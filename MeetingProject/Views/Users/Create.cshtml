@@ -1,0 +1,52 @@
+﻿@{
+    ViewBag.Title = "Create";
+    Layout = null; 
+}
+
+<form id="createForm">
+    @Html.AntiForgeryToken()
+
+    <div class="text-center" style="padding: 10px;">
+
+        <div class="form-group" style="margin-bottom: 15px;">
+            <label class="control-label fw-bold" style="margin-bottom: 5px;">Ad</label>
+            <div>
+                <input type="text" id="CreateName" name="Name" class="form-control text-center" style="margin: 0 auto; max-width: 300px;" placeholder="Örn: Ahmet" required />
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 15px;">
+            <label class="control-label fw-bold" style="margin-bottom: 5px;">Soyad</label>
+            <div>
+                <input type="text" id="CreateSurname" name="Surname" class="form-control text-center" style="margin: 0 auto; max-width: 300px;" placeholder="Örn: Yılmaz" required />
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 15px;">
+            <label class="control-label fw-bold" style="margin-bottom: 5px;">E-Posta</label>
+            <div>
+                <input type="email" id="CreateEmail" name="Email" class="form-control text-center" style="margin: 0 auto; max-width: 300px;" placeholder="Örn: ahmet@sirket.com" required />
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label class="control-label fw-bold" style="margin-bottom: 5px;">Departman</label>
+            <div>
+                <select id="CreateDepartment" name="Department" class="form-control text-center" style="margin: 0 auto; max-width: 300px;" required>
+                    <option value="" selected>Seçiniz...</option>
+                    <option value="IT">IT (Bilgi İşlem)</option>
+                    <option value="İnsan Kaynakları">İnsan Kaynakları</option>
+                    <option value="Pazarlama">Pazarlama</option>
+                    <option value="Satış">Satış</option>
+                    <option value="Yönetim">Yönetim</option>
+                </select>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal-footer" style="padding-bottom: 0; border-top: 1px solid #dee2e6; margin-top: 15px; display: flex; justify-content: center; gap: 10px;">
+        <button type="button" class="btn btn-secondary" style="min-width: 100px;" onclick="$('#kullaniciModali').modal('hide');">Kapat</button>
+        <button type="submit" class="btn btn-success" style="min-width: 100px;">Kaydet</button>
+    </div>
+</form>

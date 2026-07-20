@@ -5,20 +5,27 @@
 <h2>Index</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create", null, new { @class = "modal-tetikle btn btn-primary" })
+    @Html.ActionLink("Oda Oluştur", "Create", null, new { @class = "modal-tetikle btn btn-primary" })
 </p>
-<table class="table" id="roomsTable">
-    <thead>
-        <tr>
-            <th>Oda Adı</th>
-            <th>Kapasite</th>
-            <th>Projeksiyon Durumu</th>
-            <th>İşlemler</th>
-        </tr>
-    </thead>
-    <tbody id="odaListesi">
-    </tbody>
-</table>
+
+
+<div class="table-responsive">
+    <table class="table table-hover table-striped table-bordered text-center" style="background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        <thead class="thead-dark" style="background-color: #343a40; color: white;">
+            <tr>
+                <th>Oda Adı</th>
+                <th>Kapasite</th>
+                <th>Projeksiyon Durumu</th>               
+                <th style="width: 250px;">İşlemler</th>
+            </tr>
+        </thead>
+        <tbody id="odaListesi">
+            <tr>
+                <td colspan="5" class="text-muted" style="padding: 20px;">Kullanıcılar yükleniyor, lütfen bekleyin...</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 <div class="modal fade" id="odaModali" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -58,9 +65,9 @@
                         tabloIcerigi += '<td>' + oda.Capacity + '</td>';
                         tabloIcerigi += '<td>' + projeksiyonHtml + '</td>';
                         tabloIcerigi += '<td>' +
-                            '<a href="/Rooms/Edit/' + oda.Id + '" class="modal-tetikle">Edit</a> | ' +
-                            '<a href="/Rooms/Details/' + oda.Id + '" class="modal-tetikle">Details</a> | ' +
-                            '<a href="/Rooms/Delete/' + oda.Id + '" class="modal-tetikle">Delete</a>' +
+                            '<a href="/Rooms/Edit/' + oda.Id + '" class="modal-tetikle">Düzenle</a> | ' +
+                            '<a href="/Rooms/Details/' + oda.Id + '" class="modal-tetikle">Detaylar</a> | ' +
+                            '<a href="/Rooms/Delete/' + oda.Id + '" class="modal-tetikle">Sil</a>' +
                             '</td>';
                         tabloIcerigi += '</tr>';
                     });

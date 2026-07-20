@@ -1,0 +1,29 @@
+﻿
+@{
+    ViewBag.Title = "Delete";
+    Layout = null;
+}
+
+<form id="deleteForm">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" id="DeleteId" name="Id" />
+
+    <div class="text-center" style="padding: 10px;">
+
+        <i class="text-danger" style="font-size: 3rem; margin-bottom: 10px;">⚠️</i>
+        <h5 class="text-danger fw-bold mb-3">Bu kullanıcıyı silmek istediğinize emin misiniz?</h5>
+        <p class="text-muted">Bu işlem geri alınamaz.</p>
+
+        <div style="margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-radius: 8px;">
+            <h4 id="DeleteFullName" class="fw-bold text-dark">Yükleniyor...</h4>
+            <h6 id="DeleteDepartment" class="text-muted" style="margin-top: 10px;">Yükleniyor...</h6>
+        </div>
+
+    </div>
+
+    <div class="modal-footer" style="padding-bottom: 0; border-top: 1px solid #dee2e6; display: flex; justify-content: center; gap: 10px;">
+        <button type="button" class="btn btn-secondary" style="min-width: 100px;" onclick="$('#kullaniciModali').modal('hide');">İptal</button>
+        <button type="submit" class="btn btn-danger" style="min-width: 100px;">Evet, Sil</button>
+    </div>
+</form>

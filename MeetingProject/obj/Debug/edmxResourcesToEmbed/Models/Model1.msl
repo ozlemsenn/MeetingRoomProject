@@ -14,6 +14,9 @@
     <EntitySetMapping Name="Users">
       <EntityTypeMapping TypeName="MeetingAppModel.Users">
         <MappingFragment StoreEntitySet="Users">
+          <ScalarProperty Name="Department" ColumnName="Department" />
+          <ScalarProperty Name="Email" ColumnName="Email" />
+          <ScalarProperty Name="Surname" ColumnName="Surname" />
           <ScalarProperty Name="Name" ColumnName="Name" />
           <ScalarProperty Name="Id" ColumnName="Id" />
         </MappingFragment>

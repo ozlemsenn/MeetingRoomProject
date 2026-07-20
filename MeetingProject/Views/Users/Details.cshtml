@@ -1,0 +1,26 @@
+﻿@{
+    ViewBag.Title = "Details";
+    Layout = null;
+}
+
+<div class="text-center" style="padding: 10px;">
+
+    <div style="margin-bottom: 15px;">
+        <h6 class="text-muted">Ad Soyad</h6>
+        <h4 id="DetailsFullName" class="fw-bold">Yükleniyor...</h4>
+    </div>
+
+    <div style="margin-bottom: 15px;">
+        <h6 class="text-muted">E-Posta</h6>
+        <h4 id="DetailsEmail">Yükleniyor...</h4>
+    </div>
+
+    <div style="margin-bottom: 25px;">
+        <h6 class="text-muted">Departman</h6>
+        <h4 id="DetailsDepartment">Yükleniyor...</h4>
+    </div>
+
+    <div class="modal-footer" style="padding-bottom: 0; border-top: 1px solid #dee2e6; display: flex; justify-content: center;">
+        <button type="button" class="btn btn-secondary" style="min-width: 100px;" onclick="$('#kullaniciModali').modal('hide');">Kapat</button>
+    </div>
+</div>
