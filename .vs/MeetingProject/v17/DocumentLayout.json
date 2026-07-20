@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|c:\\users\\pc\\onedrive\\desktop\\staj 1\\meetingproject\\meetingproject\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|solutionrelative:meetingproject\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|c:\\users\\pc\\onedrive\\desktop\\staj 1\\meetingproject\\meetingproject\\views\\rooms\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|solutionrelative:meetingproject\\views\\rooms\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
@@ -34,7 +38,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
@@ -42,7 +46,46 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 1,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Rooms\\Index.cshtml",
+              "RelativeDocumentMoniker": "MeetingProject\\Views\\Rooms\\Index.cshtml",
+              "ToolTip": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Rooms\\Index.cshtml",
+              "RelativeToolTip": "MeetingProject\\Views\\Rooms\\Index.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-07-20T12:20:01.656Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "MeetingProject\\Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "MeetingProject\\Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADcAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-07-20T13:02:36.358Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Users\\Index.cshtml",
+              "RelativeDocumentMoniker": "MeetingProject\\Views\\Users\\Index.cshtml",
+              "ToolTip": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Users\\Index.cshtml",
+              "RelativeToolTip": "MeetingProject\\Views\\Users\\Index.cshtml",
+              "ViewState": "AgIAADYAAAAAAAAAAAAAAF0AAAAzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-07-20T12:09:29.871Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
               "Title": "Edit.cshtml",
               "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Users\\Edit.cshtml",
               "RelativeDocumentMoniker": "MeetingProject\\Views\\Users\\Edit.cshtml",
@@ -54,32 +97,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Index.cshtml",
-              "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Users\\Index.cshtml",
-              "RelativeDocumentMoniker": "MeetingProject\\Views\\Users\\Index.cshtml",
-              "ToolTip": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Users\\Index.cshtml",
-              "RelativeToolTip": "MeetingProject\\Views\\Users\\Index.cshtml",
-              "ViewState": "AgIAAEgAAAAAAAAAAAAAAFkAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-07-20T12:09:29.871Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Index.cshtml",
-              "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Rooms\\Index.cshtml",
-              "RelativeDocumentMoniker": "MeetingProject\\Views\\Rooms\\Index.cshtml",
-              "ToolTip": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Rooms\\Index.cshtml",
-              "RelativeToolTip": "MeetingProject\\Views\\Rooms\\Index.cshtml",
-              "ViewState": "AgIAAFcAAAAAAAAAAAAAAF4AAAAkAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-07-20T12:20:01.656Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "Details.cshtml",
               "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Users\\Details.cshtml",
               "RelativeDocumentMoniker": "MeetingProject\\Views\\Users\\Details.cshtml",
@@ -91,7 +109,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "Delete.cshtml",
               "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Users\\Delete.cshtml",
               "RelativeDocumentMoniker": "MeetingProject\\Views\\Users\\Delete.cshtml",
@@ -103,7 +121,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "Create.cshtml",
               "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Users\\Create.cshtml",
               "RelativeDocumentMoniker": "MeetingProject\\Views\\Users\\Create.cshtml",
