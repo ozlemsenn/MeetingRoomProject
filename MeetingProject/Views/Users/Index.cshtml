@@ -1,6 +1,6 @@
 ﻿@{
     ViewBag.Title = "Kullanıcı Yönetimi";
-    Layout = "~/Views/Shared/_Layout.cshtml"; 
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container" style="margin-top: 30px;">
@@ -10,7 +10,7 @@
             <p class="text-muted">Sistemde kayıtlı kullanıcıları buradan yönetebilir ve yeni kullanıcı ekleyebilirsiniz.</p>
         </div>
         <div class="col-md-4 text-right" style="display: flex; justify-content: flex-end; align-items: center;">
-            
+
             <a href="/Users/Create" class="btn btn-primary modal-tetikle" style="font-weight: bold; min-width: 150px;">
                 + Yeni Kullanıcı
             </a>
@@ -18,7 +18,7 @@
     </div>
 
     <div class="table-responsive">
-        <table class="table table-hover table-striped table-bordered text-center" style="background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        <table id="kullaniciTablosu" class="table table-hover table-striped table-bordered text-center" style="background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
             <thead class="thead-dark" style="background-color: #343a40; color: white;">
                 <tr>
                     <th>Ad</th>
@@ -82,6 +82,13 @@
                     }
 
                     $('#kullaniciListesi').html(tabloIcerigi);
+                    if ($.fn.DataTable.isDataTable('#kullaniciTablosu')) {
+                        $('#kullaniciTablosu').DataTable().destroy();
+                    }
+
+                    $('#kullaniciListesi').html(tabloIcerigi);
+
+                    $('#kullaniciTablosu').DataTable();
                 },
                 error: function () {
                     console.log("Kullanıcılar yüklenirken sunucuya ulaşılamadı.");
@@ -108,9 +115,9 @@
                         $.ajax({
                             url: '/Users/GetUserData/' + userId,
                             type: 'GET',
-                            success: function(kullaniciBilgisi) {
+                            success: function (kullaniciBilgisi) {
 
-                                if(gidilecekAdres.indexOf('/Users/Edit/') !== -1) {
+                                if (gidilecekAdres.indexOf('/Users/Edit/') !== -1) {
                                     $('#EditId').val(kullaniciBilgisi.Id);
                                     $('#EditName').val(kullaniciBilgisi.Name);
                                     $('#EditSurname').val(kullaniciBilgisi.Surname);
@@ -118,13 +125,13 @@
                                     $('#EditDepartment').val(kullaniciBilgisi.Department);
                                 }
 
-                                else if(gidilecekAdres.indexOf('/Users/Delete/') !== -1) {
+                                else if (gidilecekAdres.indexOf('/Users/Delete/') !== -1) {
                                     $('#DeleteId').val(kullaniciBilgisi.Id);
                                     $('#DeleteFullName').text(kullaniciBilgisi.Name + ' ' + kullaniciBilgisi.Surname);
                                     $('#DeleteDepartment').text(kullaniciBilgisi.Department);
                                 }
 
-                                else if(gidilecekAdres.indexOf('/Users/Details/') !== -1) {
+                                else if (gidilecekAdres.indexOf('/Users/Details/') !== -1) {
                                     $('#DetailsFullName').text(kullaniciBilgisi.Name + ' ' + kullaniciBilgisi.Surname);
                                     $('#DetailsEmail').text(kullaniciBilgisi.Email);
                                     $('#DetailsDepartment').text(kullaniciBilgisi.Department);
@@ -171,7 +178,7 @@
 
             $(document).on("submit", "#deleteForm", function (e) {
                 e.preventDefault();
-                var silinecekId = $('#DeleteId').val(); 
+                var silinecekId = $('#DeleteId').val();
                 $.ajax({
                     url: "/Users/Delete/" + silinecekId,
                     type: "POST",

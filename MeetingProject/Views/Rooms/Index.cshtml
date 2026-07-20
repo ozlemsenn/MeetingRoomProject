@@ -10,12 +10,12 @@
 
 
 <div class="table-responsive">
-    <table class="table table-hover table-striped table-bordered text-center" style="background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+    <table id="odaTablosu" class="table table-hover table-striped table-bordered text-center" style="background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
         <thead class="thead-dark" style="background-color: #343a40; color: white;">
             <tr>
                 <th>Oda Adı</th>
                 <th>Kapasite</th>
-                <th>Projeksiyon Durumu</th>               
+                <th>Projeksiyon Durumu</th>
                 <th style="width: 250px;">İşlemler</th>
             </tr>
         </thead>
@@ -73,6 +73,13 @@
                     });
 
                     $('#odaListesi').html(tabloIcerigi);
+                    if ($.fn.DataTable.isDataTable('#odaTablosu')) {
+                        $('#odaTablosu').DataTable().destroy();
+                    }
+
+                    $('#odaListesi').html(tabloIcerigi);
+
+                    $('#odaTablosu').DataTable();
                 },
                 error: function () {
                     console.log("Odalar yüklenirken sunucuya ulaşılamadı.");
@@ -171,7 +178,7 @@
 
             $(document).on("submit", "#deleteForm", function (e) {
                 e.preventDefault();
-                var silinecekId = $('#DeleteId').val(); 
+                var silinecekId = $('#DeleteId').val();
                 $.ajax({
                     url: "/Rooms/Delete/" + silinecekId,
                     type: "POST",
