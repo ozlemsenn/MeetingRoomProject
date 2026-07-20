@@ -1,0 +1,42 @@
+﻿@{
+    Layout = null;
+}
+
+<form id="editForm">
+    @Html.AntiForgeryToken()
+
+    <div class="text-center" style="padding: 10px;">
+
+        <input type="hidden" id="EditId" name="Id" />
+
+        <div class="form-group" style="margin-bottom: 15px;">
+            <label class="control-label fw-bold" style="margin-bottom: 5px;">Oda Adı</label>
+            <div>
+                <input type="text" id="EditName" name="Name" class="form-control text-center" style="margin: 0 auto; max-width: 300px;" required />
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 15px;">
+            <label class="control-label fw-bold" style="margin-bottom: 5px;">Kapasite (Kişi)</label>
+            <div>
+                <input type="number" id="EditCapacity" name="Capacity" class="form-control text-center" style="margin: 0 auto; max-width: 300px;" required />
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label class="control-label fw-bold" style="margin-bottom: 5px;">Projeksiyon Cihazı Var Mı?</label>
+            <div>
+                <select id="EditHasProjector" name="HasProjector" class="form-control text-center" style="margin: 0 auto; max-width: 300px;">
+                    <option value="">Seçiniz...</option>
+                    <option value="true">Var</option>
+                    <option value="false">Yok</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer" style="padding-bottom: 0; border-top: 1px solid #dee2e6; margin-top: 15px; display: flex; justify-content: center; gap: 10px;">
+        <button type="button" class="btn btn-secondary" style="min-width: 100px;" onclick="$('#odaModali').modal('hide');">İptal</button>
+        <button type="submit" class="btn btn-primary" style="min-width: 100px;">Güncelle</button>
+    </div>
+</form>

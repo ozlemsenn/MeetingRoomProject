@@ -1,0 +1,35 @@
+﻿@{
+    ViewBag.Title = "Delete";
+    Layout = null;
+}
+
+<div class="text-center" style="padding: 10px;">
+
+    <h4 class="text-danger fw-bold" style="margin-bottom: 20px;">Bu odayı silmek istediğinize emin misiniz?</h4>
+
+    <div style="margin-bottom: 15px;">
+        <h6 class="text-muted">Oda Adı</h6>
+        <h4 id="DeleteName">Yükleniyor...</h4>
+    </div>
+
+    <div style="margin-bottom: 15px;">
+        <h6 class="text-muted">Kapasite</h6>
+        <h4 id="DeleteCapacity">Yükleniyor...</h4>
+    </div>
+
+    <div style="margin-bottom: 25px;">
+        <h6 class="text-muted">Projeksiyon Durumu</h6>
+        <h4 id="DeleteProjector">Yükleniyor...</h4>
+    </div>
+
+    <form id="deleteForm">
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" id="DeleteId" name="Id" />
+
+        <div class="modal-footer" style="padding-bottom: 0; border-top: 1px solid #dee2e6; display: flex; justify-content: center; gap: 10px;">
+            <button type="button" class="btn btn-secondary" style="min-width: 100px;" onclick="$('#odaModali').modal('hide');">İptal</button>
+            <button type="submit" class="btn btn-danger" style="min-width: 100px;">Sil</button>
+        </div>
+    </form>
+</div>
