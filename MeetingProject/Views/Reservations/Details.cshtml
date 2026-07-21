@@ -1,0 +1,42 @@
+﻿@model MeetingProject.Models.Reservations
+@{
+    Layout = null;
+}
+
+<div class="modal-header border-0 pb-0">
+    <h5 class="modal-title fw-bold text-info">🔍 Rezervasyon Detayları</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+
+<div class="modal-body py-4">
+    <div class="card border-0 shadow-sm" style="border-radius: 15px; background-color: #f8f9fa;">
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-sm-4 text-muted fw-bold">Toplantı Odası:</div>
+                <div class="col-sm-8 text-dark">@ViewBag.RoomName</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-4 text-muted fw-bold">Kullanıcı:</div>
+                <div class="col-sm-8 text-dark">@ViewBag.UserName</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-4 text-muted fw-bold">Tarih:</div>
+                <div class="col-sm-8 text-dark">@(Model.Date.HasValue ? Model.Date.Value.ToString("dd.MM.yyyy") : "")</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-4 text-muted fw-bold">Saat Aralığı:</div>
+                <div class="col-sm-8 text-dark">
+                    <span class="badge bg-secondary">@(Model.StartTime.HasValue ? Model.StartTime.Value.ToString(@"hh\:mm") : "") - @(Model.EndTime.HasValue ? Model.EndTime.Value.ToString(@"hh\:mm") : "")</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 text-muted fw-bold mb-2">Açıklama (Toplantı Konusu):</div>
+                <div class="col-sm-12 text-dark" style="background-color: white; padding: 15px; border-radius: 10px; border: 1px solid #e9ecef; white-space: pre-wrap;">@Model.Description</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer border-0 pt-0 justify-content-end">
+    <button type="button" class="btn btn-secondary" style="border-radius: 15px; padding: 8px 25px;" data-bs-dismiss="modal">Kapat</button>
+</div>

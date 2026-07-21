@@ -14,111 +14,145 @@
     </div>
 </div>
 
-<div class="card shadow-sm" style="border-radius: 15px; border: none;">
-    <div class="card-body">
-        <table id="rezervasyonTablosu" class="table table-hover table-borderless align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>Tarih</th>
-                    <th>Saat Aralığı</th>
-                    <th>Oda</th>
-                    <th>Kullanıcı</th>
-                    <th>Açıklama</th>
-                    <th>Durum</th>
-                    <th class="text-end">İşlemler</th>
-                </tr>
-            </thead>
-            <tbody id="rezervasyonListesi">
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<div class="modal fade" id="islemModali" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" id="modalIcerik" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-            
+    <div class="card shadow-sm" style="border-radius: 15px; border: none;">
+        <div class="card-body">
+            <table id="rezervasyonTablosu" class="table table-hover table-borderless align-middle">
+                <thead class="thead-dark" style="background-color: #343a40; color: white;">
+                    <tr>
+                        <th class="text-center align-middle" style="width: 10%;">Tarih</th>
+                        <th class="text-center align-middle" style="width: 10%;">Saat Aralığı</th>
+                        <th class="text-center align-middle" style="width: 20%;">Oda</th>
+                        <th class="text-center align-middle" style="width: 20%;">Kullanıcı</th>
+                        <th class="text-center align-middle" style="width: 35%;">Açıklama</th>
+                        <th class="text-center align-middle" style="width: 10%;">Durum</th>
+                        <th class="text-center align-middle" style="width: 20%;">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody id="rezervasyonListesi">
+                </tbody>
+            </table>
         </div>
     </div>
-</div>
 
-@section scripts {
-    <script>
-        $(document).ready(function () {
-            TabloyuDoldur();
-        });
+    <div class="modal fade" id="islemModali" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" id="modalIcerik" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
 
-        function TabloyuDoldur() {
-            $.ajax({
-                url: '/Reservations/GetReservations',
-                type: 'GET',
-                success: function (data) {
-                    if ($.fn.DataTable.isDataTable('#rezervasyonTablosu')) {
-                        $('#rezervasyonTablosu').DataTable().destroy();
+            </div>
+        </div>
+    </div>
+
+    @section scripts {
+        <script>
+            $(document).ready(function () {
+                TabloyuDoldur();
+            });
+
+            function TabloyuDoldur() {
+                $.ajax({
+                    url: '/Reservations/GetReservations',
+                    type: 'GET',
+                    success: function (data) {
+                        if ($.fn.DataTable.isDataTable('#rezervasyonTablosu')) {
+                            $('#rezervasyonTablosu').DataTable().destroy();
+                        }
+
+                        var html = '';
+                        $.each(data, function (i, item) {
+                            html += '<tr>';
+                            html += '<td class="text-center align-middle"><strong>' + item.Date + '</strong></td>';
+                            html += '<td class="text-center align-middle"><span class="badge bg-light text-dark">' + item.StartTime + ' - ' + item.EndTime + '</span></td>';
+                            html += '<td class="text-center align-middle">' + item.RoomName + '</td>';
+                            html += '<td class="text-center align-middle">' + item.UserName + '</td>';
+                            var kisaAciklama = item.Description;
+                            if (kisaAciklama && kisaAciklama.length > 30) {
+                                kisaAciklama = kisaAciklama.substring(0, 30) + '...'; 
+                            }
+                            html += '<td>' + kisaAciklama + '</td>';
+                            html += '<td class="text-center align-middle"><span class="badge bg-success">' + item.Status + '</span></td>';
+
+                            html += '<td class="align-middle text-center">';
+
+                            html += '<div class="d-flex justify-content-center align-items-center flex-nowrap gap-1">';
+
+                            html += '<button class="btn btn-sm btn-info text-white shadow-sm" title="Detayları Gör" style="border-radius: 10px; padding: 5px 10px;" onclick="ModalAc(\'/Reservations/Details/' + item.Id + '\')">🔍</button>';
+
+                            html += '<button class="btn btn-sm btn-warning shadow-sm" title="Düzenle" style="border-radius: 10px; padding: 5px 10px;" onclick="ModalAc(\'/Reservations/Edit/' + item.Id + '\')">✏️</button>';
+
+                            html += '<button class="btn btn-sm btn-danger shadow-sm" title="Sil" style="border-radius: 10px; padding: 5px 10px;" onclick="ModalAc(\'/Reservations/Delete/' + item.Id + '\')">🗑️</button>';
+
+                            html += '</div>';
+                            html += '</td>';
+                            html += '</tr>';
+                        });
+
+                        $('#rezervasyonListesi').html(html);
+                        $('#rezervasyonTablosu').DataTable({
+                            "language": { "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json" }
+                        });
                     }
+                });
+            }
 
-                    var html = '';
-                    $.each(data, function (i, item) {
-                        html += '<tr>';
-                        html += '<td><strong>' + item.Date + '</strong></td>';
-                        html += '<td><span class="badge bg-light text-dark">' + item.StartTime + ' - ' + item.EndTime + '</span></td>';
-                        html += '<td>' + item.RoomName + '</td>';
-                        html += '<td>' + item.UserName + '</td>';
-                        html += '<td>' + item.Description + '</td>';
-                        html += '<td><span class="badge bg-success">' + item.Status + '</span></td>';
-                        html += '<td class="text-end">';
-                        html += '<button class="btn btn-sm btn-danger" style="border-radius: 15px;" onclick="ModalAc(\'/Reservations/Delete/' + item.Id + '\')">🗑️ Sil</button>';
-                        html += '</td>';
-                        html += '</tr>';
-                    });
+            function ModalAc(url) {
+                $.get(url, function (data) {
+                    $('#modalIcerik').html(data);
+                    $('#islemModali').modal('show');
+                });
+            }
 
-                    $('#rezervasyonListesi').html(html);
-                    $('#rezervasyonTablosu').DataTable({
-                        "language": { "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json" }
-                    });
-                }
-            });
-        }
+            function Kaydet() {
+                var formData = $('#formRezervasyon').serialize();
 
-        function ModalAc(url) {
-            $.get(url, function (data) {
-                $('#modalIcerik').html(data);
-                $('#islemModali').modal('show');
-            });
-        }
+                $('#hataMesajiAlani').addClass('d-none');
 
-        function Kaydet() {
-            var formData = $('#formRezervasyon').serialize();
+                $.ajax({
+                    url: '/Reservations/Create',
+                    type: 'POST',
+                    data: formData,
+                    success: function (response) {
+                        if (response.success) {
+                            $('#islemModali').modal('hide');
+                            TabloyuDoldur();
+                        } else {
+                            $('#hataMesajiAlani').removeClass('d-none').html('<strong>⚠️ Uyarı:</strong> ' + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        $('#hataMesajiAlani').removeClass('d-none').html('<strong>❌ Sunucu Hatası:</strong> İşlem tamamlanamadı.');
+                    }
+                });
+            }
 
-            $('#hataMesajiAlani').addClass('d-none');
-
-            $.ajax({
-                url: '/Reservations/Create',
-                type: 'POST',
-                data: formData,
-                success: function (response) {
+            function Sil() {
+                var formData = $('#formSil').serialize();
+                $.post('/Reservations/DeleteConfirm', formData, function (response) {
                     if (response.success) {
                         $('#islemModali').modal('hide');
-                        TabloyuDoldur(); 
-                    } else {
-                        $('#hataMesajiAlani').removeClass('d-none').html('<strong>⚠️ Uyarı:</strong> ' + response.message);
+                        TabloyuDoldur();
                     }
-                },
-                error: function (xhr, status, error) {
-                    $('#hataMesajiAlani').removeClass('d-none').html('<strong>❌ Sunucu Hatası:</strong> İşlem tamamlanamadı.');
-                }
-            });
-        }
+                });
+            }
+            function Guncelle() {
+                var formData = $('#formDuzenle').serialize();
+                $('#hataMesajiAlaniDuzenle').addClass('d-none');
 
-        function Sil() {
-            var formData = $('#formSil').serialize();
-            $.post('/Reservations/DeleteConfirm', formData, function (response) {
-                if (response.success) {
-                    $('#islemModali').modal('hide');
-                    TabloyuDoldur();
-                }
-            });
-        }
-    </script>
-}
-}
+                $.ajax({
+                    url: '/Reservations/Edit',
+                    type: 'POST',
+                    data: formData,
+                    success: function (response) {
+                        if (response.success) {
+                            $('#islemModali').modal('hide');
+                            TabloyuDoldur();
+                        } else {
+                            $('#hataMesajiAlaniDuzenle').removeClass('d-none').html('<strong>⚠️ Uyarı:</strong> ' + response.message);
+                        }
+                    },
+                    error: function () {
+                        $('#hataMesajiAlaniDuzenle').removeClass('d-none').html('<strong>❌ Sunucu Hatası.</strong>');
+                    }
+                });
+            }
+        </script>
+    }

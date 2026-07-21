@@ -131,5 +131,77 @@ namespace MeetingProject.Controllers
             }
             return Json(new { success = true });
         }
+        
+        public ActionResult Edit(int id)
+        {
+            var res = db.Reservations.Find(id);
+            if (res == null)
+            {
+                return HttpNotFound();
+            }
+
+            ViewBag.Rooms = new SelectList(db.Rooms, "Id", "Name", res.RoomId);
+            ViewBag.Users = new SelectList(db.Users, "Id", "Name", res.UserId);
+
+            return View(res);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(Reservations res)
+        {
+            if (!res.RoomId.HasValue || res.RoomId == 0) return Json(new { success = false, message = "Lütfen bir toplantı odası seçiniz." });
+            if (!res.UserId.HasValue || res.UserId == 0) return Json(new { success = false, message = "Lütfen rezervasyonu yapacak kullanıcıyı seçiniz." });
+            if (!res.Date.HasValue) return Json(new { success = false, message = "Lütfen rezervasyon tarihini seçiniz." });
+            if (!res.StartTime.HasValue || !res.EndTime.HasValue) return Json(new { success = false, message = "Lütfen başlangıç ve bitiş saatlerini eksiksiz giriniz." });
+            if (res.StartTime >= res.EndTime) return Json(new { success = false, message = "Bitiş saati, başlangıç saatinden önce veya aynı olamaz." });
+            if (string.IsNullOrWhiteSpace(res.Description)) return Json(new { success = false, message = "Lütfen toplantı için bir açıklama (konu) giriniz." });
+
+            bool isOverlap = db.Reservations.Any(r =>
+                r.Id != res.Id && 
+                r.RoomId == res.RoomId &&
+                r.Date == res.Date &&
+                (
+                    (res.StartTime >= r.StartTime && res.StartTime < r.EndTime) ||
+                    (res.EndTime > r.StartTime && res.EndTime <= r.EndTime) ||
+                    (res.StartTime <= r.StartTime && res.EndTime >= r.EndTime)
+                )
+            );
+
+            if (isOverlap)
+            {
+                return Json(new { success = false, message = "Seçtiğiniz saat aralığında bu oda doludur." });
+            }
+
+            var existingRes = db.Reservations.Find(res.Id);
+            if (existingRes != null)
+            {
+                existingRes.RoomId = res.RoomId;
+                existingRes.UserId = res.UserId;
+                existingRes.Date = res.Date;
+                existingRes.StartTime = res.StartTime;
+                existingRes.EndTime = res.EndTime;
+                existingRes.Description = res.Description;
+
+                db.SaveChanges();
+            }
+
+            return Json(new { success = true, message = "Rezervasyon başarıyla güncellendi!" });
+        }
+        public ActionResult Details(int id)
+        {
+            var res = db.Reservations.Find(id);
+            if (res == null)
+            {
+                return HttpNotFound();
+            }
+
+            ViewBag.RoomName = db.Rooms.FirstOrDefault(r => r.Id == res.RoomId)?.Name;
+
+            var user = db.Users.FirstOrDefault(u => u.Id == res.UserId);
+            ViewBag.UserName = user != null ? user.Name + " " + user.Surname : "";
+
+            return View(res);
+        }
     }
 }

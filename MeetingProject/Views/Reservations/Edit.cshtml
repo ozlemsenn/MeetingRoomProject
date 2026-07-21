@@ -1,0 +1,50 @@
+﻿@model MeetingProject.Models.Reservations
+@{
+    Layout = null;
+}
+
+<div class="modal-header border-0 pb-0">
+    <h5 class="modal-title fw-bold text-warning">✏️ Rezervasyonu Düzenle</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+
+<div class="modal-body py-4">
+    <div id="hataMesajiAlaniDuzenle" class="alert alert-danger d-none" style="border-radius: 10px; font-size: 0.9rem;" role="alert"></div>
+
+    <form id="formDuzenle">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="Id" value="@Model.Id" />
+
+        <div class="mb-3">
+            <label class="form-label text-muted small fw-bold">Toplantı Odası</label>
+            @Html.DropDownList("RoomId", (SelectList)ViewBag.Rooms, "Oda Seçiniz", new { @class = "form-select" })
+        </div>
+        <div class="mb-3">
+            <label class="form-label text-muted small fw-bold">Kullanıcı</label>
+            @Html.DropDownList("UserId", (SelectList)ViewBag.Users, "Kullanıcı Seçiniz", new { @class = "form-select" })
+        </div>
+        <div class="mb-3">
+            <label class="form-label text-muted small fw-bold">Tarih</label>
+            <input type="date" name="Date" class="form-control" value="@(Model.Date.HasValue ? Model.Date.Value.ToString("yyyy-MM-dd") : "")" />
+        </div>
+        <div class="row mb-3">
+            <div class="col-6">
+                <label class="form-label text-muted small fw-bold">Başlangıç</label>
+                <input type="time" name="StartTime" class="form-control" value="@(Model.StartTime.HasValue ? Model.StartTime.Value.ToString(@"hh\:mm") : "")" />
+            </div>
+            <div class="col-6">
+                <label class="form-label text-muted small fw-bold">Bitiş</label>
+                <input type="time" name="EndTime" class="form-control" value="@(Model.EndTime.HasValue ? Model.EndTime.Value.ToString(@"hh\:mm") : "")" />
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label text-muted small fw-bold">Açıklama</label>
+            <textarea name="Description" class="form-control" rows="2">@Model.Description</textarea>
+        </div>
+    </form>
+</div>
+
+<div class="modal-footer border-0 pt-0 justify-content-end">
+    <button type="button" class="btn btn-light" style="border-radius: 15px;" data-bs-dismiss="modal">İptal</button>
+    <button type="button" class="btn btn-warning" style="border-radius: 15px; padding: 8px 25px;" onclick="Guncelle()">Değişiklikleri Kaydet</button>
+</div>
