@@ -27,5 +27,6 @@ namespace MeetingProject.Models
     
         public virtual DbSet<Rooms> Rooms { get; set; }
         public virtual DbSet<Users> Users { get; set; }
+        public virtual DbSet<Reservations> Reservations { get; set; }
     }
 }

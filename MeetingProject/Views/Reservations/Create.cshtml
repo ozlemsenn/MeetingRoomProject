@@ -1,0 +1,56 @@
+﻿@model MeetingProject.Models.Reservations
+@{
+    Layout = null;
+}
+
+<div class="modal-header border-0 pb-0">
+    <h5 class="modal-title fw-bold">Yeni Rezervasyon Oluştur</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+
+<div class="modal-body">
+
+        <div id="hataMesajiAlani" class="alert alert-danger d-none" style="border-radius: 10px; font-size: 0.9rem;" role="alert">
+        </div>
+
+        <form id="formRezervasyon">
+            <form id="formRezervasyon">
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">Toplantı Odası</label>
+                    @Html.DropDownList("RoomId", (SelectList)ViewBag.Rooms, "Oda Seçiniz", new { @class = "form-select", required = "required" })
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">Kullanıcı (Rezerve Eden)</label>
+                    @Html.DropDownList("UserId", (SelectList)ViewBag.Users, "Kullanıcı Seçiniz", new { @class = "form-select", required = "required" })
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">Tarih</label>
+                    <input type="date" name="Date" class="form-control" required />
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold">Başlangıç Saati</label>
+                        <input type="time" name="StartTime" class="form-control" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-bold">Bitiş Saati</label>
+                        <input type="time" name="EndTime" class="form-control" required />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">Toplantı Konusu / Açıklama</label>
+                    <textarea name="Description" class="form-control" rows="2" placeholder="Örn: Aylık Bütçe Değerlendirmesi" required></textarea>
+                </div>
+            </form>
+    </div>
+
+    <div class="modal-footer border-0 pt-0">
+        <button type="button" class="btn btn-light" style="border-radius: 15px;" data-bs-dismiss="modal">İptal</button>
+        <button type="button" class="btn btn-primary" style="border-radius: 15px; padding: 8px 20px;" onclick="Kaydet()">Randevuyu Kaydet</button>
+    </div>

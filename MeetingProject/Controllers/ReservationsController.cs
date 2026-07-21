@@ -1,0 +1,135 @@
+﻿using System;
+using System.Linq;
+using System.Web.Mvc;
+using MeetingProject.Models;
+
+namespace MeetingProject.Controllers
+{
+    public class ReservationsController : Controller
+    {
+        MeetingAppEntities1 db = new MeetingAppEntities1();
+
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        public ActionResult GetReservations()
+        {
+            var reservations = db.Reservations.Select(r => new
+            {
+                r.Id,
+                RoomName = db.Rooms.FirstOrDefault(room => room.Id == r.RoomId).Name,
+                UserName = db.Users.FirstOrDefault(user => user.Id == r.UserId).Name + " " + db.Users.FirstOrDefault(user => user.Id == r.UserId).Surname,
+                Date = r.Date,
+                StartTime = r.StartTime,
+                EndTime = r.EndTime,
+                Description = r.Description,
+                Status = r.Status
+            }).ToList();
+
+            var formattedList = reservations.Select(r => new {
+                r.Id,
+                r.RoomName,
+                r.UserName,
+                Date = r.Date.HasValue ? r.Date.Value.ToString("dd.MM.yyyy") : "",
+                StartTime = r.StartTime.HasValue ? r.StartTime.Value.ToString(@"hh\:mm") : "",
+                EndTime = r.EndTime.HasValue ? r.EndTime.Value.ToString(@"hh\:mm") : "",
+                r.Description,
+                r.Status
+            });
+
+            return Json(formattedList, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult Create()
+        {
+            ViewBag.Rooms = new SelectList(db.Rooms, "Id", "Name");
+            ViewBag.Users = new SelectList(db.Users, "Id", "Name");
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(Reservations res)
+        {
+            if (!res.RoomId.HasValue || res.RoomId == 0)
+            {
+                return Json(new { success = false, message = "Lütfen bir toplantı odası seçiniz." });
+            }
+
+            if (!res.UserId.HasValue || res.UserId == 0)
+            {
+                return Json(new { success = false, message = "Lütfen rezervasyonu yapacak kullanıcıyı seçiniz." });
+            }
+
+            if (!res.Date.HasValue)
+            {
+                return Json(new { success = false, message = "Lütfen rezervasyon tarihini seçiniz." });
+            }
+
+            if (!res.StartTime.HasValue || !res.EndTime.HasValue)
+            {
+                return Json(new { success = false, message = "Lütfen başlangıç ve bitiş saatlerini eksiksiz giriniz." });
+            }
+
+            if (res.StartTime >= res.EndTime)
+            {
+                return Json(new { success = false, message = "Bitiş saati, başlangıç saatinden önce veya aynı olamaz." });
+            }
+
+            if (string.IsNullOrWhiteSpace(res.Description))
+            {
+                return Json(new { success = false, message = "Lütfen toplantı için bir açıklama (konu) giriniz." });
+            }
+
+
+            bool isOverlap = db.Reservations.Any(r =>
+                r.RoomId == res.RoomId &&
+                r.Date == res.Date &&
+                (
+                    (res.StartTime >= r.StartTime && res.StartTime < r.EndTime) ||
+                    (res.EndTime > r.StartTime && res.EndTime <= r.EndTime) ||
+                    (res.StartTime <= r.StartTime && res.EndTime >= r.EndTime)
+                )
+            );
+
+            if (isOverlap)
+            {
+                return Json(new { success = false, message = "Seçtiğiniz saat aralığında bu oda doludur. Lütfen farklı bir saat veya oda seçiniz." });
+            }
+
+
+            res.Status = "Aktif";
+            db.Reservations.Add(res);
+
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (System.Exception ex)
+            {
+                return Json(new { success = false, message = "Veritabanına kaydedilirken bir hata oluştu." });
+            }
+
+            return Json(new { success = true, message = "Rezervasyon başarıyla oluşturuldu!" });
+        }
+        public ActionResult Delete(int id)
+        {
+            var res = db.Reservations.Find(id);
+            return View(res);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirm(int id)
+        {
+            var res = db.Reservations.Find(id);
+            if (res != null)
+            {
+                db.Reservations.Remove(res);
+                db.SaveChanges();
+            }
+            return Json(new { success = true });
+        }
+    }
+}

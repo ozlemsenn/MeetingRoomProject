@@ -12,6 +12,7 @@
   <EntityContainer Name="MeetingAppEntities1" annotation:LazyLoadingEnabled="true">
     <EntitySet Name="Rooms" EntityType="Self.Rooms" />
     <EntitySet Name="Users" EntityType="MeetingAppModel.Users" />
+    <EntitySet Name="Reservations" EntityType="MeetingAppModel.Reservations" />
   </EntityContainer>
   <EntityType Name="Users">
     <Key>
@@ -22,5 +23,18 @@
     <Property Name="Surname" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
     <Property Name="Email" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
     <Property Name="Department" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+  </EntityType>
+  <EntityType Name="Reservations">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="UserId" Type="Int32" />
+    <Property Name="RoomId" Type="Int32" />
+    <Property Name="Date" Type="DateTime" Precision="0" />
+    <Property Name="StartTime" Type="Time" Precision="7" />
+    <Property Name="EndTime" Type="Time" Precision="7" />
+    <Property Name="Description" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
+    <Property Name="Status" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
   </EntityType>
 </Schema>
