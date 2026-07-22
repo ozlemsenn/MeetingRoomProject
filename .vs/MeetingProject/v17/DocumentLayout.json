@@ -3,20 +3,20 @@
   "WorkspaceRootPath": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|c:\\users\\pc\\onedrive\\desktop\\staj 1\\meetingproject\\meetingproject\\views\\reservations\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\meetingproject\\views\\reservations\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|solutionrelative:meetingproject\\views\\reservations\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|c:\\users\\pc\\onedrive\\desktop\\staj 1\\meetingproject\\meetingproject\\views\\reservations\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|solutionrelative:meetingproject\\views\\reservations\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|c:\\users\\pc\\onedrive\\desktop\\staj 1\\meetingproject\\meetingproject\\views\\reservations\\cancel.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|solutionrelative:meetingproject\\views\\reservations\\cancel.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\meetingproject\\controllers\\reservationscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|solutionrelative:meetingproject\\controllers\\reservationscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\meetingproject\\views\\reservations\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|solutionrelative:meetingproject\\views\\reservations\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\meetingproject\\views\\reservations\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|solutionrelative:meetingproject\\views\\reservations\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,7 +26,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Bookmark",
@@ -38,39 +38,29 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Edit.cshtml",
-              "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Reservations\\Edit.cshtml",
-              "RelativeDocumentMoniker": "MeetingProject\\Views\\Reservations\\Edit.cshtml",
-              "ToolTip": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Reservations\\Edit.cshtml",
-              "RelativeToolTip": "MeetingProject\\Views\\Reservations\\Edit.cshtml",
-              "ViewState": "AgIAABgAAAAAAAAAAAAAAA4AAAAgAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-07-21T11:40:57.995Z"
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "ReservationsController.cs",
-              "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Controllers\\ReservationsController.cs",
-              "RelativeDocumentMoniker": "MeetingProject\\Controllers\\ReservationsController.cs",
-              "ToolTip": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Controllers\\ReservationsController.cs",
-              "RelativeToolTip": "MeetingProject\\Controllers\\ReservationsController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-21T11:38:59.608Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
               "Title": "Details.cshtml",
               "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Reservations\\Details.cshtml",
               "RelativeDocumentMoniker": "MeetingProject\\Views\\Reservations\\Details.cshtml",
               "ToolTip": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Reservations\\Details.cshtml",
               "RelativeToolTip": "MeetingProject\\Views\\Reservations\\Details.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACkAAAAGAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADgAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-07-21T11:46:18.073Z"
+              "WhenOpened": "2026-07-22T11:59:32.822Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Cancel.cshtml",
+              "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Reservations\\Cancel.cshtml",
+              "RelativeDocumentMoniker": "MeetingProject\\Views\\Reservations\\Cancel.cshtml",
+              "ToolTip": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Reservations\\Cancel.cshtml",
+              "RelativeToolTip": "MeetingProject\\Views\\Reservations\\Cancel.cshtml",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAABUAAAC8AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-07-22T11:30:52.602Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -80,9 +70,22 @@
               "RelativeDocumentMoniker": "MeetingProject\\Views\\Reservations\\Index.cshtml",
               "ToolTip": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Reservations\\Index.cshtml",
               "RelativeToolTip": "MeetingProject\\Views\\Reservations\\Index.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAHMAAAAsAAAAAAAAAA==",
+              "ViewState": "AgIAAEgAAAAAAAAAAAAAACsAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-07-21T10:52:01.613Z",
+              "WhenOpened": "2026-07-22T09:02:34.378Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ReservationsController.cs",
+              "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Controllers\\ReservationsController.cs",
+              "RelativeDocumentMoniker": "MeetingProject\\Controllers\\ReservationsController.cs",
+              "ToolTip": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Controllers\\ReservationsController.cs",
+              "RelativeToolTip": "MeetingProject\\Controllers\\ReservationsController.cs",
+              "ViewState": "AgIAANMAAAAAAAAAAAAAwOQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-22T06:51:58.138Z",
               "EditorCaption": ""
             }
           ]

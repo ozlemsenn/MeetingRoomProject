@@ -36,5 +36,6 @@
     <Property Name="EndTime" Type="Time" Precision="7" />
     <Property Name="Description" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
     <Property Name="Status" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+    <Property Name="CancelReason" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
   </EntityType>
 </Schema>

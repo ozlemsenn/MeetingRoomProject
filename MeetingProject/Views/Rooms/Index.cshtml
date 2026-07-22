@@ -99,7 +99,11 @@
 
                         $('#odaListesi').html(tabloIcerigi);
 
-                        $('#odaTablosu').DataTable();
+                        $('#odaTablosu').DataTable({
+                            language: {
+                                url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json"
+                            }
+                        });
                     },
                     error: function () {
                         console.log("Odalar yüklenirken sunucuya ulaşılamadı.");

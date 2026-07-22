@@ -22,5 +22,6 @@ namespace MeetingProject.Models
         public Nullable<System.TimeSpan> EndTime { get; set; }
         public string Description { get; set; }
         public string Status { get; set; }
+        public string CancelReason { get; set; }
     }
 }

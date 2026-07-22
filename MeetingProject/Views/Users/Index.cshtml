@@ -96,7 +96,11 @@
 
                     $('#kullaniciListesi').html(tabloIcerigi);
 
-                    $('#kullaniciTablosu').DataTable();
+                    $('#kullaniciTablosu').DataTable({
+                        language: {
+                            url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json"
+                        }
+                    });
                 },
                 error: function () {
                     console.log("Kullanıcılar yüklenirken sunucuya ulaşılamadı.");

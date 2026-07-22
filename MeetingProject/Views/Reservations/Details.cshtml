@@ -1,6 +1,11 @@
 ﻿@model MeetingProject.Models.Reservations
 @{
     Layout = null;
+
+    // Gelen duruma göre rozetin rengini otomatik seçiyoruz
+    string rozetRengi = "bg-success";
+    if (ViewBag.GuncelDurum == "Tamamlandı") { rozetRengi = "bg-secondary"; }
+    else if (ViewBag.GuncelDurum == "İptal Edildi") { rozetRengi = "bg-danger"; }
 }
 
 <div class="modal-header border-0 pb-0">
@@ -11,6 +16,16 @@
 <div class="modal-body py-4">
     <div class="card border-0 shadow-sm" style="border-radius: 15px; background-color: #f8f9fa;">
         <div class="card-body">
+
+            <!-- 1. DURUM SATIRI -->
+            <div class="row mb-3 pb-2 border-bottom">
+                <div class="col-sm-4 text-muted fw-bold align-self-center">Durum:</div>
+                <div class="col-sm-8">
+                    <span class="badge @rozetRengi shadow-sm" style="font-size: 0.95rem; padding: 8px 15px;">@ViewBag.GuncelDurum</span>
+                </div>
+            </div>
+
+            <!-- 2. STANDART BİLGİLER -->
             <div class="row mb-3">
                 <div class="col-sm-4 text-muted fw-bold">Toplantı Odası:</div>
                 <div class="col-sm-8 text-dark">@ViewBag.RoomName</div>
@@ -29,14 +44,22 @@
                     <span class="badge bg-secondary">@(Model.StartTime.HasValue ? Model.StartTime.Value.ToString(@"hh\:mm") : "") - @(Model.EndTime.HasValue ? Model.EndTime.Value.ToString(@"hh\:mm") : "")</span>
                 </div>
             </div>
-            <div class="row">
+            <div class="row mb-3">
                 <div class="col-sm-12 text-muted fw-bold mb-2">Açıklama (Toplantı Konusu):</div>
                 <div class="col-sm-12 text-dark" style="background-color: white; padding: 15px; border-radius: 10px; border: 1px solid #e9ecef; white-space: pre-wrap;">@Model.Description</div>
             </div>
+            @if (!string.IsNullOrWhiteSpace(Model.CancelReason))
+            {
+                <div class="row mt-3 pt-3 border-top">
+                    <div class="col-sm-12 text-danger fw-bold mb-2">🚫 İptal Nedeni:</div>
+                    <div class="col-sm-12 text-dark" style="background-color: #fff3cd; padding: 15px; border-radius: 10px; border: 1px solid #ffeeba; white-space: pre-wrap;">@Model.CancelReason</div>
+                </div>
+            }
+
         </div>
     </div>
 </div>
 
 <div class="modal-footer border-0 pt-0 justify-content-end">
-    <button type="button" class="btn btn-secondary" style="border-radius: 15px; padding: 8px 25px;" data-bs-dismiss="modal">Kapat</button>
+    <button type="button" class="btn btn-secondary shadow-sm" style="border-radius: 15px; padding: 8px 25px;" data-bs-dismiss="modal">Kapat</button>
 </div>

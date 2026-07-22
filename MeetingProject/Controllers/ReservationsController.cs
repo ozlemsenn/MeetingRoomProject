@@ -16,6 +16,7 @@ namespace MeetingProject.Controllers
 
         public ActionResult GetReservations()
         {
+            // 1. Verileri veritabanından çek (Mevcut kodun)
             var reservations = db.Reservations.Select(r => new
             {
                 r.Id,
@@ -28,15 +29,30 @@ namespace MeetingProject.Controllers
                 Status = r.Status
             }).ToList();
 
-            var formattedList = reservations.Select(r => new {
-                r.Id,
-                r.RoomName,
-                r.UserName,
-                Date = r.Date.HasValue ? r.Date.Value.ToString("dd.MM.yyyy") : "",
-                StartTime = r.StartTime.HasValue ? r.StartTime.Value.ToString(@"hh\:mm") : "",
-                EndTime = r.EndTime.HasValue ? r.EndTime.Value.ToString(@"hh\:mm") : "",
-                r.Description,
-                r.Status
+            var formattedList = reservations.Select(r => {
+
+                string guncelDurum = r.Status; 
+
+                if (guncelDurum != "İptal Edildi" && r.Date.HasValue && r.EndTime.HasValue)
+                {
+                    DateTime toplantininBitisZamani = r.Date.Value.Add(r.EndTime.Value);
+                    if (toplantininBitisZamani < DateTime.Now)
+                    {
+                        guncelDurum = "Tamamlandı";
+                    }
+                }
+
+                return new
+                {
+                    r.Id,
+                    r.RoomName,
+                    r.UserName,
+                    Date = r.Date.HasValue ? r.Date.Value.ToString("dd.MM.yyyy") : "",
+                    StartTime = r.StartTime.HasValue ? r.StartTime.Value.ToString(@"hh\:mm") : "",
+                    EndTime = r.EndTime.HasValue ? r.EndTime.Value.ToString(@"hh\:mm") : "",
+                    r.Description,
+                    Status = guncelDurum // Veritabanındaki eski durumu değil, bizim hesapladığımız güncel durumu gönderiyoruz
+                };
             });
 
             return Json(formattedList, JsonRequestBehavior.AllowGet);
@@ -85,6 +101,7 @@ namespace MeetingProject.Controllers
 
 
             bool isOverlap = db.Reservations.Any(r =>
+                r.Status != "İptal Edildi" &&
                 r.RoomId == res.RoomId &&
                 r.Date == res.Date &&
                 (
@@ -131,7 +148,7 @@ namespace MeetingProject.Controllers
             }
             return Json(new { success = true });
         }
-        
+
         public ActionResult Edit(int id)
         {
             var res = db.Reservations.Find(id);
@@ -158,7 +175,8 @@ namespace MeetingProject.Controllers
             if (string.IsNullOrWhiteSpace(res.Description)) return Json(new { success = false, message = "Lütfen toplantı için bir açıklama (konu) giriniz." });
 
             bool isOverlap = db.Reservations.Any(r =>
-                r.Id != res.Id && 
+                r.Id != res.Id &&
+                r.Status != "İptal Edildi" &&
                 r.RoomId == res.RoomId &&
                 r.Date == res.Date &&
                 (
@@ -187,6 +205,32 @@ namespace MeetingProject.Controllers
             }
 
             return Json(new { success = true, message = "Rezervasyon başarıyla güncellendi!" });
+        }
+
+        public ActionResult Cancel(int id)
+        {
+            var res = db.Reservations.Find(id);
+            if (res == null)
+            {
+                return HttpNotFound();
+            }
+            return View(res);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CancelConfirm(int id, string CancelReason)
+        {
+            var res = db.Reservations.Find(id);
+            if (res != null)
+            {
+                res.Status = "İptal Edildi";
+                res.CancelReason = CancelReason;
+
+                db.SaveChanges();
+                return Json(new { success = true });
+            }
+            return Json(new { success = false, message = "Kayıt bulunamadı." });
         }
         public ActionResult Details(int id)
         {

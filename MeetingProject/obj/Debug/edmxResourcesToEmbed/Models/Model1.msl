@@ -25,6 +25,7 @@
     <EntitySetMapping Name="Reservations">
       <EntityTypeMapping TypeName="MeetingAppModel.Reservations">
         <MappingFragment StoreEntitySet="Reservations">
+          <ScalarProperty Name="CancelReason" ColumnName="CancelReason" />
           <ScalarProperty Name="Status" ColumnName="Status" />
           <ScalarProperty Name="Description" ColumnName="Description" />
           <ScalarProperty Name="EndTime" ColumnName="EndTime" />

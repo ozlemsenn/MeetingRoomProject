@@ -1,0 +1,29 @@
+﻿@model MeetingProject.Models.Reservations
+@{
+    Layout = null;
+}
+
+<div class="modal-header border-0 pb-0">
+    <h5 class="modal-title fw-bold text-dark">🚫 Rezervasyon İptali</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+
+<div class="modal-body py-4 text-center">
+    <h1 class="display-1 mb-3">⚠️</h1>
+    <h5 class="text-dark fw-bold">Bu rezervasyonu iptal etmek istediğinize emin misiniz?</h5>
+    <p class="text-muted mb-4">Bu işlem kaydı veritabanından tamamen silmez, sadece tablodaki durumunu <strong class="text-danger">"İptal Edildi"</strong> olarak günceller.</p>
+
+    <form id="formIptal" class="px-3">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.Id" />
+
+        <div class="mb-3 text-start">
+            <label class="form-label text-muted small fw-bold w-100">İptal Nedeni (İsteğe Bağlı):</label>
+            <textarea name="CancelReason" class="form-control" style="max-width: 100%;" rows="3" placeholder="Neden iptal ediyorsunuz? (Bu not detaylar ekranında görünecektir)"></textarea>        </div>
+    </form>
+</div>
+
+<div class="modal-footer border-0 pt-0 justify-content-center mt-2">
+    <button type="button" class="btn btn-light shadow-sm" style="border-radius: 15px; padding: 8px 25px;" data-bs-dismiss="modal">Vazgeç</button>
+    <button type="button" class="btn btn-dark shadow-sm" style="border-radius: 15px; padding: 8px 25px;" onclick="IptalOnayla()">Evet, İptal Et</button>
+</div>

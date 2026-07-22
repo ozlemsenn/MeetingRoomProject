@@ -17,6 +17,7 @@
           <Property Name="EndTime" Type="time" Precision="7" />
           <Property Name="Description" Type="nvarchar" MaxLength="500" Nullable="false" />
           <Property Name="Status" Type="nvarchar" MaxLength="20" />
+          <Property Name="CancelReason" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="Rooms">
           <Key>
@@ -82,6 +83,7 @@
           <Property Name="EndTime" Type="Time" Precision="7" />
           <Property Name="Description" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
           <Property Name="Status" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="CancelReason" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -113,6 +115,7 @@
           <EntitySetMapping Name="Reservations">
             <EntityTypeMapping TypeName="MeetingAppModel.Reservations">
               <MappingFragment StoreEntitySet="Reservations">
+                <ScalarProperty Name="CancelReason" ColumnName="CancelReason" />
                 <ScalarProperty Name="Status" ColumnName="Status" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="EndTime" ColumnName="EndTime" />

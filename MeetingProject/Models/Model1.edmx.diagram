@@ -7,7 +7,7 @@
       <Diagram DiagramId="d271d60c18df41eb9971d796721db0ad" Name="Diagram1">
         <EntityTypeShape EntityType="MeetingAppModel.Rooms" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="MeetingAppModel.Users" Width="1.5" PointX="3.375" PointY="0.75" />
-        <EntityTypeShape EntityType="MeetingAppModel.Reservations" Width="1.5" PointX="2" PointY="2.25" />
+        <EntityTypeShape EntityType="MeetingAppModel.Reservations" Width="1.5" PointX="2.125" PointY="1.875" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

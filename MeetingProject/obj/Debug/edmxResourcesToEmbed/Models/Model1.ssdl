@@ -12,6 +12,7 @@
     <Property Name="EndTime" Type="time" Precision="7" />
     <Property Name="Description" Type="nvarchar" MaxLength="500" Nullable="false" />
     <Property Name="Status" Type="nvarchar" MaxLength="20" />
+    <Property Name="CancelReason" Type="nvarchar(max)" />
   </EntityType>
   <EntityType Name="Rooms">
     <Key>

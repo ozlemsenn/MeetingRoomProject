@@ -245,6 +245,7 @@
     <Content Include="Views\Reservations\Delete.cshtml" />
     <Content Include="Views\Reservations\Edit.cshtml" />
     <Content Include="Views\Reservations\Details.cshtml" />
+    <Content Include="Views\Reservations\Cancel.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
