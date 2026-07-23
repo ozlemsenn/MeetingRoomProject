@@ -17,7 +17,7 @@
                 </div>
                 <div class="col-md-6">
                     <label class="form-label text-muted small fw-bold mb-1">Kullanıcı (Arama Yapabilirsiniz)</label>
-                    
+
                     @Html.DropDownList("UserId", (SelectList)ViewBag.Users, "Kullanıcı Seçiniz", new { @class = "form-select shadow-sm border-0 bg-light select2-kullanici", @required = "required", style = "width: 100%;" })
                 </div>
             </div>
@@ -25,7 +25,7 @@
             <div class="row mb-3">
                 <div class="col-md-4">
                     <label class="form-label text-muted small fw-bold mb-1">Tarih</label>
-                    <input type="date" name="Date" class="form-control shadow-sm border-0 bg-light" required />
+                    <input type="date" name="Date" id="tarihInput" class="form-control shadow-sm border-0 bg-light" required onchange="TarihSecildi()">
                 </div>
                 <div class="col-md-4">
                     <label class="form-label text-muted small fw-bold mb-1">Başlangıç</label>
@@ -47,11 +47,24 @@
     </div>
 </div>
 
-<div class="modal-footer border-0 bg-white justify-content-end" style="padding: 15px 20px; border-radius: 0 0 15px 15px;">
-    <button type="button" class="btn btn-outline-secondary px-4 shadow-sm" style="border-radius: 8px;" onclick="$('#islemModali').modal('hide');">İptal</button>
-    <button type="button" class="btn px-4 shadow-sm fw-bold text-white" style="background-color: #343a40; border-color: #343a40; border-radius: 8px;" onclick="Kaydet()">Oluştur</button>
+<div class="modal-footer border-0 bg-white d-flex justify-content-between align-items-center" style="padding: 15px 20px; border-radius: 0 0 15px 15px;">
+
+    <button type="button" id="btnDolulukGoster" class="btn btn-info text-white shadow-sm d-none" style="border-radius: 8px; padding: 8px 15px;" onclick="DolulukDurumunuGetir()">
+        <i class="fas fa-calendar-alt me-2"></i> Doluluk Durumu
+    </button>
+
+    <div>
+        <button type="button" class="btn btn-outline-secondary px-4 shadow-sm" style="border-radius: 8px;" onclick="$('#islemModali').modal('hide');">İptal</button>
+        <button type="button" class="btn px-4 shadow-sm fw-bold text-white" style="background-color: #343a40; border-radius: 8px;" onclick="Kaydet()">Oluştur</button>
+    </div>
 </div>
 
+<div id="dolulukAlani" class="px-4 pb-3" style="display:none;">
+    <div class="card border-0 bg-light shadow-sm">
+        <div class="card-body" id="dolulukIcerik">
+        </div>
+    </div>
+</div>
 <script>
     $(document).ready(function () {
         $('.select2-kullanici').select2({

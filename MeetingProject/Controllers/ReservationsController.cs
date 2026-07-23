@@ -131,6 +131,23 @@ namespace MeetingProject.Controllers
 
             return Json(new { success = true, message = "Rezervasyon başarıyla oluşturuldu!" });
         }
+        [HttpGet]
+        public ActionResult GetReservationsByDate(DateTime date, int? excludeId = null)
+        {
+            var tumRezervasyonlar = db.Reservations
+                .Where(x => x.Date == date
+                            && x.Status != "İptal Edildi"
+                            && (!excludeId.HasValue || x.Id != excludeId.Value))
+                .ToList();
+
+            var sonuc = tumRezervasyonlar.Select(x => new {
+                RoomName = db.Rooms.Find(x.RoomId) != null ? db.Rooms.Find(x.RoomId).Name : "Oda Adı Yok",
+                StartTime = x.StartTime.HasValue ? x.StartTime.Value.ToString(@"hh\:mm") : "",
+                EndTime = x.EndTime.HasValue ? x.EndTime.Value.ToString(@"hh\:mm") : ""
+            }).ToList();
+
+            return Json(sonuc, JsonRequestBehavior.AllowGet);
+        }
         public ActionResult Delete(int id)
         {
             var res = db.Reservations.Find(id);

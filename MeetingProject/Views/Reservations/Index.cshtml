@@ -71,7 +71,7 @@
     @section scripts {
         <script>
             $(document).ready(function () {
-                TabloyuDoldur();
+                TabloyuDoldur()
             });
 
             function TabloyuDoldur() {
@@ -141,6 +141,60 @@
                 });
             }
 
+            function TarihSecildi() {
+                var tarih = $('#tarihInput').val();
+                if (tarih) {
+                    $('#btnDolulukGoster').removeClass('d-none');
+
+                    if ($('#dolulukAlani').is(':visible')) {
+                        YenidenYukle();
+                    }
+                } else {
+                    $('#btnDolulukGoster').addClass('d-none');
+                    $('#dolulukAlani').hide();
+                }
+            }
+
+            function DolulukDurumunuGetir() {
+                if ($('#dolulukAlani').is(':visible')) {
+                    $('#dolulukAlani').slideUp();
+                    return;
+                }
+                YenidenYukle();
+            }
+
+            function YenidenYukle() {
+                var secilenTarih = $('#tarihInput').val();
+                var mevcutId = $('#formDuzenle input[name="Id"]').val() || 0;
+
+                $.ajax({
+                    url: '/Reservations/GetReservationsByDate',
+                    type: 'GET',
+                    data: { date: secilenTarih, excludeId: mevcutId },
+                    success: function (data) {
+                        var html = '<h6 class="fw-bold mb-3"><i class="fas fa-info-circle"></i> ' + secilenTarih + ' Doluluk Durumu:</h6>';
+
+                        if (data.length === 0) {
+                            html += '<p class="text-muted small">Bu tarihte başka rezervasyon yok.</p>';
+                        } else {
+                            html += '<ul class="list-group list-group-flush">';
+                            $.each(data, function (i, item) {
+                                html += '<li class="list-group-item bg-transparent d-flex justify-content-between">' +
+                                    '<span>' + item.RoomName + '</span>' +
+                                    '<span class="badge bg-secondary">' + item.StartTime + ' - ' + item.EndTime + '</span></li>';
+                            });
+                            html += '</ul>';
+                        }
+
+                        $('#dolulukIcerik').html(html);
+                        $('#dolulukAlani').slideDown();
+                    },
+                    error: function () {
+                        alert("Doluluk bilgisi alınırken bir hata oluştu.");
+                    }
+                });
+            }
+
             function ModalAc(url) {
                 var modalCerceve = $('#islemModali .modal-dialog');
                 var modalBaslik = $('#modalBaslik');
@@ -164,7 +218,7 @@
                     modalCerceve.removeClass('modal-lg');
                 }
                 else if (url.indexOf('Cancel') !== -1) {
-                    modalBaslik.text('🚫 Rezervasyonu İptal Et').addClass('text-warning'); 
+                    modalBaslik.text('🚫 Rezervasyonu İptal Et').addClass('text-white'); 
                     modalCerceve.removeClass('modal-lg');
                 }
                 else {
