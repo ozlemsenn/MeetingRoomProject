@@ -6,34 +6,28 @@
 <form id="createForm">
     @Html.AntiForgeryToken()
 
-    <div class="text-center" style="padding: 10px;">
+    <div class="container-fluid" style="padding: 15px 25px;">
 
-        <div class="form-group" style="margin-bottom: 15px;">
-            <label class="control-label fw-bold" style="margin-bottom: 5px;">Ad</label>
-            <div>
-                <input type="text" id="CreateName" name="Name" class="form-control text-center" style="margin: 0 auto; max-width: 300px;" placeholder="Örn: Ahmet" required />
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">Ad</label>
+                <input type="text" id="CreateName" name="Name" class="form-control shadow-sm border-0 bg-light" placeholder="Örn: Ahmet" required />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">Soyad</label>
+                <input type="text" id="CreateSurname" name="Surname" class="form-control shadow-sm border-0 bg-light" placeholder="Örn: Yılmaz" required />
             </div>
         </div>
 
-        <div class="form-group" style="margin-bottom: 15px;">
-            <label class="control-label fw-bold" style="margin-bottom: 5px;">Soyad</label>
-            <div>
-                <input type="text" id="CreateSurname" name="Surname" class="form-control text-center" style="margin: 0 auto; max-width: 300px;" placeholder="Örn: Yılmaz" required />
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">E-Posta</label>
+                <input type="email" id="CreateEmail" name="Email" class="form-control shadow-sm border-0 bg-light" placeholder="Örn: ahmet@sirket.com" required />
             </div>
-        </div>
-
-        <div class="form-group" style="margin-bottom: 15px;">
-            <label class="control-label fw-bold" style="margin-bottom: 5px;">E-Posta</label>
-            <div>
-                <input type="email" id="CreateEmail" name="Email" class="form-control text-center" style="margin: 0 auto; max-width: 300px;" placeholder="Örn: ahmet@sirket.com" required />
-            </div>
-        </div>
-
-        <div class="form-group" style="margin-bottom: 20px;">
-            <label class="control-label fw-bold" style="margin-bottom: 5px;">Departman</label>
-            <div>
-                <select id="CreateDepartment" name="Department" class="form-control text-center" style="margin: 0 auto; max-width: 300px;" required>
-                    <option value="" selected>Seçiniz...</option>
+            <div class="col-md-6">
+                <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">Departman</label>
+                <select id="CreateDepartment" name="Department" class="form-select shadow-sm border-0 bg-light" required>
+                    <option value="" selected disabled>Seçiniz...</option>
                     <option value="IT">IT (Bilgi İşlem)</option>
                     <option value="İnsan Kaynakları">İnsan Kaynakları</option>
                     <option value="Pazarlama">Pazarlama</option>
@@ -45,8 +39,8 @@
 
     </div>
 
-    <div class="modal-footer" style="padding-bottom: 0; border-top: 1px solid #dee2e6; margin-top: 15px; display: flex; justify-content: center; gap: 10px;">
-        <button type="button" class="btn btn-secondary" style="min-width: 100px;" onclick="$('#kullaniciModali').modal('hide');">Kapat</button>
-        <button type="submit" class="btn btn-success" style="min-width: 100px;">Kaydet</button>
+    <div class="modal-footer border-0 bg-white d-flex justify-content-end" style="padding: 15px 25px; border-radius: 0 0 10px 10px;">
+        <button type="button" class="btn btn-outline-secondary px-4 shadow-sm" style="border-radius: 8px;" onclick="$('#kullaniciModali').modal('hide');">İptal</button>
+        <button type="submit" class="btn btn-primary px-4 shadow-sm" style="border-radius: 8px;">Kaydet</button>
     </div>
 </form>

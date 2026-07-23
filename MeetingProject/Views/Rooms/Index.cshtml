@@ -15,17 +15,17 @@
             </a>
         </div>
     </div>
-    <div class="table-responsive">
+    <div class="table-responsive" style="overflow-x: auto">
         <table id="odaTablosu" class="table table-hover table-striped table-bordered text-center" style="background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
             <thead class="thead-dark" style="background-color: #343a40; color: white;">
                 <tr>
-                    <th class="text-center align-middle" style="width: 32%;">Oda Adı</th>
+                    <th class="text-center align-middle" style="width: 30%;">Oda Adı</th>
 
                     <th class="text-center align-middle" style="width: 20%;">Kapasite</th>
 
                     <th class="text-center align-middle" style="width: 25%;">Projeksiyon Durumu</th>
 
-                    <th class="text-center align-middle" style="width: 20%;">İşlemler</th>
+                    <th class="text-center align-middle" style="width: 25%; min-width: 130px;">İşlemler</th>
                 </tr>
             </thead>
             <tbody id="odaListesi">
@@ -70,23 +70,25 @@
                             }
 
                             tabloIcerigi += '<tr>';
-                            tabloIcerigi += '<td style="text-transform: capitalize;">' + oda.Name + '</td>';
-                            tabloIcerigi += '<td>' + oda.Capacity + '</td>';
-                            tabloIcerigi += '<td>' + projeksiyonHtml + '</td>';
-                            tabloIcerigi += '<td>' +
-                                '<div class="d-flex justify-content-center gap-1">' +
-                             
-                                '<a href="/Rooms/Edit/' + oda.Id + '" class="btn btn-sm btn-outline-warning text-dark modal-tetikle" title="Düzenle">' +
-                                '<i class="fas fa-pen"></i>' +
+                            tabloIcerigi += '<td class="align-middle" style="text-transform: capitalize;">' + oda.Name + '</td>';
+                            tabloIcerigi += '<td class="align-middle">' + oda.Capacity + '</td>';
+                            tabloIcerigi += '<td class="align-middle">' + projeksiyonHtml + '</td>';
+
+                            tabloIcerigi += '<td class="align-middle text-center text-nowrap">' +
+                                '<div class="d-flex justify-content-center align-items-center flex-nowrap" style="gap: 5px;">' +
+
+                                '<a href="/Rooms/Details/' + oda.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Detaylar">' +
+                                '<i class="fas fa-search" style="font-size: 1.1rem;"></i>' +
                                 '</a>' +
-                                
-                                '<a href="/Rooms/Details/' + oda.Id + '" class="btn btn-sm btn-outline-info text-dark modal-tetikle" title="Detaylar">' +
-                                '<i class="fas fa-eye"></i>' +
+
+                                '<a href="/Rooms/Edit/' + oda.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Düzenle">' +
+                                '<i class="fas fa-edit" style="font-size: 1.1rem;"></i>' +
                                 '</a>' +
-                           
-                                '<a href="/Rooms/Delete/' + oda.Id + '" class="btn btn-sm btn-outline-danger modal-tetikle" title="Sil">' +
-                                '<i class="fas fa-trash"></i>' +
+
+                                '<a href="/Rooms/Delete/' + oda.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Sil">' +
+                                '<i class="fas fa-trash-alt" style="font-size: 1.1rem;"></i>' +
                                 '</a>' +
+
                                 '</div>' +
                                 '</td>';
                             tabloIcerigi += '</tr>';
@@ -102,7 +104,11 @@
                         $('#odaTablosu').DataTable({
                             language: {
                                 url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json"
-                            }
+                            },
+                            "autowidth": false,
+                            "columnDefs": [
+                                {"width": "140px", "targets": -1}
+                            ]
                         });
                     },
                     error: function () {

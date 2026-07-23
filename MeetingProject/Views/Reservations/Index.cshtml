@@ -12,10 +12,28 @@
             + Yeni Rezervasyon
         </button>
     </div>
-</div>5
+</div>
 
     <div class="card shadow-sm" style="border-radius: 15px; border: none;">
         <div class="card-body">
+            <div class="row mb-4 mt-2">
+                <div class="col-md-5 col-lg-4 text-start">
+                    <div class="input-group shadow-sm" style="border-radius: 12px; overflow: hidden; border: 1px solid #ced4da;">
+                        <span class="input-group-text bg-white border-0 fw-bold text-muted" style="padding-right: 5px;">
+                            🎯 Filtrele:
+                        </span>
+                        <select id="rezervasyonFiltre" class="form-select border-0 text-dark fw-semibold" style="cursor: pointer; background-color: #f8f9fa;" onchange="TabloyuDoldur()">
+                            <option value="Tümü">Tüm Rezervasyonlar</option>
+                            <option value="Aktif">Sadece Aktif Olanlar</option>
+                            <option value="Tamamlandı">Geçmiş Toplantılar</option>
+                            <option value="İptal Edildi">İptal Edilenler</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-7 col-lg-8 text-end align-self-center">
+                </div>
+            </div>
             <table id="rezervasyonTablosu" class="table table-hover table-borderless align-middle">
                 <thead class="thead-dark" style="background-color: #343a40; color: white;">
                     <tr>
@@ -53,43 +71,53 @@
                     url: '/Reservations/GetReservations',
                     type: 'GET',
                     success: function (data) {
+
                         if ($.fn.DataTable.isDataTable('#rezervasyonTablosu')) {
                             $('#rezervasyonTablosu').DataTable().destroy();
                         }
 
                         var html = '';
+
+                        var secilenFiltre = $('#rezervasyonFiltre').val() || "Tümü";
+
                         $.each(data, function (i, item) {
+
+                            if (secilenFiltre !== "Tümü" && item.Status !== secilenFiltre) {
+                                return true;
+                            }
+
                             html += '<tr>';
                             html += '<td class="text-center align-middle"><strong>' + item.Date + '</strong></td>';
                             html += '<td class="text-center align-middle"><span class="badge bg-light text-dark">' + item.StartTime + ' - ' + item.EndTime + '</span></td>';
                             html += '<td class="text-center align-middle">' + item.RoomName + '</td>';
                             html += '<td class="text-center align-middle">' + item.UserName + '</td>';
+
                             var kisaAciklama = item.Description;
                             if (kisaAciklama && kisaAciklama.length > 30) {
-                                kisaAciklama = kisaAciklama.substring(0, 30) + '...'; 
+                                kisaAciklama = kisaAciklama.substring(0, 30) + '...';
                             }
                             html += '<td>' + kisaAciklama + '</td>';
-                            var rozetRengi = 'bg-success'; 
+
+                            var rozetRengi = 'bg-success';
                             if (item.Status === 'Tamamlandı') {
-                                rozetRengi = 'bg-secondary'; 
+                                rozetRengi = 'bg-secondary';
                             } else if (item.Status === 'İptal Edildi') {
-                                rozetRengi = 'bg-danger'; 
+                                rozetRengi = 'bg-danger';
                             }
                             html += '<td><span class="badge ' + rozetRengi + '">' + item.Status + '</span></td>';
 
                             html += '<td class="align-middle text-center">';
                             html += '<div class="d-flex justify-content-center align-items-center flex-nowrap gap-1">';
 
-                            html += '<button class="btn btn-sm btn-info text-white shadow-sm" title="Detayları Gör" style="border-radius: 10px; padding: 5px 10px;" onclick="ModalAc(\'/Reservations/Details/' + item.Id + '\')">🔍</button>';
+                            html += '<button class="btn btn-sm text-secondary border-0 shadow-none" title="Detayları Gör" onclick="ModalAc(\'/Reservations/Details/' + item.Id + '\')"><i class="fas fa-search" style="font-size: 1.1rem;"></i></button>';
 
                             if (item.Status !== 'İptal Edildi' && item.Status !== 'Tamamlandı') {
-                                
-                                html += '<button class="btn btn-sm btn-warning shadow-sm" title="Düzenle" style="border-radius: 10px; padding: 5px 10px;" onclick="ModalAc(\'/Reservations/Edit/' + item.Id + '\')">✏️</button>';
+                                html += '<button class="btn btn-sm text-secondary border-0 shadow-none" title="Düzenle" onclick="ModalAc(\'/Reservations/Edit/' + item.Id + '\')"><i class="fas fa-edit" style="font-size: 1.1rem;"></i></button>';
 
-                                html += '<button class="btn btn-sm btn-dark shadow-sm" title="İptal Et" style="border-radius: 10px; padding: 5px 10px;" onclick="ModalAc(\'/Reservations/Cancel/' + item.Id + '\')">🚫</button>';
+                                html += '<button class="btn btn-sm text-secondary border-0 shadow-none" title="İptal Et" onclick="ModalAc(\'/Reservations/Cancel/' + item.Id + '\')"><i class="fas fa-ban" style="font-size: 1.1rem;"></i></button>';
                             }
 
-                            html += '<button class="btn btn-sm btn-danger shadow-sm" title="Tamamen Sil" style="border-radius: 10px; padding: 5px 10px;" onclick="ModalAc(\'/Reservations/Delete/' + item.Id + '\')">🗑️</button>';
+                            html += '<button class="btn btn-sm text-secondary border-0 shadow-none" title="Tamamen Sil" onclick="ModalAc(\'/Reservations/Delete/' + item.Id + '\')"><i class="fas fa-trash-alt" style="font-size: 1.1rem;"></i></button>';
 
                             html += '</div>';
                             html += '</td>';
@@ -97,6 +125,7 @@
                         });
 
                         $('#rezervasyonListesi').html(html);
+
                         $('#rezervasyonTablosu').DataTable({
                             "language": { "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json" }
                         });

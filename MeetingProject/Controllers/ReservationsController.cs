@@ -16,7 +16,6 @@ namespace MeetingProject.Controllers
 
         public ActionResult GetReservations()
         {
-            // 1. Verileri veritabanından çek (Mevcut kodun)
             var reservations = db.Reservations.Select(r => new
             {
                 r.Id,
@@ -51,7 +50,7 @@ namespace MeetingProject.Controllers
                     StartTime = r.StartTime.HasValue ? r.StartTime.Value.ToString(@"hh\:mm") : "",
                     EndTime = r.EndTime.HasValue ? r.EndTime.Value.ToString(@"hh\:mm") : "",
                     r.Description,
-                    Status = guncelDurum // Veritabanındaki eski durumu değil, bizim hesapladığımız güncel durumu gönderiyoruz
+                    Status = guncelDurum
                 };
             });
 
@@ -244,6 +243,19 @@ namespace MeetingProject.Controllers
 
             var user = db.Users.FirstOrDefault(u => u.Id == res.UserId);
             ViewBag.UserName = user != null ? user.Name + " " + user.Surname : "";
+
+            string guncelDurum = res.Status;
+
+            if (guncelDurum != "İptal Edildi" && res.Date.HasValue && res.EndTime.HasValue)
+            {
+                DateTime toplantininBitisZamani = res.Date.Value.Add(res.EndTime.Value);
+                if (toplantininBitisZamani < DateTime.Now)
+                {
+                    guncelDurum = "Tamamlandı";
+                }
+            }
+
+            ViewBag.GuncelDurum = guncelDurum;
 
             return View(res);
         }

@@ -1,29 +1,32 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "Delete";
     Layout = null;
 }
 
 <form id="deleteForm">
     @Html.AntiForgeryToken()
-
     <input type="hidden" id="DeleteId" name="Id" />
 
-    <div class="text-center" style="padding: 10px;">
+    <div class="container-fluid px-2 py-3 text-center">
 
-        <i class="text-danger" style="font-size: 3rem; margin-bottom: 10px;">⚠️</i>
-        <h5 class="text-danger fw-bold mb-3">Bu kullanıcıyı silmek istediğinize emin misiniz?</h5>
-        <p class="text-muted">Bu işlem geri alınamaz.</p>
+        <p class="text-secondary fw-semibold mb-4" style="font-size: 1.05rem;">
+            Aşağıdaki kaydı sistemden kalıcı olarak silmek üzeresiniz. Onaylıyor musunuz?
+        </p>
 
-        <div style="margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-radius: 8px;">
-            <h4 id="DeleteFullName" class="fw-bold text-dark">Yükleniyor...</h4>
-            <h6 id="DeleteDepartment" class="text-muted" style="margin-top: 10px;">Yükleniyor...</h6>
+        <div class="card border-danger shadow-sm mx-auto mb-4" style="border-radius: 12px; background-color: #fff5f5; max-width: 380px;">
+            <div class="card-body p-4">
+                <h4 id="DeleteFullName" class="fw-bold text-dark mb-2">Yükleniyor...</h4>
+
+                <hr class="text-danger opacity-25 mx-4">
+
+                <h6 id="DeleteDepartment" class="text-muted mb-0 mt-2">Yükleniyor...</h6>
+            </div>
         </div>
 
     </div>
 
-    <div class="modal-footer" style="padding-bottom: 0; border-top: 1px solid #dee2e6; display: flex; justify-content: center; gap: 10px;">
-        <button type="button" class="btn btn-secondary" style="min-width: 100px;" onclick="$('#kullaniciModali').modal('hide');">İptal</button>
-        <button type="submit" class="btn btn-danger" style="min-width: 100px;">Evet, Sil</button>
+    <div class="modal-footer border-0 pt-0 pb-3 justify-content-center">
+        <button type="button" class="btn btn-outline-secondary shadow-sm px-4" style="border-radius: 8px;" onclick="$('#kullaniciModali').modal('hide');">İptal</button>
+        <button type="submit" class="btn btn-danger shadow-sm px-4 fw-bold" style="border-radius: 8px;">Evet, Sil</button>
     </div>
 </form>

@@ -38,10 +38,10 @@
 </div>
 
 <div class="modal fade" id="kullaniciModali" tabindex="-1" role="dialog" aria-labelledby="kullaniciModaliLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content" style="border-radius: 10px; border: none; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
             <div class="modal-header" style="background-color: #f8f9fa; border-bottom: 1px solid #dee2e6; border-radius: 10px 10px 0 0;">
-                <h5 class="modal-title fw-bold text-secondary" id="kullaniciModaliLabel">Kullanıcı İşlemi</h5>
+                <h5 id="modalBaslik" class="modal-title fw-bold text-primary">Kullanıcı İşlemi</h5>
             </div>
 
             <div class="modal-body" id="modalinIci">
@@ -65,23 +65,30 @@
 
                     $.each(data, function (index, user) {
                         tabloIcerigi += '<tr>';
-                        tabloIcerigi += '<td><span class="fw-bold">' + user.Name + '</span></td>';
-                        tabloIcerigi += '<td>' + user.Surname + '</td>';
-                        tabloIcerigi += '<td><a href="mailto:' + user.Email + '" class="text-info">' + user.Email + '</a></td>';
-                        tabloIcerigi += '<td><span class="badge bg-secondary" style="padding: 6px 10px; color:white;">' + user.Department + '</span></td>';
-                        tabloIcerigi += '<td>' +
-                            '<div class="d-flex justify-content-center gap-1">' +
-                            '<a href="/Users/Edit/' + user.Id + '" class="btn btn-sm btn-outline-warning text-dark modal-tetikle" title="Düzenle">' +
-                            '<i class="fas fa-pen"></i>' +
+
+                        tabloIcerigi += '<td class="align-middle"><span class="fw-bold">' + user.Name + '</span></td>';
+                        tabloIcerigi += '<td class="align-middle">' + user.Surname + '</td>';
+                        tabloIcerigi += '<td class="align-middle"><a href="mailto:' + user.Email + '" class="text-info">' + user.Email + '</a></td>';
+                        tabloIcerigi += '<td class="align-middle"><span class="badge bg-secondary" style="padding: 6px 10px; color:white;">' + user.Department + '</span></td>';
+
+                        tabloIcerigi += '<td class="align-middle text-center text-nowrap">' +
+                            '<div class="d-flex justify-content-center align-items-center flex-nowrap" style="gap: 5px;">' +
+
+                            '<a href="/Users/Details/' + user.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Detaylar">' +
+                            '<i class="fas fa-search" style="font-size: 1.1rem;"></i>' +
                             '</a>' +
-                            '<a href="/Users/Details/' + user.Id + '" class="btn btn-sm btn-outline-info text-dark modal-tetikle" title="Detaylar">' +
-                            '<i class="fas fa-eye"></i>' +
+
+                            '<a href="/Users/Edit/' + user.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Düzenle">' +
+                            '<i class="fas fa-edit" style="font-size: 1.1rem;"></i>' +
                             '</a>' +
-                            '<a href="/Users/Delete/' + user.Id + '" class="btn btn-sm btn-outline-danger modal-tetikle" title="Sil">' +
-                            '<i class="fas fa-trash"></i>' +
+
+                            '<a href="/Users/Delete/' + user.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Sil">' +
+                            '<i class="fas fa-trash-alt" style="font-size: 1.1rem;"></i>' +
                             '</a>' +
+
                             '</div>' +
                             '</td>';
+
                         tabloIcerigi += '</tr>';
                     });
 
@@ -115,14 +122,37 @@
                 Olay.preventDefault();
                 var gidilecekAdres = $(this).attr('href');
 
+                var modalCerceve = $('#kullaniciModali .modal-dialog');
+                var modalBaslik = $('#modalBaslik');
+
+                modalBaslik.removeClass('text-primary text-warning text-info text-danger');
+
+                if (gidilecekAdres.indexOf('Create') !== -1) {
+                    modalBaslik.text('✨ Yeni Kullanıcı Ekle').addClass('text-primary'); // Mavi
+                    modalCerceve.addClass('modal-lg');
+                }
+                else if (gidilecekAdres.indexOf('Edit') !== -1) {
+                    modalBaslik.text('✏️ Kullanıcıyı Düzenle').addClass('text-warning');
+                    modalCerceve.addClass('modal-lg');
+                }
+                else if (gidilecekAdres.indexOf('Details') !== -1) {
+                    modalBaslik.text('🔍 Kullanıcı Detayları').addClass('text-info'); // Turkuaz
+                    modalCerceve.removeClass('modal-lg');
+                }
+                else if (gidilecekAdres.indexOf('Delete') !== -1) {
+                    modalBaslik.text('🗑️ Kullanıcı Silme Onayı').addClass('text-danger'); // Kırmızı
+                    modalCerceve.removeClass('modal-lg');
+                }
+                
                 $('#modalinIci').load(gidilecekAdres, function () {
                     $('#kullaniciModali').modal('show');
-
+            
                     if (gidilecekAdres.indexOf('/Users/Edit/') !== -1 ||
                         gidilecekAdres.indexOf('/Users/Delete/') !== -1 ||
                         gidilecekAdres.indexOf('/Users/Details/') !== -1) {
 
                         var userId = gidilecekAdres.split('/').pop();
+
 
                         $.ajax({
                             url: '/Users/GetUserData/' + userId,

@@ -3,24 +3,35 @@
     Layout = null;
 }
 
-<div class="text-center" style="padding: 10px;">
+<div class="container-fluid px-2 py-3">
+    <div class="card border-0 shadow-sm" style="border-radius: 15px; background-color: #f8f9fa;">
+        <div class="card-body p-4 text-center">
 
-    <div style="margin-bottom: 15px;">
-        <h6 class="text-muted">Ad Soyad</h6>
-        <h4 id="DetailsFullName" class="fw-bold">Yükleniyor...</h4>
-    </div>
+            <div class="d-inline-flex align-items-center justify-content-center text-white mb-3 shadow" style="width: 85px; height: 85px; border-radius: 50%; background: linear-gradient(135deg, #0dcaf0 0%, #0dcaf0 100%);">
+                <i class="fas fa-user-tie" style="font-size: 2.8rem;"></i>
+            </div>
 
-    <div style="margin-bottom: 15px;">
-        <h6 class="text-muted">E-Posta</h6>
-        <h4 id="DetailsEmail">Yükleniyor...</h4>
-    </div>
+            <h3 id="DetailsFullName" class="fw-bold text-dark mb-1">Yükleniyor...</h3>
 
-    <div style="margin-bottom: 25px;">
-        <h6 class="text-muted">Departman</h6>
-        <h4 id="DetailsDepartment">Yükleniyor...</h4>
-    </div>
+            <div class="mb-4 pb-4 border-bottom">
+                <span id="DetailsDepartment" class="badge bg-secondary shadow-sm px-3 py-2 mt-2" style="font-size: 0.95rem; border-radius: 8px;">
+                    Yükleniyor...
+                </span>
+            </div>
 
-    <div class="modal-footer" style="padding-bottom: 0; border-top: 1px solid #dee2e6; display: flex; justify-content: center;">
-        <button type="button" class="btn btn-secondary" style="min-width: 100px;" onclick="$('#kullaniciModali').modal('hide');">Kapat</button>
+            <div class="row align-items-center justify-content-center mt-2">
+                <div class="col-sm-5 text-muted fw-bold text-end">
+                    <i class="fas fa-envelope text-info me-1"></i> E-Posta Adresi:
+                </div>
+                <div class="col-sm-7 text-dark fw-semibold text-start" style="font-size: 1.05rem;" id="DetailsEmail">
+                    Yükleniyor...
+                </div>
+            </div>
+
+        </div>
     </div>
+</div>
+
+<div class="modal-footer border-0 pt-0 pb-3 justify-content-center">
+    <button type="button" class="btn btn-outline-secondary shadow-sm px-5" style="border-radius: 12px; font-weight: 500;" onclick="$('#kullaniciModali').modal('hide');">Kapat</button>
 </div>
