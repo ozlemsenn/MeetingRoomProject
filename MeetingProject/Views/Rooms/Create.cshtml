@@ -4,40 +4,38 @@
 }
 
 <form id="createForm">
-    
     @Html.AntiForgeryToken()
 
-    <div class="text-center" style="padding: 10px;">
+    <div class="container-fluid" style="padding: 20px;">
 
-        <div class="form-group" style="margin-bottom: 15px;">
-            <label class="control-label fw-bold" style="margin-bottom: 5px;">Oda Adı</label>
-            <div>
-                <input type="text" id="CreateName" name="Name" class="form-control text-center" style="margin: 0 auto; max-width: 300px;" placeholder="Örn: Toplantı Odası 1" required />
+        <div class="row mb-4">
+            <div class="col-md-7">
+                <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">Oda Adı</label>
+                <input type="text" id="CreateName" name="Name" class="form-control shadow-sm border-0 bg-light" placeholder="Örn: Toplantı Odası 1" required />
+            </div>
+            <div class="col-md-5">
+                <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">Kapasite</label>
+                <input type="number" id="CreateCapacity" name="Capacity" class="form-control shadow-sm border-0 bg-light" placeholder="Örn: 12" required min="1" />
             </div>
         </div>
-
-        <div class="form-group" style="margin-bottom: 15px;">
-            <label class="control-label fw-bold" style="margin-bottom: 5px;">Kapasite (Kişi)</label>
-            <div>
-                <input type="number" id="CreateCapacity" name="Capacity" class="form-control text-center" style="margin: 0 auto; max-width: 300px;" placeholder="Örn: 10" required />
-            </div>
-        </div>
-
-        <div class="form-group" style="margin-bottom: 20px;">
-            <label class="control-label fw-bold" style="margin-bottom: 5px;">Projeksiyon Cihazı Var Mı?</label>
-            <div>
-                
-                <select id="CreateHasProjector" name="HasProjector" class="form-control text-center" style="margin: 0 auto; max-width: 300px;" required>
-                    <option value="" selected>Seçiniz...</option>
-                    <option value="true">Var</option>
+        <div class="row mb-2">
+            <div class="col-md-12">
+                <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">Projeksiyon Durumu</label>
+                <select id="CreateHasProjector" name="HasProjector" class="form-select shadow-sm border-0 bg-light" required>
+                    <option value="" selected disabled>Seçiniz...</option>
+                    <option value="true">Var (Mevcut)</option>
                     <option value="false">Yok</option>
                 </select>
             </div>
         </div>
+
     </div>
 
-    <div class="modal-footer" style="padding-bottom: 0; border-top: 1px solid #dee2e6; margin-top: 15px; display: flex; justify-content: center; gap: 10px;">
-        <button type="button" class="btn btn-secondary" style="min-width: 100px;" onclick="$('#odaModali').modal('hide');">Kapat</button>
-        <button type="submit" class="btn btn-success" style="min-width: 100px;">Kaydet</button>
+    <div class="modal-footer border-0 bg-white d-flex justify-content-end" style="padding: 15px 20px; border-radius: 0 0 10px 10px;">
+
+        <button type="button" class="btn btn-outline-secondary px-4 shadow-sm" style="border-radius: 8px;" onclick="$('#odaModali').modal('hide');">İptal</button>
+
+        <button type="submit" class="btn px-4 shadow-sm text-white" style="background-color: #343a40; border-color: #343a40; border-radius: 8px;">Kaydet</button>
+
     </div>
 </form>

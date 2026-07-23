@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Web.Mvc;
 using MeetingProject.Models;
+using Microsoft.Ajax.Utilities;
 
 namespace MeetingProject.Controllers
 {
@@ -133,7 +134,15 @@ namespace MeetingProject.Controllers
         public ActionResult Delete(int id)
         {
             var res = db.Reservations.Find(id);
-            return View(res);
+            if (res == null) return HttpNotFound();
+
+            var oda = db.Rooms.Find(res.RoomId);
+            var user = db.Users.Find(res.UserId);
+
+            ViewBag.OdaAdi = oda != null ? oda.Name : "Oda Bilgisi Bulunamadı";
+            ViewBag.KullaniciAdi = user != null ? user.Name + " " + user.Surname : "Kullanıcı Bulunamadı";
+
+            return PartialView(res);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -213,7 +222,10 @@ namespace MeetingProject.Controllers
             {
                 return HttpNotFound();
             }
-            return View(res);
+            var oda = db.Rooms.Find(res.RoomId);
+            ViewBag.OdaAdi = oda != null ? oda.Name : "Oda Bilgisi Bulunamadı";
+
+            return PartialView(res);
         }
 
         [HttpPost]

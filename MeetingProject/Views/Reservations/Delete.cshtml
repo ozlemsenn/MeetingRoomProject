@@ -3,14 +3,31 @@
     Layout = null;
 }
 
-<div class="modal-header border-0 pb-0">
-    <h5 class="modal-title fw-bold text-danger">⚠️ Rezervasyonu İptal Et</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-</div>
+<div class="container-fluid px-2 py-3 text-center">
 
-<div class="modal-body text-center py-4">
-    <p class="mb-0">Bu randevuyu iptal etmek istediğinize emin misiniz?</p>
-    <small class="text-muted">Bu işlem geri alınamaz ve toplantı odası başkaları için uygun hale gelir.</small>
+    <h5 class="text-danger fw-bold mb-3"><i class="fas fa-exclamation-triangle"></i> DİKKAT: Kalıcı Silme</h5>
+    <p class="text-secondary fw-semibold mb-4" style="font-size: 0.95rem;">
+        Bu rezervasyon kaydını veritabanından <strong>tamamen siliyorsunuz.</strong> <br />
+        Bu işlem geri alınamaz!
+    </p>
+
+    <div class="card border-danger shadow-sm mx-auto mb-4" style="border-radius: 12px; background-color: #fff5f5; max-width: 420px;">
+        <div class="card-body p-3">
+
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-dark fw-bold"><i class="fas fa-door-open text-danger me-1"></i> @ViewBag.OdaAdi</span>
+                <span class="text-dark fw-bold"><i class="fas fa-user text-danger me-1"></i> @ViewBag.KullaniciAdi</span>
+            </div>
+
+            <hr class="text-danger opacity-25 my-2">
+
+            <div class="text-muted small fw-bold">
+                <i class="far fa-calendar-alt me-1"></i> @(Model.Date.HasValue ? Model.Date.Value.ToString("dd.MM.yyyy") : "")
+                <span class="mx-2">|</span>
+                <i class="far fa-clock me-1"></i> @(Model.StartTime.HasValue ? Model.StartTime.Value.ToString(@"hh\:mm") : "") - @(Model.EndTime.HasValue ? Model.EndTime.Value.ToString(@"hh\:mm") : "")
+            </div>
+        </div>
+    </div>
 
     <form id="formSil">
         @Html.AntiForgeryToken()
@@ -18,7 +35,7 @@
     </form>
 </div>
 
-<div class="modal-footer border-0 pt-0 justify-content-center">
-    <button type="button" class="btn btn-light" style="border-radius: 15px;" data-bs-dismiss="modal">Vazgeç</button>
-    <button type="button" class="btn btn-danger" style="border-radius: 15px; padding: 8px 25px;" onclick="Sil()">Evet, İptal Et</button>
+<div class="modal-footer border-0 pt-0 pb-3 justify-content-center">
+    <button type="button" class="btn btn-outline-secondary shadow-sm px-4" style="border-radius: 8px;" onclick="$('#islemModali').modal('hide');">Vazgeç</button>
+    <button type="button" class="btn btn-danger shadow-sm px-4 fw-bold" style="border-radius: 8px;" onclick="Sil()">Evet, Kalıcı Olarak Sil</button>
 </div>

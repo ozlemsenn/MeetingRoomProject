@@ -1,56 +1,63 @@
-﻿@model MeetingProject.Models.Reservations
-@{
+﻿@{
     Layout = null;
 }
 
-<div class="modal-header border-0 pb-0">
-    <h5 class="modal-title fw-bold">Yeni Rezervasyon Oluştur</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-</div>
+<div class="modal-body p-0">
+    <div class="container-fluid px-4 py-3">
 
-<div class="modal-body">
-
-        <div id="hataMesajiAlani" class="alert alert-danger d-none" style="border-radius: 10px; font-size: 0.9rem;" role="alert">
-        </div>
+        <div id="hataMesajiAlani" class="alert alert-danger d-none shadow-sm" style="border-radius: 8px; font-size: 0.9rem; padding: 10px;"></div>
 
         <form id="formRezervasyon">
-            <form id="formRezervasyon">
-                @Html.AntiForgeryToken()
+            @Html.AntiForgeryToken()
 
-                <div class="mb-3">
-                    <label class="form-label text-muted small fw-bold">Toplantı Odası</label>
-                    @Html.DropDownList("RoomId", (SelectList)ViewBag.Rooms, "Oda Seçiniz", new { @class = "form-select", required = "required" })
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label text-muted small fw-bold mb-1">Toplantı Odası</label>
+                    @Html.DropDownList("RoomId", (SelectList)ViewBag.Rooms, "Oda Seçiniz", new { @class = "form-select shadow-sm border-0 bg-light", @required = "required" })
                 </div>
+                <div class="col-md-6">
+                    <label class="form-label text-muted small fw-bold mb-1">Kullanıcı (Arama Yapabilirsiniz)</label>
+                    
+                    @Html.DropDownList("UserId", (SelectList)ViewBag.Users, "Kullanıcı Seçiniz", new { @class = "form-select shadow-sm border-0 bg-light select2-kullanici", @required = "required", style = "width: 100%;" })
+                </div>
+            </div>
 
-                <div class="mb-3">
-                    <label class="form-label text-muted small fw-bold">Kullanıcı (Rezerve Eden)</label>
-                    @Html.DropDownList("UserId", (SelectList)ViewBag.Users, "Kullanıcı Seçiniz", new { @class = "form-select", required = "required" })
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label text-muted small fw-bold mb-1">Tarih</label>
+                    <input type="date" name="Date" class="form-control shadow-sm border-0 bg-light" required />
                 </div>
+                <div class="col-md-4">
+                    <label class="form-label text-muted small fw-bold mb-1">Başlangıç</label>
+                    <input type="time" name="StartTime" class="form-control shadow-sm border-0 bg-light" required />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-muted small fw-bold mb-1">Bitiş</label>
+                    <input type="time" name="EndTime" class="form-control shadow-sm border-0 bg-light" required />
+                </div>
+            </div>
 
-                <div class="mb-3">
-                    <label class="form-label text-muted small fw-bold">Tarih</label>
-                    <input type="date" name="Date" class="form-control" required />
+            <div class="row mb-2">
+                <div class="mb-2">
+                    <label class="form-label text-muted small fw-bold mb-1">Açıklama / Amacı</label>
+                    <textarea name="Description" class="form-control shadow-sm border-0 bg-light" rows="3" style="width: 100% !important; max-width: 100% !important; resize: none;" placeholder="Örn: Bütçe değerlendirmesi..." required></textarea>
                 </div>
-
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label text-muted small fw-bold">Başlangıç Saati</label>
-                        <input type="time" name="StartTime" class="form-control" required />
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label text-muted small fw-bold">Bitiş Saati</label>
-                        <input type="time" name="EndTime" class="form-control" required />
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label text-muted small fw-bold">Toplantı Konusu / Açıklama</label>
-                    <textarea name="Description" class="form-control" rows="2" placeholder="Örn: Aylık Bütçe Değerlendirmesi" required></textarea>
-                </div>
-            </form>
+            </div>
+        </form>
     </div>
+</div>
 
-    <div class="modal-footer border-0 pt-0">
-        <button type="button" class="btn btn-light" style="border-radius: 15px;" data-bs-dismiss="modal">İptal</button>
-        <button type="button" class="btn btn-primary" style="border-radius: 15px; padding: 8px 20px;" onclick="Kaydet()">Randevuyu Kaydet</button>
-    </div>
+<div class="modal-footer border-0 bg-white justify-content-end" style="padding: 15px 20px; border-radius: 0 0 15px 15px;">
+    <button type="button" class="btn btn-outline-secondary px-4 shadow-sm" style="border-radius: 8px;" onclick="$('#islemModali').modal('hide');">İptal</button>
+    <button type="button" class="btn px-4 shadow-sm fw-bold text-white" style="background-color: #343a40; border-color: #343a40; border-radius: 8px;" onclick="Kaydet()">Oluştur</button>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('.select2-kullanici').select2({
+            dropdownParent: $('#islemModali'),
+            placeholder: "Kullanıcı Ara...",
+            allowClear: true
+        });
+    });
+</script>

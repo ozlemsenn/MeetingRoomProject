@@ -42,6 +42,7 @@
         <div class="modal-content" style="border-radius: 10px; border: none; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
             <div class="modal-header" style="background-color: #343a40; border-bottom: 1px solid #dee2e6; border-radius: 10px 10px 0 0;">
                 <h5 id="modalBaslik" class="modal-title fw-bold text-primary" style="background-color: #343a40;">Kullanıcı İşlemi</h5>
+                <button type="button" class="btn-close" onclick="$('#kullaniciModali').modal('hide');" aria-label="Close"></button>
             </div>
 
             <div class="modal-body" id="modalinIci">
@@ -72,18 +73,18 @@
                         tabloIcerigi += '<td class="align-middle"><span class="badge bg-secondary" style="padding: 6px 10px; color:white;">' + user.Department + '</span></td>';
 
                         tabloIcerigi += '<td class="align-middle text-center text-nowrap">' +
-                            '<div class="d-flex justify-content-center align-items-center flex-nowrap" style="gap: 5px;">' +
+                            '<div class="d-flex justify-content-evenly align-items-center flex-nowrap w-100 px-3">' +
 
                             '<a href="/Users/Details/' + user.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Detaylar">' +
-                            '<i class="fas fa-search" style="font-size: 1.1rem;"></i>' +
+                            '<i class="fas fa-search" style="font-size: 1.15rem;"></i>' +
                             '</a>' +
 
                             '<a href="/Users/Edit/' + user.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Düzenle">' +
-                            '<i class="fas fa-edit" style="font-size: 1.1rem;"></i>' +
+                            '<i class="fas fa-edit" style="font-size: 1.15rem;"></i>' +
                             '</a>' +
 
                             '<a href="/Users/Delete/' + user.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Sil">' +
-                            '<i class="fas fa-trash-alt" style="font-size: 1.1rem;"></i>' +
+                            '<i class="fas fa-trash-alt" style="font-size: 1.15rem;"></i>' +
                             '</a>' +
 
                             '</div>' +
@@ -129,11 +130,11 @@
 
                 if (gidilecekAdres.indexOf('Create') !== -1) {
                     modalBaslik.text('✨ Yeni Kullanıcı Ekle').addClass('text-white');
-                    modalCerceve.addClass('modal-lg');
+                    modalCerceve.removeClass('modal-lg');
                 }
                 else if (gidilecekAdres.indexOf('Edit') !== -1) {
                     modalBaslik.text('✏️ Kullanıcıyı Düzenle').addClass('text-warning');
-                    modalCerceve.addClass('modal-lg');
+                    modalCerceve.removeClass('modal-lg');
                 }
                 else if (gidilecekAdres.indexOf('Details') !== -1) {
                     modalBaslik.text('🔍 Kullanıcı Detayları').addClass('text-info'); // Turkuaz

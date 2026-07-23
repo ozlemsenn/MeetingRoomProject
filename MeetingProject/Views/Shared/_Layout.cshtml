@@ -7,12 +7,12 @@
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
     <!--datatables için-->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Menüye özel tasarım (Sayfanın head kısmına da taşıyabilirsiniz, burada da kalabilir) -->
     <style>
         .navbar-ozel {
             background: #fff;
@@ -53,10 +53,12 @@
             text-decoration: none;
             transition: all .25s ease;
         }
+
             .brand-logo:hover {
                 text-decoration: none;
                 transform: scale(1.05);
             }
+
             .brand-logo small {
                 display: block;
                 font-size: 14px;
@@ -67,11 +69,9 @@
             }
     </style>
 
-    <!-- Üst Menü Gövdesi -->
     <nav class="navbar navbar-expand-lg navbar-light navbar-ozel">
         <div class="container">
 
-            <!-- Sol Taraf: Logo -->
             <a class="navbar-brand brand-logo" href="/">
                 <div>
                     <i class="bi bi-calendar2-check-fill"></i>
@@ -80,13 +80,12 @@
                 </div>
             </a>
 
-            <!-- Sağ Taraf: Linkler -->
             <div class="collapse navbar-collapse d-flex justify-content-end">
                 <ul class="navbar-nav" style="flex-direction: row;">
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="/Users/Index">
                             <i class="bi bi-people-fill"></i> Kullanıcılar
-                        </a>    
+                        </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link menu-link" href="/Rooms/Index">
@@ -117,5 +116,6 @@
     <!-- DataTables calısma dosyaları-->
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </body>
 </html>

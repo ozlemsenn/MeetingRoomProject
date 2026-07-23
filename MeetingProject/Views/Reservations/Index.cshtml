@@ -54,7 +54,15 @@
 
     <div class="modal fade" id="islemModali" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" id="modalIcerik" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+            <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+
+                <div class="modal-header border-0" style="background-color: #343a40; padding: 15px 20px; border-radius: 15px 15px 0 0;">
+                    <h5 id="modalBaslik" class="modal-title fw-bold text-white mb-0">Rezervasyon İşlemi</h5>
+                    <button type="button" class="btn-close btn-close-white" onclick="$('#islemModali').modal('hide');" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body" id="modalIcerik" style="padding: 0;">
+                </div>
 
             </div>
         </div>
@@ -134,6 +142,35 @@
             }
 
             function ModalAc(url) {
+                var modalCerceve = $('#islemModali .modal-dialog');
+                var modalBaslik = $('#modalBaslik');
+
+                modalBaslik.removeClass('text-primary text-warning text-info text-danger text-white text-light');
+
+                if (url.indexOf('Create') !== -1) {
+                    modalBaslik.text('✨ Yeni Rezervasyon Ekle').addClass('text-white');
+                    modalCerceve.removeClass('modal-lg'); 
+                }
+                else if (url.indexOf('Edit') !== -1) {
+                    modalBaslik.text('✏️ Rezervasyonu Düzenle').addClass('text-white');
+                    modalCerceve.removeClass('modal-lg');
+                }
+                else if (url.indexOf('Details') !== -1) {
+                    modalBaslik.text('🔍 Rezervasyon Detayları').addClass('text-white'); 
+                    modalCerceve.removeClass('modal-lg');
+                }
+                else if (url.indexOf('Delete') !== -1) {
+                    modalBaslik.text('🗑️ Rezervasyonu Kalıcı Olarak Sil').addClass('text-white');
+                    modalCerceve.removeClass('modal-lg');
+                }
+                else if (url.indexOf('Cancel') !== -1) {
+                    modalBaslik.text('🚫 Rezervasyonu İptal Et').addClass('text-warning'); 
+                    modalCerceve.removeClass('modal-lg');
+                }
+                else {
+                    modalBaslik.text('Rezervasyon İşlemi').addClass('text-white');
+                }
+
                 $.get(url, function (data) {
                     $('#modalIcerik').html(data);
                     $('#islemModali').modal('show');

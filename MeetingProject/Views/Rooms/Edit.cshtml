@@ -1,42 +1,47 @@
 ﻿@{
+    ViewBag.Title = "Edit";
     Layout = null;
 }
 
 <form id="editForm">
     @Html.AntiForgeryToken()
 
-    <div class="text-center" style="padding: 10px;">
+    <!-- Güncelleme işlemi için odanın ID'sini tutan gizli alan -->
+    <input type="hidden" id="EditId" name="Id" />
 
-        <input type="hidden" id="EditId" name="Id" />
+    <div class="container-fluid" style="padding: 20px;">
 
-        <div class="form-group" style="margin-bottom: 15px;">
-            <label class="control-label fw-bold" style="margin-bottom: 5px;">Oda Adı</label>
-            <div>
-                <input type="text" id="EditName" name="Name" class="form-control text-center" style="margin: 0 auto; max-width: 300px;" required />
+        <!-- 1. SATIR: Oda Adı ve Kapasite Yan Yana -->
+        <div class="row mb-4">
+            <div class="col-md-7">
+                <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">Oda Adı</label>
+                <!-- bg-light ve border-0 ile inputlara "Ghost" hissiyatı verildi -->
+                <input type="text" id="EditName" name="Name" class="form-control shadow-sm border-0 bg-light" required />
+            </div>
+            <div class="col-md-5">
+                <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">Kapasite</label>
+                <input type="number" id="EditCapacity" name="Capacity" class="form-control shadow-sm border-0 bg-light" required min="1" />
             </div>
         </div>
 
-        <div class="form-group" style="margin-bottom: 15px;">
-            <label class="control-label fw-bold" style="margin-bottom: 5px;">Kapasite (Kişi)</label>
-            <div>
-                <input type="number" id="EditCapacity" name="Capacity" class="form-control text-center" style="margin: 0 auto; max-width: 300px;" required />
-            </div>
-        </div>
-
-        <div class="form-group" style="margin-bottom: 20px;">
-            <label class="control-label fw-bold" style="margin-bottom: 5px;">Projeksiyon Cihazı Var Mı?</label>
-            <div>
-                <select id="EditHasProjector" name="HasProjector" class="form-control text-center" style="margin: 0 auto; max-width: 300px;">
-                    <option value="">Seçiniz...</option>
-                    <option value="true">Var</option>
+        <!-- 2. SATIR: Projeksiyon Durumu -->
+        <div class="row mb-2">
+            <div class="col-md-12">
+                <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">Projeksiyon Durumu</label>
+                <select id="EditHasProjector" name="HasProjector" class="form-select shadow-sm border-0 bg-light" required>
+                    <option value="" disabled>Seçiniz...</option>
+                    <option value="true">Var (Mevcut)</option>
                     <option value="false">Yok</option>
                 </select>
             </div>
         </div>
+
     </div>
 
-    <div class="modal-footer" style="padding-bottom: 0; border-top: 1px solid #dee2e6; margin-top: 15px; display: flex; justify-content: center; gap: 10px;">
-        <button type="button" class="btn btn-secondary" style="min-width: 100px;" onclick="$('#odaModali').modal('hide');">İptal</button>
-        <button type="submit" class="btn btn-primary" style="min-width: 100px;">Güncelle</button>
+    <!-- İşlem Butonları -->
+    <div class="modal-footer border-0 bg-white d-flex justify-content-end" style="padding: 15px 20px; border-radius: 0 0 10px 10px;">
+        <button type="button" class="btn btn-outline-secondary px-4 shadow-sm" style="border-radius: 8px;" onclick="$('#odaModali').modal('hide');">İptal</button>
+        <!-- Düzenleme işleminin sistem geneli rengi olan SARI buton -->
+        <button type="submit" class="btn btn-warning px-4 shadow-sm fw-bold text-dark" style="border-radius: 8px;">Değişiklikleri Kaydet</button>
     </div>
 </form>

@@ -3,25 +3,35 @@
     Layout = null;
 }
 
-<div class="text-center" style="padding: 10px;">
+<div class="container-fluid px-2 py-3">
+    <div class="card border-0 shadow-sm" style="border-radius: 15px; background-color: #f8f9fa;">
+        <div class="card-body p-4 text-center">
 
-    <div style="margin-bottom: 15px;">
-        <h6 class="text-muted">Oda Adı</h6>
-        <h4 id="DetailsName">Yükleniyor...</h4>
+            <div class="d-inline-flex align-items-center justify-content-center text-white mb-3 shadow" style="width: 85px; height: 85px; border-radius: 50%; background: linear-gradient(135deg, #6c757d 0%, #343a40 100%);">
+                <i class="fas fa-door-open" style="font-size: 2.5rem;"></i>
+            </div>
+
+            <h3 id="DetailsName" class="fw-bold text-dark mb-1">Yükleniyor...</h3>
+
+            <div class="mb-4 pb-4 border-bottom">
+                <span class="badge bg-secondary shadow-sm px-3 py-2 mt-2" style="font-size: 0.95rem; border-radius: 8px;">
+                    <i class="fas fa-users me-1"></i> Kapasite: <span id="DetailsCapacity">...</span> 
+                </span>
+            </div>
+
+            <div class="row align-items-center justify-content-center mt-2">
+                <div class="col-sm-6 text-muted fw-bold text-end">
+                    <i class="fas fa-video text-info me-1"></i> Projeksiyon Durumu:
+                </div>
+                <div class="col-sm-6 text-dark fw-semibold text-start" style="font-size: 1.05rem;" id="DetailsHasProjector">
+                    Yükleniyor...
+                </div>
+            </div>
+
+        </div>
     </div>
-
-    <div style="margin-bottom: 15px;">
-        <h6 class="text-muted">Kapasite</h6>
-        <h4 id="DetailsCapacity">Yükleniyor...</h4>
-    </div>
-
-    <div style="margin-bottom: 15px;">
-        <h6 class="text-muted">Projeksiyon Durumu</h6>
-        <h4 id="DetailsProjector">Yükleniyor...</h4>
-    </div>
-
 </div>
 
-<div class="modal-footer" style="padding-bottom: 0; border-top: 1px solid #dee2e6; margin-top: 15px; display: flex; justify-content: center;">
-    <button type="button" class="btn btn-secondary" style="min-width: 120px;" onclick="$('#odaModali').modal('hide');">Kapat</button>
+<div class="modal-footer border-0 pt-0 pb-3 justify-content-center">
+    <button type="button" class="btn btn-outline-secondary shadow-sm px-5" style="border-radius: 12px; font-weight: 500;" onclick="$('#odaModali').modal('hide');">Kapat</button>
 </div>

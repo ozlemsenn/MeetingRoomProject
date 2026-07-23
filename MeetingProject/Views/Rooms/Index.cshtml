@@ -25,7 +25,7 @@
 
                     <th class="text-center align-middle" style="width: 25%;">Projeksiyon Durumu</th>
 
-                    <th class="text-center align-middle" style="width: 25%; min-width: 130px;">İşlemler</th>
+                    <th class="text-center align-middle" style="width: 15%; min-width: 130px;">İşlemler</th>
                 </tr>
             </thead>
             <tbody id="odaListesi">
@@ -36,22 +36,20 @@
         </table>
     </div>
 
-    <div class="modal fade" id="odaModali" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Oda İşlemi</h5>
-                    <button type="button" class="close" onclick="$('#odaModali').modal('hide');" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body" id="modalinIci">
+    <div class="modal fade" id="odaModali" tabindex="-1" role="dialog" aria-labelledby="odaModaliLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content" style="border-radius: 12px; border: none; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
 
+                <div class="modal-header border-0" style="background-color: #343a40; padding: 15px 20px;">
+                    <h5 id="modalBaslik" class="modal-title fw-bold text-white mb-0">Oda İşlemi</h5>
+                    <button type="button" class="btn-close btn-close-white" onclick="$('#odaModali').modal('hide');" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body" id="modalinIci" style="padding: 0;">
                 </div>
             </div>
         </div>
     </div>
-
     @section Scripts {
         <script>
             function OdalariYukle() {
@@ -75,18 +73,18 @@
                             tabloIcerigi += '<td class="align-middle">' + projeksiyonHtml + '</td>';
 
                             tabloIcerigi += '<td class="align-middle text-center text-nowrap">' +
-                                '<div class="d-flex justify-content-center align-items-center flex-nowrap" style="gap: 5px;">' +
+                                '<div class="d-flex justify-content-evenly align-items-center flex-nowrap w-100 px-3">' +
 
                                 '<a href="/Rooms/Details/' + oda.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Detaylar">' +
-                                '<i class="fas fa-search" style="font-size: 1.1rem;"></i>' +
+                                '<i class="fas fa-search" style="font-size: 1.15rem;"></i>' +
                                 '</a>' +
 
                                 '<a href="/Rooms/Edit/' + oda.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Düzenle">' +
-                                '<i class="fas fa-edit" style="font-size: 1.1rem;"></i>' +
+                                '<i class="fas fa-edit" style="font-size: 1.15rem;"></i>' +
                                 '</a>' +
 
                                 '<a href="/Rooms/Delete/' + oda.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Sil">' +
-                                '<i class="fas fa-trash-alt" style="font-size: 1.1rem;"></i>' +
+                                '<i class="fas fa-trash-alt" style="font-size: 1.15rem;"></i>' +
                                 '</a>' +
 
                                 '</div>' +
@@ -123,6 +121,27 @@
                 $(document).on('click', '.modal-tetikle', function (Olay) {
                     Olay.preventDefault();
                     var gidilecekAdres = $(this).attr('href');
+                    var modalCerceve = $('#odaModali .modal-dialog');
+                    var modalBaslik = $('#modalBaslik');
+
+                    modalBaslik.removeClass('text-primary text-warning text-info text-danger text-white text-light');
+
+                    if (gidilecekAdres.indexOf('Create') !== -1) {
+                        modalBaslik.text('✨ Yeni Oda Ekle').addClass('text-white');
+                        modalCerceve.removeClass('modal-lg');
+                    }
+                    else if (gidilecekAdres.indexOf('Edit') !== -1) {
+                        modalBaslik.text('✏️ Odayı Düzenle').addClass('text-white');
+                        modalCerceve.removeClass('modal-lg');
+                    }
+                    else if (gidilecekAdres.indexOf('Details') !== -1) {
+                        modalBaslik.text('🔍 Oda Detayları').addClass('text-white');
+                        modalCerceve.removeClass('modal-lg');
+                    }
+                    else if (gidilecekAdres.indexOf('Delete') !== -1) {
+                        modalBaslik.text('🗑️ Oda Silme Onayı').addClass('text-white');
+                        modalCerceve.removeClass('modal-lg');
+                    }
 
                     $('#modalinIci').load(gidilecekAdres, function () {
                         $('#odaModali').modal('show');
@@ -162,9 +181,9 @@
                                         $('#DetailsName').text(odaBilgisi.Name);
                                         $('#DetailsCapacity').text(odaBilgisi.Capacity + ' Kişilik');
 
-                                        if (odaBilgisi.HasProjector === true) $('#DetailsProjector').html('<span class="text-success fw-bold">Var</span>');
-                                        else if (odaBilgisi.HasProjector === false) $('#DetailsProjector').html('<span class="text-danger fw-bold">Yok</span>');
-                                        else $('#DetailsProjector').html('<span class="text-muted">Belirtilmedi</span>');
+                                        if (odaBilgisi.HasProjector === true) $('#DetailsHasProjector').html('<span class="text-success fw-bold">Var</span>');
+                                        else if (odaBilgisi.HasProjector === false) $('#DetailsHasProjector').html('<span class="text-danger fw-bold">Yok</span>');
+                                        else $('#DetailsHasProjector').html('<span class="text-muted">Belirtilmedi</span>');
                                     }
                                 }
                             });
