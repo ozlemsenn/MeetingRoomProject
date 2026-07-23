@@ -40,8 +40,8 @@
 <div class="modal fade" id="kullaniciModali" tabindex="-1" role="dialog" aria-labelledby="kullaniciModaliLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content" style="border-radius: 10px; border: none; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
-            <div class="modal-header" style="background-color: #f8f9fa; border-bottom: 1px solid #dee2e6; border-radius: 10px 10px 0 0;">
-                <h5 id="modalBaslik" class="modal-title fw-bold text-primary">Kullanıcı İşlemi</h5>
+            <div class="modal-header" style="background-color: #343a40; border-bottom: 1px solid #dee2e6; border-radius: 10px 10px 0 0;">
+                <h5 id="modalBaslik" class="modal-title fw-bold text-primary" style="background-color: #343a40;">Kullanıcı İşlemi</h5>
             </div>
 
             <div class="modal-body" id="modalinIci">
@@ -128,7 +128,7 @@
                 modalBaslik.removeClass('text-primary text-warning text-info text-danger');
 
                 if (gidilecekAdres.indexOf('Create') !== -1) {
-                    modalBaslik.text('✨ Yeni Kullanıcı Ekle').addClass('text-primary'); // Mavi
+                    modalBaslik.text('✨ Yeni Kullanıcı Ekle').addClass('text-white');
                     modalCerceve.addClass('modal-lg');
                 }
                 else if (gidilecekAdres.indexOf('Edit') !== -1) {
