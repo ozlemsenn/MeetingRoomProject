@@ -1,33 +1,367 @@
 ﻿@{
-    ViewBag.Title = "Home Page";
+    ViewBag.Title = "Genel Bakış";
 }
 
-<main>
-    <section class="row" aria-labelledby="aspnetTitle">
-        <h1 id="title">ASP.NET</h1>
-        <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-        <p><a href="https://asp.net" class="btn btn-primary btn-md">Learn more &raquo;</a></p>
-    </section>
+<style>
+    .fc {
+        font-family: inherit;
+    }
 
-    <div class="row">
-        <section class="col-md-4" aria-labelledby="gettingStartedTitle">
-            <h2 id="gettingStartedTitle">Getting started</h2>
-            <p>
-                ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-                enables a clean separation of concerns and gives you full control over markup
-                for enjoyable, agile development.
-            </p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="librariesTitle">
-            <h2 id="librariesTitle">Get more libraries</h2>
-            <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="hostingTitle">
-            <h2 id="hostingTitle">Web Hosting</h2>
-            <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-        </section>
+        .fc .fc-toolbar-title {
+            font-size: 1.3rem !important;
+            font-weight: 800;
+            color: #2b3445;
+        }
+
+        .fc .fc-button-primary {
+            background: #fff !important;
+            color: #495057 !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 8px !important;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            text-transform: capitalize !important;
+            font-weight: 600 !important;
+            padding: 6px 12px !important;
+            transition: all 0.2s ease;
+        }
+
+            .fc .fc-button-primary:hover {
+                background: #f8f9fa !important;
+            }
+
+        .fc .fc-button-active {
+            background: #e2e8f0 !important;
+            color: #0f172a !important;
+        }
+
+    .fc-theme-standard th {
+        border: none !important;
+        padding: 12px 0 !important;
+        color: #64748b;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .fc-theme-standard td, .fc-theme-standard th {
+        border-color: #f1f5f9 !important;
+    }
+
+    .fc .fc-daygrid-day-number {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #475569;
+        padding: 8px;
+    }
+
+    .fc-theme-standard .fc-day-today {
+        background-color: #f8fafc !important;
+    }
+
+    .fc-event {
+        border: none !important;
+        border-radius: 6px !important;
+        padding: 4px 6px !important;
+        font-size: 0.80rem !important;
+        font-weight: 600 !important;
+        cursor: pointer;
+        margin-bottom: 3px !important;
+    }
+</style>
+
+<div class="container-fluid mt-3">
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-8">
+            <h2 class="fw-bold text-dark mb-1">Genel Bakış</h2>
+            <p class="text-muted small mb-0">Sistemdeki güncel rezervasyon ve toplantı odası istatistikleri.</p>
+        </div>
+        <div class="col-md-4 text-end d-flex justify-content-end gap-2">
+            <a href="@Url.Action("ExcelIndir", "Home")" class="btn btn-success shadow-sm fw-bold px-3 py-2" style="border-radius: 8px;">
+                <i class="fas fa-file-excel me-1"></i> Rapor İndir
+            </a>
+            <button class="btn btn-primary shadow-sm fw-bold px-3 py-2" style="border-radius: 8px;" onclick="HizliRezervasyonAc()">
+                <i class="fas fa-plus-circle me-1"></i> Yeni Rezervasyon
+            </button>
+        </div>
     </div>
-</main>
+
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm border-0" style="border-radius: 12px; background-color: #f0f8ff;">
+                <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted small fw-bold mb-1">Toplam Rezervasyon</p>
+                        <h3 class="fw-bold text-primary mb-0">@ViewBag.ToplamRezervasyon</h3>
+                    </div>
+                    <div class="text-primary opacity-50">
+                        <i class="fas fa-calendar-check fa-3x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm border-0" style="border-radius: 12px; background-color: #f0fff4;">
+                <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted small fw-bold mb-1">Bugünkü Toplantılar</p>
+                        <h3 class="fw-bold text-success mb-0">@ViewBag.BugunkuRezervasyon</h3>
+                    </div>
+                    <div class="text-success opacity-50">
+                        <i class="fas fa-clock fa-3x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm border-0" style="border-radius: 12px; background-color: #fffaf0;">
+                <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted small fw-bold mb-1">Aktif Odalar</p>
+                        <h3 class="fw-bold text-warning mb-0">@ViewBag.ToplamOda</h3>
+                    </div>
+                    <div class="text-warning opacity-50">
+                        <i class="fas fa-door-open fa-3x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm border-0" style="border-radius: 12px; background-color: #fff5f5;">
+                <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted small fw-bold mb-1">İptal Edilenler</p>
+                        <h3 class="fw-bold text-danger mb-0">@ViewBag.IptalEdilenler</h3>
+                    </div>
+                    <div class="text-danger opacity-50">
+                        <i class="fas fa-ban fa-3x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-8 mb-3">
+            <div class="card shadow-sm border-0 h-100" style="border-radius: 12px;">
+                <div class="card-body p-4">
+                    <div id="rezervasyonTakvimi"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm border-0 h-100" style="background-color: #f8f9fa; border-radius: 12px;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold text-dark mb-4">
+                        <i class="fas fa-bolt text-success me-2"></i>Bugünün Gündemi
+                    </h5>
+
+                    <div class="d-flex flex-column gap-3 mt-2">
+                        @if (ViewBag.BugunkuToplantilar != null)
+                        {
+                            foreach (var item in ViewBag.BugunkuToplantilar)
+                            {
+                                <div class="d-flex justify-content-between align-items-center p-3 bg-white shadow-sm" style="border-radius: 10px; border-left: 5px solid #198754 !important;">
+                                    <div>
+                                        <h6 class="fw-bold text-dark mb-1">@item.OdaAdi</h6>
+                                        <small class="text-success fw-bold"><i class="fas fa-circle me-1" style="font-size: 8px; vertical-align: middle;"></i> Aktif</small>
+                                    </div>
+                                    <span class="badge bg-success bg-gradient rounded-pill shadow-sm" style="padding: 8px 15px;"><i class="far fa-clock me-1"></i> @item.Saat</span>
+                                </div>
+                            }
+                            if (ViewBag.BugunkuToplantilar.Count == 0)
+                            {
+                                <div class="text-center text-muted mt-4 p-4 bg-white shadow-sm" style="border-radius: 10px;">
+                                    <i class="fas fa-check-circle fa-2x mb-2 text-success opacity-50"></i>
+                                    <p class="small fw-semibold mb-0">Bugün için planlanmış toplantı yok.</p>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
+<div class="row mb-4">
+
+    <div class="col-md-6 mb-3">
+        <div class="card shadow-sm border-0 h-100" style="border-radius: 12px;">
+            <div class="card-body p-4">
+                <h5 class="fw-bold text-dark mb-4"><i class="fas fa-history text-secondary me-2"></i>Sistemdeki Son Hareketler</h5>
+
+                <div style="border-left: 2px solid #e9ecef; padding-left: 25px; margin-left: 15px; position: relative;">
+                    @if (ViewBag.Aktiviteler != null)
+                    {
+                        foreach (var aktivite in ViewBag.Aktiviteler)
+                        {
+                            <div class="mb-4" style="position: relative;">
+                                <div style="position: absolute; left: -36px; top: 0; background-color: white; padding: 2px 0;">
+                                    <i class="fas @aktivite.Ikon text-@aktivite.RenkSinifi" style="font-size: 1.25rem;"></i>
+                                </div>
+                                
+                                <div>
+                                    <p class="mb-1 fw-semibold text-dark" style="font-size: 0.95rem;">@aktivite.Aciklama</p>
+                                    <small class="text-muted"><i class="far fa-calendar-check me-1"></i> Tarih: @aktivite.TarihSaat</small>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <div class="card shadow-sm border-0 h-100" style="background-color: #f8f9fa; border-radius: 12px;">
+            <div class="card-body p-4">
+                <h5 class="fw-bold text-dark mb-4">
+                    <i class="fas fa-list-ul text-warning me-2"></i>Sıradaki Toplantılar
+                </h5>
+
+                <div class="d-flex flex-column gap-3 mt-2">
+                    @if (ViewBag.SiradakiToplantilar != null)
+                    {
+                        foreach (var item in ViewBag.SiradakiToplantilar)
+                        {
+                            <div class="d-flex justify-content-between align-items-center p-3 bg-white shadow-sm"
+                                 style="border-radius: 10px; border-left: 5px solid #0d6efd !important;">
+
+                                <div>
+                                    <h6 class="fw-bold text-dark mb-1">@item.OdaAdi</h6>
+                                    <small class="text-muted fw-semibold">
+                                        <i class="far fa-calendar-alt text-primary me-1"></i> @item.Tarih
+                                    </small>
+                                </div>
+                                <span class="badge bg-primary bg-gradient rounded-pill shadow-sm" style="font-size: 0.90rem; padding: 8px 15px;">
+                                    <i class="far fa-clock me-1"></i> @item.Saat
+                                </span>
+                            </div>
+                        }
+
+                        if (ViewBag.SiradakiToplantilar.Count == 0)
+                        {
+                            <div class="text-center text-muted mt-4 p-4 bg-white shadow-sm" style="border-radius: 10px;">
+                                <i class="fas fa-mug-hot fa-2x mb-2 text-warning opacity-75"></i>
+                                <p class="small fw-semibold mb-0">Yakın zamanda planlanmış toplantı yok.</p>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="modal fade" id="islemModali" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+            <div class="modal-header border-0 pb-0" id="modalHeader">
+                <h5 class="modal-title fw-bold" id="modalBaslik">Yeni Rezervasyon</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="modalIcerik">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var takvimKutusu = document.getElementById('rezervasyonTakvimi');
+
+        var takvim = new FullCalendar.Calendar(takvimKutusu, {
+            initialView: 'dayGridMonth',
+            locale: 'tr',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek'
+            },
+            buttonText: { today: 'Bugün', month: 'Ay', week: 'Hafta' },
+            height: 500, 
+
+            events: '/Home/GetCalendarEvents',
+
+            eventClick: function (info) {
+                var baslik = info.event.title;
+                var saat = info.event.start.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+                var tarih = info.event.start.toLocaleDateString('tr-TR');
+                var kisi = info.event.extendedProps.kisi;
+                var durum = info.event.extendedProps.durum;
+                var renk = info.event.backgroundColor || '#0d6efd';
+                var durumRozeti = durum === 'İptal Edildi' ? 'bg-danger' : (durum === 'Bekliyor' ? 'bg-warning text-dark' : 'bg-success');
+
+                var ozelTasarim = `
+                    <div class="text-start" style="font-family: inherit;">
+                        <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
+                            <div class="rounded-circle d-flex justify-content-center align-items-center text-white shadow-sm" style="width: 55px; height: 55px; background-color: ${renk};">
+                                <i class="fas fa-door-open fs-4"></i>
+                            </div>
+                            <div class="ms-3">
+                                <h4 class="mb-1 fw-bold text-dark" style="font-size: 1.3rem;">${baslik}</h4>
+                                <span class="badge ${durumRozeti} rounded-pill shadow-sm px-3 py-2" style="font-size: 0.8rem;">${durum}</span>
+                            </div>
+                        </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <div class="p-3 rounded-3 bg-light border border-light-subtle h-100">
+                                    <small class="text-muted d-block mb-1"><i class="far fa-calendar-alt text-primary me-1"></i> Tarih</small>
+                                    <span class="fw-bold text-dark fs-6">${tarih}</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-3 rounded-3 bg-light border border-light-subtle h-100">
+                                    <small class="text-muted d-block mb-1"><i class="far fa-clock text-primary me-1"></i> Saat</small>
+                                    <span class="fw-bold text-dark fs-6">${saat}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-3 rounded-3 bg-light border border-light-subtle d-flex align-items-center">
+                            <div class="bg-white rounded-circle d-flex justify-content-center align-items-center me-3 shadow-sm" style="width: 40px; height: 40px;">
+                                <i class="fas fa-user-tie text-secondary"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block mb-0" style="font-size: 0.8rem;">Rezervasyon Sahibi</small>
+                                <span class="fw-bold text-dark">${kisi}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                Swal.fire({
+                    html: ozelTasarim,
+                    showCloseButton: true,
+                    showConfirmButton: false,
+                    showCancelButton: true,
+                    cancelButtonText: 'Kapat',
+                    cancelButtonColor: '#6c757d',
+                    width: '450px',
+                    padding: '1.5em',
+                    customClass: { popup: 'rounded-4 shadow-lg border-0' }
+                });
+            }
+        });
+
+        takvim.render();
+    });
+
+    function HizliRezervasyonAc() {
+        $('#modalIcerik').html('<div class="p-4 text-center text-muted"><i class="fas fa-spinner fa-spin fa-2x"></i><br>Yükleniyor...</div>');
+        $('#modalHeader').removeClass('bg-danger text-white').addClass('text-dark');
+        $('#modalBaslik').text("Yeni Rezervasyon Oluştur");
+        $('#islemModali').modal('show');
+        $.ajax({
+            url: '/Reservations/Create',
+            type: 'GET',
+            success: function (res) { $('#modalIcerik').html(res); },
+            error: function () { $('#modalIcerik').html('<div class="p-4 text-center text-danger">Form yüklenirken hata oluştu!</div>'); }
+        });
+    }
+</script>

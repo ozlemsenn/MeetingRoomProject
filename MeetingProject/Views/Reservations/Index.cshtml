@@ -14,287 +14,287 @@
     </div>
 </div>
 
-    <div class="card shadow-sm" style="border-radius: 15px; border: none;">
-        <div class="card-body">
-            <div class="row mb-4 mt-2">
-                <div class="col-md-5 col-lg-4 text-start">
-                    <div class="input-group shadow-sm" style="border-radius: 12px; overflow: hidden; border: 1px solid #ced4da;">
-                        <span class="input-group-text bg-white border-0 fw-bold text-muted" style="padding-right: 5px;">
-                            🎯 Filtrele:
-                        </span>
-                        <select id="rezervasyonFiltre" class="form-select border-0 text-dark fw-semibold" style="cursor: pointer; background-color: #f8f9fa;" onchange="TabloyuDoldur()">
-                            <option value="Tümü">Tüm Rezervasyonlar</option>
-                            <option value="Aktif">Sadece Aktif Olanlar</option>
-                            <option value="Tamamlandı">Geçmiş Toplantılar</option>
-                            <option value="İptal Edildi">İptal Edilenler</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="col-md-7 col-lg-8 text-end align-self-center">
+<div class="card shadow-sm" style="border-radius: 15px; border: none;">
+    <div class="card-body">
+        <div class="row mb-4 mt-2">
+            <div class="col-md-5 col-lg-4 text-start">
+                <div class="input-group shadow-sm" style="border-radius: 12px; overflow: hidden; border: 1px solid #ced4da;">
+                    <span class="input-group-text bg-white border-0 fw-bold text-muted" style="padding-right: 5px;">
+                        🎯 Filtrele:
+                    </span>
+                    <select id="rezervasyonFiltre" class="form-select border-0 text-dark fw-semibold" style="cursor: pointer; background-color: #f8f9fa;" onchange="TabloyuDoldur()">
+                        <option value="Tümü">Tüm Rezervasyonlar</option>
+                        <option value="Aktif">Sadece Aktif Olanlar</option>
+                        <option value="Tamamlandı">Geçmiş Toplantılar</option>
+                        <option value="İptal Edildi">İptal Edilenler</option>
+                    </select>
                 </div>
             </div>
-            <table id="rezervasyonTablosu" class="table table-hover table-borderless align-middle">
-                <thead class="thead-dark" style="background-color: #343a40; color: white;">
-                    <tr>
-                        <th class="text-center align-middle" style="width: 10%;">Tarih</th>
-                        <th class="text-center align-middle" style="width: 10%;">Saat Aralığı</th>
-                        <th class="text-center align-middle" style="width: 20%;">Oda</th>
-                        <th class="text-center align-middle" style="width: 20%;">Kullanıcı</th>
-                        <th class="text-center align-middle" style="width: 35%;">Açıklama</th>
-                        <th class="text-center align-middle" style="width: 10%;">Durum</th>
-                        <th class="text-center align-middle" style="width: 20%;">İşlemler</th>
-                    </tr>
-                </thead>
-                <tbody id="rezervasyonListesi">
-                </tbody>
-            </table>
-        </div>
-    </div>
 
-    <div class="modal fade" id="islemModali" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-
-                <div class="modal-header border-0" style="background-color: #343a40; padding: 15px 20px; border-radius: 15px 15px 0 0;">
-                    <h5 id="modalBaslik" class="modal-title fw-bold text-white mb-0">Rezervasyon İşlemi</h5>
-                    <button type="button" class="btn-close btn-close-white" onclick="$('#islemModali').modal('hide');" aria-label="Close"></button>
-                </div>
-
-                <div class="modal-body" id="modalIcerik" style="padding: 0;">
-                </div>
-
+            <div class="col-md-7 col-lg-8 text-end align-self-center">
             </div>
         </div>
+        <table id="rezervasyonTablosu" class="table table-hover table-borderless align-middle">
+            <thead class="thead-dark" style="background-color: #343a40; color: white;">
+                <tr>
+                    <th class="text-center align-middle" style="width: 10%;">Tarih</th>
+                    <th class="text-center align-middle" style="width: 10%;">Saat Aralığı</th>
+                    <th class="text-center align-middle" style="width: 20%;">Oda</th>
+                    <th class="text-center align-middle" style="width: 20%;">Kullanıcı</th>
+                    <th class="text-center align-middle" style="width: 35%;">Açıklama</th>
+                    <th class="text-center align-middle" style="width: 10%;">Durum</th>
+                    <th class="text-center align-middle" style="width: 20%;">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody id="rezervasyonListesi">
+            </tbody>
+        </table>
     </div>
+</div>
 
-    @section scripts {
-        <script>
-            $(document).ready(function () {
-                TabloyuDoldur()
+<div class="modal fade" id="islemModali" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+
+            <div class="modal-header border-0" style="background-color: #343a40; padding: 15px 20px; border-radius: 15px 15px 0 0;">
+                <h5 id="modalBaslik" class="modal-title fw-bold text-white mb-0">Rezervasyon İşlemi</h5>
+                <button type="button" class="btn-close btn-close-white" onclick="$('#islemModali').modal('hide');" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body" id="modalIcerik" style="padding: 0;">
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            TabloyuDoldur()
+        });
+
+        function TabloyuDoldur() {
+            $.ajax({
+                url: '/Reservations/GetReservations',
+                type: 'GET',
+                success: function (data) {
+
+                    if ($.fn.DataTable.isDataTable('#rezervasyonTablosu')) {
+                        $('#rezervasyonTablosu').DataTable().destroy();
+                    }
+
+                    var html = '';
+
+                    var secilenFiltre = $('#rezervasyonFiltre').val() || "Tümü";
+
+                    $.each(data, function (i, item) {
+
+                        if (secilenFiltre !== "Tümü" && item.Status !== secilenFiltre) {
+                            return true;
+                        }
+
+                        html += '<tr>';
+                        html += '<td class="text-center align-middle"><strong>' + item.Date + '</strong></td>';
+                        html += '<td class="text-center align-middle"><span class="badge bg-light text-dark">' + item.StartTime + ' - ' + item.EndTime + '</span></td>';
+                        html += '<td class="text-center align-middle">' + item.RoomName + '</td>';
+                        html += '<td class="text-center align-middle">' + item.UserName + '</td>';
+
+                        var kisaAciklama = item.Description;
+                        if (kisaAciklama && kisaAciklama.length > 30) {
+                            kisaAciklama = kisaAciklama.substring(0, 30) + '...';
+                        }
+                        html += '<td>' + kisaAciklama + '</td>';
+
+                        var rozetRengi = 'bg-success';
+                        if (item.Status === 'Tamamlandı') {
+                            rozetRengi = 'bg-secondary';
+                        } else if (item.Status === 'İptal Edildi') {
+                            rozetRengi = 'bg-danger';
+                        }
+                        html += '<td><span class="badge ' + rozetRengi + '">' + item.Status + '</span></td>';
+
+                        html += '<td class="align-middle text-center">';
+                        html += '<div class="d-flex justify-content-center align-items-center flex-nowrap gap-1">';
+
+                        html += '<button class="btn btn-sm text-secondary border-0 shadow-none" title="Detayları Gör" onclick="ModalAc(\'/Reservations/Details/' + item.Id + '\')"><i class="fas fa-search" style="font-size: 1.1rem;"></i></button>';
+
+                        if (item.Status !== 'İptal Edildi' && item.Status !== 'Tamamlandı') {
+                            html += '<button class="btn btn-sm text-secondary border-0 shadow-none" title="Düzenle" onclick="ModalAc(\'/Reservations/Edit/' + item.Id + '\')"><i class="fas fa-edit" style="font-size: 1.1rem;"></i></button>';
+
+                            html += '<button class="btn btn-sm text-secondary border-0 shadow-none" title="İptal Et" onclick="ModalAc(\'/Reservations/Cancel/' + item.Id + '\')"><i class="fas fa-ban" style="font-size: 1.1rem;"></i></button>';
+                        }
+
+                        html += '<button class="btn btn-sm text-secondary border-0 shadow-none" title="Tamamen Sil" onclick="ModalAc(\'/Reservations/Delete/' + item.Id + '\')"><i class="fas fa-trash-alt" style="font-size: 1.1rem;"></i></button>';
+
+                        html += '</div>';
+                        html += '</td>';
+                        html += '</tr>';
+                    });
+
+                    $('#rezervasyonListesi').html(html);
+
+                    $('#rezervasyonTablosu').DataTable({
+                        "language": { "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json" }
+                    });
+                }
             });
+        }
 
-            function TabloyuDoldur() {
-                $.ajax({
-                    url: '/Reservations/GetReservations',
-                    type: 'GET',
-                    success: function (data) {
+        function TarihSecildi() {
+            var tarih = $('#tarihInput').val();
+            if (tarih) {
+                $('#btnDolulukGoster').removeClass('d-none');
 
-                        if ($.fn.DataTable.isDataTable('#rezervasyonTablosu')) {
-                            $('#rezervasyonTablosu').DataTable().destroy();
-                        }
-
-                        var html = '';
-
-                        var secilenFiltre = $('#rezervasyonFiltre').val() || "Tümü";
-
-                        $.each(data, function (i, item) {
-
-                            if (secilenFiltre !== "Tümü" && item.Status !== secilenFiltre) {
-                                return true;
-                            }
-
-                            html += '<tr>';
-                            html += '<td class="text-center align-middle"><strong>' + item.Date + '</strong></td>';
-                            html += '<td class="text-center align-middle"><span class="badge bg-light text-dark">' + item.StartTime + ' - ' + item.EndTime + '</span></td>';
-                            html += '<td class="text-center align-middle">' + item.RoomName + '</td>';
-                            html += '<td class="text-center align-middle">' + item.UserName + '</td>';
-
-                            var kisaAciklama = item.Description;
-                            if (kisaAciklama && kisaAciklama.length > 30) {
-                                kisaAciklama = kisaAciklama.substring(0, 30) + '...';
-                            }
-                            html += '<td>' + kisaAciklama + '</td>';
-
-                            var rozetRengi = 'bg-success';
-                            if (item.Status === 'Tamamlandı') {
-                                rozetRengi = 'bg-secondary';
-                            } else if (item.Status === 'İptal Edildi') {
-                                rozetRengi = 'bg-danger';
-                            }
-                            html += '<td><span class="badge ' + rozetRengi + '">' + item.Status + '</span></td>';
-
-                            html += '<td class="align-middle text-center">';
-                            html += '<div class="d-flex justify-content-center align-items-center flex-nowrap gap-1">';
-
-                            html += '<button class="btn btn-sm text-secondary border-0 shadow-none" title="Detayları Gör" onclick="ModalAc(\'/Reservations/Details/' + item.Id + '\')"><i class="fas fa-search" style="font-size: 1.1rem;"></i></button>';
-
-                            if (item.Status !== 'İptal Edildi' && item.Status !== 'Tamamlandı') {
-                                html += '<button class="btn btn-sm text-secondary border-0 shadow-none" title="Düzenle" onclick="ModalAc(\'/Reservations/Edit/' + item.Id + '\')"><i class="fas fa-edit" style="font-size: 1.1rem;"></i></button>';
-
-                                html += '<button class="btn btn-sm text-secondary border-0 shadow-none" title="İptal Et" onclick="ModalAc(\'/Reservations/Cancel/' + item.Id + '\')"><i class="fas fa-ban" style="font-size: 1.1rem;"></i></button>';
-                            }
-
-                            html += '<button class="btn btn-sm text-secondary border-0 shadow-none" title="Tamamen Sil" onclick="ModalAc(\'/Reservations/Delete/' + item.Id + '\')"><i class="fas fa-trash-alt" style="font-size: 1.1rem;"></i></button>';
-
-                            html += '</div>';
-                            html += '</td>';
-                            html += '</tr>';
-                        });
-
-                        $('#rezervasyonListesi').html(html);
-
-                        $('#rezervasyonTablosu').DataTable({
-                            "language": { "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json" }
-                        });
-                    }
-                });
-            }
-
-            function TarihSecildi() {
-                var tarih = $('#tarihInput').val();
-                if (tarih) {
-                    $('#btnDolulukGoster').removeClass('d-none');
-
-                    if ($('#dolulukAlani').is(':visible')) {
-                        YenidenYukle();
-                    }
-                } else {
-                    $('#btnDolulukGoster').addClass('d-none');
-                    $('#dolulukAlani').hide();
-                }
-            }
-
-            function DolulukDurumunuGetir() {
                 if ($('#dolulukAlani').is(':visible')) {
-                    $('#dolulukAlani').slideUp();
-                    return;
+                    YenidenYukle();
                 }
-                YenidenYukle();
+            } else {
+                $('#btnDolulukGoster').addClass('d-none');
+                $('#dolulukAlani').hide();
             }
+        }
 
-            function YenidenYukle() {
-                var secilenTarih = $('#tarihInput').val();
-                var mevcutId = $('#formDuzenle input[name="Id"]').val() || 0;
+        function DolulukDurumunuGetir() {
+            if ($('#dolulukAlani').is(':visible')) {
+                $('#dolulukAlani').slideUp();
+                return;
+            }
+            YenidenYukle();
+        }
 
-                $.ajax({
-                    url: '/Reservations/GetReservationsByDate',
-                    type: 'GET',
-                    data: { date: secilenTarih, excludeId: mevcutId },
-                    success: function (data) {
-                        var html = '<h6 class="fw-bold mb-3"><i class="fas fa-info-circle"></i> ' + secilenTarih + ' Doluluk Durumu:</h6>';
+        function YenidenYukle() {
+            var secilenTarih = $('#tarihInput').val();
+            var mevcutId = $('#formDuzenle input[name="Id"]').val() || 0;
 
-                        if (data.length === 0) {
-                            html += '<p class="text-muted small">Bu tarihte başka rezervasyon yok.</p>';
-                        } else {
-                            html += '<ul class="list-group list-group-flush">';
-                            $.each(data, function (i, item) {
-                                html += '<li class="list-group-item bg-transparent d-flex justify-content-between">' +
-                                    '<span>' + item.RoomName + '</span>' +
-                                    '<span class="badge bg-secondary">' + item.StartTime + ' - ' + item.EndTime + '</span></li>';
-                            });
-                            html += '</ul>';
-                        }
+            $.ajax({
+                url: '/Reservations/GetReservationsByDate',
+                type: 'GET',
+                data: { date: secilenTarih, excludeId: mevcutId },
+                success: function (data) {
+                    var html = '<h6 class="fw-bold mb-3"><i class="fas fa-info-circle"></i> ' + secilenTarih + ' Doluluk Durumu:</h6>';
 
-                        $('#dolulukIcerik').html(html);
-                        $('#dolulukAlani').slideDown();
-                    },
-                    error: function () {
-                        alert("Doluluk bilgisi alınırken bir hata oluştu.");
+                    if (data.length === 0) {
+                        html += '<p class="text-muted small">Bu tarihte başka rezervasyon yok.</p>';
+                    } else {
+                        html += '<ul class="list-group list-group-flush">';
+                        $.each(data, function (i, item) {
+                            html += '<li class="list-group-item bg-transparent d-flex justify-content-between">' +
+                                '<span>' + item.RoomName + '</span>' +
+                                '<span class="badge bg-secondary">' + item.StartTime + ' - ' + item.EndTime + '</span></li>';
+                        });
+                        html += '</ul>';
                     }
-                });
+
+                    $('#dolulukIcerik').html(html);
+                    $('#dolulukAlani').slideDown();
+                },
+                error: function () {
+                    alert("Doluluk bilgisi alınırken bir hata oluştu.");
+                }
+            });
+        }
+
+        function ModalAc(url) {
+            var modalCerceve = $('#islemModali .modal-dialog');
+            var modalBaslik = $('#modalBaslik');
+
+            modalBaslik.removeClass('text-primary text-warning text-info text-danger text-white text-light');
+
+            if (url.indexOf('Create') !== -1) {
+                modalBaslik.text('✨ Yeni Rezervasyon Ekle').addClass('text-white');
+                modalCerceve.removeClass('modal-lg');
+            }
+            else if (url.indexOf('Edit') !== -1) {
+                modalBaslik.text('✏️ Rezervasyonu Düzenle').addClass('text-white');
+                modalCerceve.removeClass('modal-lg');
+            }
+            else if (url.indexOf('Details') !== -1) {
+                modalBaslik.text('🔍 Rezervasyon Detayları').addClass('text-white');
+                modalCerceve.removeClass('modal-lg');
+            }
+            else if (url.indexOf('Delete') !== -1) {
+                modalBaslik.text('🗑️ Rezervasyonu Kalıcı Olarak Sil').addClass('text-white');
+                modalCerceve.removeClass('modal-lg');
+            }
+            else if (url.indexOf('Cancel') !== -1) {
+                modalBaslik.text('🚫 Rezervasyonu İptal Et').addClass('text-white');
+                modalCerceve.removeClass('modal-lg');
+            }
+            else {
+                modalBaslik.text('Rezervasyon İşlemi').addClass('text-white');
             }
 
-            function ModalAc(url) {
-                var modalCerceve = $('#islemModali .modal-dialog');
-                var modalBaslik = $('#modalBaslik');
+            $.get(url, function (data) {
+                $('#modalIcerik').html(data);
+                $('#islemModali').modal('show');
+            });
+        }
 
-                modalBaslik.removeClass('text-primary text-warning text-info text-danger text-white text-light');
+        function Kaydet() {
+            var formData = $('#formRezervasyon').serialize();
 
-                if (url.indexOf('Create') !== -1) {
-                    modalBaslik.text('✨ Yeni Rezervasyon Ekle').addClass('text-white');
-                    modalCerceve.removeClass('modal-lg'); 
-                }
-                else if (url.indexOf('Edit') !== -1) {
-                    modalBaslik.text('✏️ Rezervasyonu Düzenle').addClass('text-white');
-                    modalCerceve.removeClass('modal-lg');
-                }
-                else if (url.indexOf('Details') !== -1) {
-                    modalBaslik.text('🔍 Rezervasyon Detayları').addClass('text-white'); 
-                    modalCerceve.removeClass('modal-lg');
-                }
-                else if (url.indexOf('Delete') !== -1) {
-                    modalBaslik.text('🗑️ Rezervasyonu Kalıcı Olarak Sil').addClass('text-white');
-                    modalCerceve.removeClass('modal-lg');
-                }
-                else if (url.indexOf('Cancel') !== -1) {
-                    modalBaslik.text('🚫 Rezervasyonu İptal Et').addClass('text-white'); 
-                    modalCerceve.removeClass('modal-lg');
-                }
-                else {
-                    modalBaslik.text('Rezervasyon İşlemi').addClass('text-white');
-                }
+            $('#hataMesajiAlani').addClass('d-none');
 
-                $.get(url, function (data) {
-                    $('#modalIcerik').html(data);
-                    $('#islemModali').modal('show');
-                });
-            }
-
-            function Kaydet() {
-                var formData = $('#formRezervasyon').serialize();
-
-                $('#hataMesajiAlani').addClass('d-none');
-
-                $.ajax({
-                    url: '/Reservations/Create',
-                    type: 'POST',
-                    data: formData,
-                    success: function (response) {
-                        if (response.success) {
-                            $('#islemModali').modal('hide');
-                            TabloyuDoldur();
-                        } else {
-                            $('#hataMesajiAlani').removeClass('d-none').html('<strong>⚠️ Uyarı:</strong> ' + response.message);
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        $('#hataMesajiAlani').removeClass('d-none').html('<strong>❌ Sunucu Hatası:</strong> İşlem tamamlanamadı.');
-                    }
-                });
-            }
-
-            function Sil() {
-                var formData = $('#formSil').serialize();
-                $.post('/Reservations/DeleteConfirm', formData, function (response) {
-                    if (response.success) {
-                        $('#islemModali').modal('hide');
-                        TabloyuDoldur();
-                    }
-                });
-            }
-            function Guncelle() {
-                var formData = $('#formDuzenle').serialize();
-                $('#hataMesajiAlaniDuzenle').addClass('d-none');
-
-                $.ajax({
-                    url: '/Reservations/Edit',
-                    type: 'POST',
-                    data: formData,
-                    success: function (response) {
-                        if (response.success) {
-                            $('#islemModali').modal('hide');
-                            TabloyuDoldur();
-                        } else {
-                            $('#hataMesajiAlaniDuzenle').removeClass('d-none').html('<strong>⚠️ Uyarı:</strong> ' + response.message);
-                        }
-                    },
-                    error: function () {
-                        $('#hataMesajiAlaniDuzenle').removeClass('d-none').html('<strong>❌ Sunucu Hatası.</strong>');
-                    }
-                });
-            }
-            function IptalOnayla() {
-                var formData = $('#formIptal').serialize();
-
-                $.post('/Reservations/CancelConfirm', formData, function (response) {
+            $.ajax({
+                url: '/Reservations/Create',
+                type: 'POST',
+                data: formData,
+                success: function (response) {
                     if (response.success) {
                         $('#islemModali').modal('hide');
                         TabloyuDoldur();
                     } else {
-                        alert("İşlem sırasında bir hata oluştu.");
+                        $('#hataMesajiAlani').removeClass('d-none').html('<strong>⚠️ Uyarı:</strong> ' + response.message);
                     }
-                });
-            }
-        </script>
-    }
+                },
+                error: function (xhr, status, error) {
+                    $('#hataMesajiAlani').removeClass('d-none').html('<strong>❌ Sunucu Hatası:</strong> İşlem tamamlanamadı.');
+                }
+            });
+        }
+
+        function Sil() {
+            var formData = $('#formSil').serialize();
+            $.post('/Reservations/DeleteConfirm', formData, function (response) {
+                if (response.success) {
+                    $('#islemModali').modal('hide');
+                    TabloyuDoldur();
+                }
+            });
+        }
+        function Guncelle() {
+            var formData = $('#formDuzenle').serialize();
+            $('#hataMesajiAlaniDuzenle').addClass('d-none');
+
+            $.ajax({
+                url: '/Reservations/Edit',
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    if (response.success) {
+                        $('#islemModali').modal('hide');
+                        TabloyuDoldur();
+                    } else {
+                        $('#hataMesajiAlaniDuzenle').removeClass('d-none').html('<strong>⚠️ Uyarı:</strong> ' + response.message);
+                    }
+                },
+                error: function () {
+                    $('#hataMesajiAlaniDuzenle').removeClass('d-none').html('<strong>❌ Sunucu Hatası.</strong>');
+                }
+            });
+        }
+        function IptalOnayla() {
+            var formData = $('#formIptal').serialize();
+
+            $.post('/Reservations/CancelConfirm', formData, function (response) {
+                if (response.success) {
+                    $('#islemModali').modal('hide');
+                    TabloyuDoldur();
+                } else {
+                    alert("İşlem sırasında bir hata oluştu.");
+                }
+            });
+        }
+    </script>
+}

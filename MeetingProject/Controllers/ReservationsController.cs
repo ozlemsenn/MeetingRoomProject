@@ -148,6 +148,7 @@ namespace MeetingProject.Controllers
 
             return Json(sonuc, JsonRequestBehavior.AllowGet);
         }
+        
         public ActionResult Delete(int id)
         {
             var res = db.Reservations.Find(id);
