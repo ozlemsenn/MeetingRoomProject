@@ -15,13 +15,10 @@ namespace MeetingProject.Controllers
             var bugun = DateTime.Today;
 
             ViewBag.ToplamRezervasyon = db.Reservations.Count();
-
             ViewBag.BugunkuRezervasyon = db.Reservations.Count(x => x.Date == bugun && x.Status != "İptal Edildi");
-
             ViewBag.ToplamOda = db.Rooms.Count();
-
             ViewBag.IptalEdilenler = db.Reservations.Count(x => x.Status == "İptal Edildi");
-
+            
             List<string> grafikGunler = new List<string>();
             List<int> grafikSayilar = new List<int>();
 
@@ -98,12 +95,27 @@ namespace MeetingProject.Controllers
             foreach (var rez in bugunkuListe)
             {
                 var oda = db.Rooms.Find(rez.RoomId);
+
+                TimeSpan rezSaati = rez.StartTime ?? new TimeSpan(0, 0, 0);
+                DateTime baslangicZamani = bugun.Add(rezSaati);
+                DateTime bitisZamani = baslangicZamani.AddHours(1); // 1 saatlik toplantı varsayıyoruz
+
+                string guncelDurum = "Planlandı";
+                if (DateTime.Now >= baslangicZamani && DateTime.Now <= bitisZamani)
+                {
+                    guncelDurum = "Devam Ediyor";
+                }
+                else if (DateTime.Now > bitisZamani)
+                {
+                    guncelDurum = "Tamamlandı";
+                }
+
                 bugunkuToplantilar.Add(new ToplantiOzet
                 {
                     OdaAdi = oda != null ? oda.Name : "Bilinmeyen Oda",
                     Saat = rez.StartTime.HasValue ? rez.StartTime.Value.ToString(@"hh\:mm") : "",
-                    Tarih = "Bugün"
-
+                    Tarih = "Bugün",
+                    Durum = guncelDurum 
                 });
             }
             ViewBag.BugunkuToplantilar = bugunkuToplantilar;
@@ -153,16 +165,37 @@ namespace MeetingProject.Controllers
                 string kisiAdi = user != null ? (user.Name + " " + user.Surname) : "Bilinmeyen Kullanıcı";
                 string durum = rez.Status ?? "Bekliyor";
 
+                DateTime rezTarihi = rez.Date ?? DateTime.Today;
+                TimeSpan rezSaati = rez.StartTime ?? new TimeSpan(0, 0, 0);
+                DateTime baslangicZamani = rezTarihi.Add(rezSaati);
 
-                string renk = "#10b981"; 
+                DateTime bitisZamani = baslangicZamani.AddHours(1);
 
+                if (durum != "İptal Edildi" && durum != "Bekliyor")
+                {
+                    if (DateTime.Now >= baslangicZamani && DateTime.Now <= bitisZamani)
+                    {
+                        durum = "Devam Ediyor";
+                    }
+                    else if (DateTime.Now > bitisZamani)
+                    {
+                        durum = "Tamamlandı";
+                    }
+                    else
+                    {
+                        durum = "Planlandı";
+                    }
+                }
+
+                string renk = "#10b981";
                 if (durum == "İptal Edildi")
-                    renk = "#ef4444";
-
+                    renk = "#ef4444"; // Kırmızı
                 else if (durum == "Bekliyor")
-                    renk = "#f59e0b"; 
-
-
+                    renk = "#f59e0b"; // Sarı
+                else if (durum == "Tamamlandı")
+                    renk = "#6c757d"; // Gri
+                else if (durum == "Devam Ediyor")
+                    renk = "#0d6efd";
 
                 string startDateTime = "";
                 if (rez.Date.HasValue && rez.StartTime.HasValue)
@@ -192,6 +225,7 @@ namespace MeetingProject.Controllers
             public string OdaAdi { get; set; }
             public string Tarih { get; set; }
             public string Saat { get; set; }
+            public string Durum { get; set; }
         }
 
         public class AktiviteOzet

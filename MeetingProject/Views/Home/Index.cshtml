@@ -163,19 +163,47 @@
                         {
                             foreach (var item in ViewBag.BugunkuToplantilar)
                             {
-                                <div class="d-flex justify-content-between align-items-center p-3 bg-white shadow-sm" style="border-radius: 10px; border-left: 5px solid #198754 !important;">
+                                string kenarRengi = "#198754";
+                                string metinRengi = "text-success";
+                                string badgeRengi = "bg-success";
+                                string ikonKodu = "<i class='fas fa-circle me-1' style='font-size: 8px; vertical-align: middle;'></i>";
+
+                                if (item.Durum == "Devam Ediyor")
+                                {
+                                    kenarRengi = "#0d6efd"; 
+                                    metinRengi = "text-primary";
+                                    badgeRengi = "bg-primary";
+                                    ikonKodu = "<i class='spinner-grow spinner-grow-sm me-1' style='width: 10px; height: 10px; vertical-align: middle;'></i>";
+                                }
+                                else if (item.Durum == "Tamamlandı")
+                                {
+                                    kenarRengi = "#6c757d"; 
+                                    metinRengi = "text-secondary";
+                                    badgeRengi = "bg-secondary";
+                                    ikonKodu = "<i class='fas fa-check-circle me-1' style='font-size: 10px; vertical-align: middle;'></i>";
+                                }
+
+                                <div class="d-flex justify-content-between align-items-center p-3 bg-white shadow-sm"
+                                     style="border-radius: 10px; border-left: 5px solid @kenarRengi !important; transition: all 0.3s ease;">
+
                                     <div>
                                         <h6 class="fw-bold text-dark mb-1">@item.OdaAdi</h6>
-                                        <small class="text-success fw-bold"><i class="fas fa-circle me-1" style="font-size: 8px; vertical-align: middle;"></i> Aktif</small>
+                                        <small class="@metinRengi fw-bold">
+                                            @Html.Raw(ikonKodu) @item.Durum
+                                        </small>
                                     </div>
-                                    <span class="badge bg-success bg-gradient rounded-pill shadow-sm" style="padding: 8px 15px;"><i class="far fa-clock me-1"></i> @item.Saat</span>
+
+                                    <span class="badge @badgeRengi bg-gradient rounded-pill shadow-sm" style="font-size: 0.90rem; padding: 8px 15px;">
+                                        <i class="far fa-clock me-1"></i> @item.Saat
+                                    </span>
                                 </div>
                             }
+
                             if (ViewBag.BugunkuToplantilar.Count == 0)
                             {
                                 <div class="text-center text-muted mt-4 p-4 bg-white shadow-sm" style="border-radius: 10px;">
                                     <i class="fas fa-check-circle fa-2x mb-2 text-success opacity-50"></i>
-                                    <p class="small fw-semibold mb-0">Bugün için planlanmış toplantı yok.</p>
+                                    <p class="small fw-semibold mb-0">Harika! Bugün için planlanmış toplantı yok.</p>
                                 </div>
                             }
                         }
@@ -210,7 +238,6 @@
                         }
                     }
                 </div>
-
             </div>
         </div>
     </div>
@@ -285,7 +312,7 @@
                 right: 'dayGridMonth,timeGridWeek'
             },
             buttonText: { today: 'Bugün', month: 'Ay', week: 'Hafta' },
-            height: 500, 
+            height: 500,
 
             events: '/Home/GetCalendarEvents',
 
@@ -296,7 +323,14 @@
                 var kisi = info.event.extendedProps.kisi;
                 var durum = info.event.extendedProps.durum;
                 var renk = info.event.backgroundColor || '#0d6efd';
-                var durumRozeti = durum === 'İptal Edildi' ? 'bg-danger' : (durum === 'Bekliyor' ? 'bg-warning text-dark' : 'bg-success');
+                var durumRozeti = durum === 'İptal Edildi' ? 'bg-danger' :
+                    (durum === 'Bekliyor' ? 'bg-warning text-dark' :
+                        (durum === 'Tamamlandı' ? 'bg-secondary' :
+                            (durum === 'Devam Ediyor' ? 'bg-primary' : 'bg-success'))); 
+                var durumYazisi = durum === 'Devam Ediyor' ?
+                    '<i class="spinner-grow spinner-grow-sm me-1" style="width: 10px; height: 10px; vertical-align: middle;"></i> Devam Ediyor'
+                    : durum;
+
 
                 var ozelTasarim = `
                     <div class="text-start" style="font-family: inherit;">
@@ -306,8 +340,7 @@
                             </div>
                             <div class="ms-3">
                                 <h4 class="mb-1 fw-bold text-dark" style="font-size: 1.3rem;">${baslik}</h4>
-                                <span class="badge ${durumRozeti} rounded-pill shadow-sm px-3 py-2" style="font-size: 0.8rem;">${durum}</span>
-                            </div>
+<span class="badge ${durumRozeti} rounded-pill shadow-sm px-3 py-2" style="font-size: 0.8rem; letter-spacing: 0.5px;">${durumYazisi}</span>                            </div>
                         </div>
                         <div class="row g-3 mb-3">
                             <div class="col-6">

@@ -2,13 +2,31 @@
     ViewBag.Title = "Rezervasyonlar";
 }
 
+<style>
+    #rezervasyonTablosu tbody tr td {
+        padding-top: 17px !important; 
+        padding-bottom: 17px !important; 
+        border-bottom: 1px solid #f1f5f9; 
+    }
+
+    .table-striped > tbody > tr:nth-of-type(odd) > * {
+        background-color: #f8fafc !important;
+        box-shadow: inset 0 0 0 9999px rgba(0, 0, 0, 0.01) !important;
+    }
+
+    .table-hover > tbody > tr:hover > * {
+        background-color: #f1f5f9 !important;
+        transition: all 0.2s ease-in-out;
+    }
+</style>
+
 <div class="row mb-4" style="margin-top: 20px;">
     <div class="col-md-8">
         <h2 class="text-primary fw-bold">Rezervasyon Yönetimi</h2>
         <p class="text-muted">Toplantı odalarının doluluk durumunu ve rezervasyonları yönetebilirsiniz.</p>
     </div>
     <div class="col-md-4" style="display: flex; justify-content: flex-end; align-items: center;">
-        <button class="btn btn-primary" style="border-radius: 20px; font-weight: 600; padding: 10px 20px;" onclick="ModalAc('/Reservations/Create')">
+        <button class="btn btn-primary shadow-sm" style="border-radius: 20px; font-weight: 600; padding: 10px 20px;" onclick="ModalAc('/Reservations/Create')">
             + Yeni Rezervasyon
         </button>
     </div>
@@ -24,7 +42,8 @@
                     </span>
                     <select id="rezervasyonFiltre" class="form-select border-0 text-dark fw-semibold" style="cursor: pointer; background-color: #f8f9fa;" onchange="TabloyuDoldur()">
                         <option value="Tümü">Tüm Rezervasyonlar</option>
-                        <option value="Aktif">Sadece Aktif Olanlar</option>
+                        <option value="Planlandı">Sadece Planlananlar</option>
+                        <option value="Devam Ediyor">Şu An Devam Edenler</option>
                         <option value="Tamamlandı">Geçmiş Toplantılar</option>
                         <option value="İptal Edildi">İptal Edilenler</option>
                     </select>
@@ -34,16 +53,16 @@
             <div class="col-md-7 col-lg-8 text-end align-self-center">
             </div>
         </div>
-        <table id="rezervasyonTablosu" class="table table-hover table-borderless align-middle">
+        <table id="rezervasyonTablosu" class="table table-striped table-hover table-borderless align-middle">
             <thead class="thead-dark" style="background-color: #343a40; color: white;">
                 <tr>
                     <th class="text-center align-middle" style="width: 10%;">Tarih</th>
                     <th class="text-center align-middle" style="width: 10%;">Saat Aralığı</th>
                     <th class="text-center align-middle" style="width: 20%;">Oda</th>
                     <th class="text-center align-middle" style="width: 20%;">Kullanıcı</th>
-                    <th class="text-center align-middle" style="width: 35%;">Açıklama</th>
+                    <th class="text-center align-middle" style="width: 30%;">Açıklama</th>
                     <th class="text-center align-middle" style="width: 10%;">Durum</th>
-                    <th class="text-center align-middle" style="width: 20%;">İşlemler</th>
+                    <th class="text-center align-middle" style="width: 15%;">İşlemler</th>
                 </tr>
             </thead>
             <tbody id="rezervasyonListesi">
@@ -52,6 +71,7 @@
     </div>
 </div>
 
+<!-- Modal Kalıbı -->
 <div class="modal fade" id="islemModali" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
@@ -71,7 +91,7 @@
 @section scripts {
     <script>
         $(document).ready(function () {
-            TabloyuDoldur()
+            TabloyuDoldur();
         });
 
         function TabloyuDoldur() {
@@ -85,12 +105,13 @@
                     }
 
                     var html = '';
-
                     var secilenFiltre = $('#rezervasyonFiltre').val() || "Tümü";
 
                     $.each(data, function (i, item) {
 
-                        if (secilenFiltre !== "Tümü" && item.Status !== secilenFiltre) {
+                        var gercekDurum = item.Durum || item.Status;
+
+                        if (secilenFiltre !== "Tümü" && gercekDurum !== secilenFiltre && item.Status !== secilenFiltre) {
                             return true;
                         }
 
@@ -104,24 +125,36 @@
                         if (kisaAciklama && kisaAciklama.length > 30) {
                             kisaAciklama = kisaAciklama.substring(0, 30) + '...';
                         }
-                        html += '<td>' + kisaAciklama + '</td>';
+                        html += '<td class="align-middle">' + (kisaAciklama || '-') + '</td>';
 
-                        var rozetRengi = 'bg-success';
-                        if (item.Status === 'Tamamlandı') {
-                            rozetRengi = 'bg-secondary';
-                        } else if (item.Status === 'İptal Edildi') {
-                            rozetRengi = 'bg-danger';
+                        var badgeRengi = "bg-success"; 
+                        var ikonKodu = "";
+
+                        if (gercekDurum === "Devam Ediyor") {
+                            badgeRengi = "bg-primary"; 
+                            ikonKodu = "<i class='spinner-grow spinner-grow-sm me-1' style='width: 10px; height: 10px; vertical-align: middle;'></i> ";
                         }
-                        html += '<td><span class="badge ' + rozetRengi + '">' + item.Status + '</span></td>';
+                        else if (gercekDurum === "Tamamlandı") {
+                            badgeRengi = "bg-secondary";
+                        }
+                        else if (gercekDurum === "İptal Edildi" || item.Status === "İptal Edildi") {
+                            badgeRengi = "bg-danger"; 
+                            gercekDurum = "İptal Edildi"; 
+                        }
+                        else if (gercekDurum === "Bekliyor" || item.Status === "Bekliyor") {
+                            badgeRengi = "bg-warning text-dark"; 
+                            gercekDurum = "Bekliyor";
+                        }
+
+                        html += '<td class="text-center align-middle"><span class="badge ' + badgeRengi + ' shadow-sm px-3 py-2" style="font-size: 0.85rem; letter-spacing: 0.5px;">' + ikonKodu + gercekDurum + '</span></td>';
 
                         html += '<td class="align-middle text-center">';
                         html += '<div class="d-flex justify-content-center align-items-center flex-nowrap gap-1">';
 
                         html += '<button class="btn btn-sm text-secondary border-0 shadow-none" title="Detayları Gör" onclick="ModalAc(\'/Reservations/Details/' + item.Id + '\')"><i class="fas fa-eye" style="font-size: 1.1rem;"></i></button>';
 
-                        if (item.Status !== 'İptal Edildi' && item.Status !== 'Tamamlandı') {
+                        if (gercekDurum !== 'İptal Edildi' && gercekDurum !== 'Tamamlandı') {
                             html += '<button class="btn btn-sm text-secondary border-0 shadow-none" title="Düzenle" onclick="ModalAc(\'/Reservations/Edit/' + item.Id + '\')"><i class="fas fa-edit" style="font-size: 1.1rem;"></i></button>';
-
                             html += '<button class="btn btn-sm text-secondary border-0 shadow-none" title="İptal Et" onclick="ModalAc(\'/Reservations/Cancel/' + item.Id + '\')"><i class="fas fa-ban" style="font-size: 1.1rem;"></i></button>';
                         }
 
@@ -145,7 +178,6 @@
             var tarih = $('#tarihInput').val();
             if (tarih) {
                 $('#btnDolulukGoster').removeClass('d-none');
-
                 if ($('#dolulukAlani').is(':visible')) {
                     YenidenYukle();
                 }
@@ -263,6 +295,7 @@
                 }
             });
         }
+
         function Guncelle() {
             var formData = $('#formDuzenle').serialize();
             $('#hataMesajiAlaniDuzenle').addClass('d-none');
@@ -284,6 +317,7 @@
                 }
             });
         }
+
         function IptalOnayla() {
             var formData = $('#formIptal').serialize();
 

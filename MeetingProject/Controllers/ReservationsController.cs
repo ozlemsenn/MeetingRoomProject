@@ -31,16 +31,30 @@ namespace MeetingProject.Controllers
 
             var formattedList = reservations.Select(r => {
 
-                string guncelDurum = r.Status; 
+                string gercekDurum = "Planlandı";
 
-                if (guncelDurum != "İptal Edildi" && r.Date.HasValue && r.EndTime.HasValue)
+                if (r.Status != "İptal Edildi" && r.Status != "Bekliyor")
                 {
-                    DateTime toplantininBitisZamani = r.Date.Value.Add(r.EndTime.Value);
-                    if (toplantininBitisZamani < DateTime.Now)
+                    DateTime rezTarihi = r.Date ?? DateTime.Today;
+                    TimeSpan rezSaati = r.StartTime ?? new TimeSpan(0, 0, 0);
+
+                    DateTime baslangic = rezTarihi.Add(rezSaati);
+                    DateTime bitis = baslangic.AddHours(1);
+
+                    if (DateTime.Now >= baslangic && DateTime.Now <= bitis)
                     {
-                        guncelDurum = "Tamamlandı";
+                        gercekDurum = "Devam Ediyor";
+                    }
+                    else if (DateTime.Now > bitis)
+                    {
+                        gercekDurum = "Tamamlandı";
                     }
                 }
+                else
+                {
+                    gercekDurum = r.Status;
+                }
+
 
                 return new
                 {
@@ -51,7 +65,7 @@ namespace MeetingProject.Controllers
                     StartTime = r.StartTime.HasValue ? r.StartTime.Value.ToString(@"hh\:mm") : "",
                     EndTime = r.EndTime.HasValue ? r.EndTime.Value.ToString(@"hh\:mm") : "",
                     r.Description,
-                    Status = guncelDurum
+                    Status = gercekDurum
                 };
             });
 
