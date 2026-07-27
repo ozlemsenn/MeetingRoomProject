@@ -117,7 +117,7 @@
                         html += '<td class="align-middle text-center">';
                         html += '<div class="d-flex justify-content-center align-items-center flex-nowrap gap-1">';
 
-                        html += '<button class="btn btn-sm text-secondary border-0 shadow-none" title="Detayları Gör" onclick="ModalAc(\'/Reservations/Details/' + item.Id + '\')"><i class="fas fa-search" style="font-size: 1.1rem;"></i></button>';
+                        html += '<button class="btn btn-sm text-secondary border-0 shadow-none" title="Detayları Gör" onclick="ModalAc(\'/Reservations/Details/' + item.Id + '\')"><i class="fas fa-eye" style="font-size: 1.1rem;"></i></button>';
 
                         if (item.Status !== 'İptal Edildi' && item.Status !== 'Tamamlandı') {
                             html += '<button class="btn btn-sm text-secondary border-0 shadow-none" title="Düzenle" onclick="ModalAc(\'/Reservations/Edit/' + item.Id + '\')"><i class="fas fa-edit" style="font-size: 1.1rem;"></i></button>';
