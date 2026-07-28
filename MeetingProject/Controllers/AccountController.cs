@@ -25,6 +25,10 @@ namespace MeetingProject.Controllers
 
             if (user != null)
             {
+                // Biletin içine gömeceğimiz veriyi hazırlıyoruz (Rol|Ad Soyad)
+                string adSoyad = user.Name + " " + user.Surname;
+                string userData = user.Role + "|" + adSoyad;
+
                 // 1. GİRİŞ BAŞARILI! Bilet (Ticket) ve Cookie oluşturma işlemleri...
                 var ticket = new FormsAuthenticationTicket(
                     1,
@@ -32,7 +36,7 @@ namespace MeetingProject.Controllers
                     DateTime.Now,
                     DateTime.Now.AddHours(24),
                     false,
-                    user.Role
+                    userData // <--- SADECE BURAYI DEĞİŞTİRDİK (user.Role yerine userData yazdık)
                 );
 
                 string encryptedTicket = FormsAuthentication.Encrypt(ticket);

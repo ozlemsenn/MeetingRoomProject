@@ -20,59 +20,49 @@
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f8fafc;
+            overflow-x: hidden;
         }
 
-        .navbar-ozel {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 10px 30px rgba(30, 58, 138, 0.08);
-            padding: 12px 30px; 
-            margin-top: 20px;
-            margin-bottom: 40px;
-            border-radius: 50px;
-            border: 1px solid rgba(255,255,255,0.8);
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: #ffffff;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.03);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #e2e8f0;
+            overflow-y: auto;
+            padding-top: 20px;
         }
 
-        .menu-link {
-            font-weight: 600;
-            color: #64748b !important;
-            padding: 10px 24px !important; 
-            border-radius: 30px;
-            transition: all 0.3s ease;
-            margin: 0 4px;
-            font-size: 1.05rem; 
-        }
-
-            .menu-link:hover {
-                background: #f1f5f9;
-                color: #1e3a8a !important;
-                transform: translateY(-2px);
+            .sidebar::-webkit-scrollbar {
+                width: 5px;
             }
 
-        .menu-aktif {
-            background: #1e3a8a;
-            color: #ffffff !important;
-            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.2);
-        }
+            .sidebar::-webkit-scrollbar-thumb {
+                background-color: #cbd5e1;
+                border-radius: 10px;
+            }
 
-            .menu-aktif i {
-                color: #ffffff !important; 
+            .sidebar::-webkit-scrollbar-track {
+                background-color: transparent;
             }
 
         .brand-logo {
-            font-size: 1.9rem; 
+            font-size: 1.8rem;
             font-weight: 800;
-            letter-spacing: -0.5px;
             text-decoration: none;
-            color: #1e293b;
-            transition: all .25s ease;
-            display: flex;
-            align-items: center;
+            color: #333333;
+            transition: transform 0.3s ease;
+            display: block;
         }
 
             .brand-logo:hover {
-                text-decoration: none;
-                transform: scale(1.02);
+                transform: scale(1.05);
             }
 
             .brand-logo span {
@@ -81,56 +71,214 @@
                 -webkit-text-fill-color: transparent;
             }
 
-            .brand-logo small {
-                display: block;
-                font-size: 0.8rem; 
-                font-weight: 500;
-                color: #64748b;
-                margin-top: -2px;
+        .sidebar-link {
+            font-weight: 600;
+            color: #64748b;
+            padding: 12px 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+
+            .sidebar-link:hover, .sidebar-link.active {
+                background: #f1f5f9;
+                color: #1e3a8a;
+                transform: translateX(4px);
+            }
+
+            .sidebar-link i {
+                width: 25px;
+                font-size: 1.2rem;
+            }
+
+        .main-wrapper {
+            margin-left: 280px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            height: 80px;
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.01);
+            position: relative;
+            z-index: 999;
+        }
+
+        .content-body {
+            padding: 40px;
+            flex-grow: 1;
+        }
+
+        .user-toggle {
+            cursor: pointer;
+            padding: 6px 12px 6px 6px;
+            border-radius: 50px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s;
+            background: #fff;
+        }
+
+            .user-toggle:hover {
+                background: #f8fafc;
+                border-color: #cbd5e1;
+            }
+
+        .dropdown-menu-custom {
+            border: none;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            border-radius: 16px;
+            padding: 15px;
+            width: 260px;
+            margin-top: 15px !important;
+        }
+
+        .dropdown-item {
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-weight: 500;
+            color: #475569;
+            transition: 0.2s;
+        }
+
+            .dropdown-item:hover {
+                background-color: #f1f5f9;
+                color: #1e3a8a;
             }
     </style>
 
-    <div class="container">
-        <nav class="navbar navbar-expand-lg navbar-light navbar-ozel">
+    <div class="sidebar">
+        <a class="brand-logo mb-1 text-center mt-2" href="/">
+            <i class="fas fa-calendar-check mb-2" style="color: #1e3a8a; font-size: 2.5rem; display: block;"></i>
+            Book<span>Room</span>
+        </a>
 
-            <a class="navbar-brand brand-logo" href="/">
-                <i class="fas fa-calendar-check me-3" style="color: #1e3a8a; font-size: 2.2rem;"></i> 
-                <div>
-                    Book<span>Room</span>
-                    <small>Toplantı Odası Rezervasyon Sistemi</small>
-                </div>
+        <div class="text-center mb-4">
+            <small class="text-muted fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Toplantı Odası Rezervasyon Sistemi</small>
+        </div>
+
+        <hr style="opacity: 0.1; margin: 0 20px;">
+
+        <div class="nav flex-column mt-3 px-3 flex-grow-1">
+            <small class="text-muted fw-bold mb-3 ms-2" style="font-size: 0.75rem; letter-spacing: 1px;">MODÜLLER</small>
+
+            <a class="sidebar-link mb-2" href="/Reservations/Index">
+                <i class="fas fa-calendar-alt text-primary me-3"></i> Rezervasyonlar
             </a>
 
-            <div class="collapse navbar-collapse d-flex justify-content-end">
-                <ul class="navbar-nav" style="flex-direction: row; align-items: center;">
-                    <li class="nav-item">
-                        <a class="nav-link menu-link" href="/Users/Index">
-                            <i class="fas fa-users me-1"></i> Kullanıcılar
+            @if (User.IsInRole("Admin") || User.IsInRole("Yonetici"))
+            {
+                <a class="sidebar-link mb-2" href="/Rooms/Index">
+                    <i class="fas fa-building text-warning me-3"></i> Odalar
+                </a>
+            }
+
+            @if (User.IsInRole("Admin"))
+            {
+                <hr style="opacity: 0.1; margin: 15px 0;">
+                <small class="text-muted fw-bold mb-3 ms-2" style="font-size: 0.75rem; letter-spacing: 1px;">YÖNETİM</small>
+
+                <a class="sidebar-link mb-2" href="/Users/Index">
+                    <i class="fas fa-users text-success me-3"></i> Kullanıcılar
+                </a>
+                <a class="sidebar-link mb-2" href="/Admin/Index">
+                    <i class="fas fa-chart-pie text-danger me-3"></i> Admin Paneli
+                </a>
+            }
+        </div>
+
+        <div class="mt-auto px-3 pb-4 pt-3">
+            <div class="p-3 bg-light rounded-3 text-center mb-3" style="border: 1px solid #f1f5f9;">
+                <i class="fas fa-headset text-primary mb-2 fs-4"></i>
+                <p class="mb-0 small fw-bold text-dark">Yardıma mı ihtiyacınız var?</p>
+                <small class="text-muted">IT Destek ile iletişime geçin</small>
+            </div>
+
+            <a href="/Auth/Logout" class="btn btn-danger w-100 fw-bold shadow-sm py-2" style="border-radius: 12px;">
+                <i class="fas fa-sign-out-alt me-2"></i> Çıkış Yap
+            </a>
+        </div>
+    </div>
+
+    <div class="main-wrapper">
+
+        <div class="topbar">
+            <div>
+                <h4 class="mb-0 fw-bold text-dark">Hoş Geldiniz, @Context.Items["UserFullName"]</h4>
+                <small class="text-muted fw-semibold"><i class="far fa-calendar me-1"></i> @DateTime.Now.ToString("dd MMMM yyyy, dddd")</small>
+            </div>
+
+            <div class="dropdown">
+                <div class="user-toggle d-flex align-items-center" data-toggle="dropdown" aria-expanded="false">
+                    <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center me-2 shadow-sm" style="width: 40px; height: 40px;">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="pe-2">
+                        <h6 class="mb-0 fw-bold text-dark" style="font-size: 0.9rem;">@Context.Items["UserFullName"]</h6>
+                        <small class="text-muted d-block" style="font-size: 0.75rem; line-height: 1;">Profil & Ayarlar <i class="fas fa-chevron-down ms-1" style="font-size: 0.6rem;"></i></small>
+                    </div>
+                </div>
+
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-custom">
+                    <li class="text-center mb-3 mt-2">
+                        <div class="bg-light text-primary rounded-circle d-flex justify-content-center align-items-center mx-auto mb-3 shadow-sm border" style="width: 70px; height: 70px; font-size: 2rem;">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <h5 class="fw-bold text-dark mb-1">@Context.Items["UserFullName"]</h5>
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <span class="badge bg-danger shadow-sm px-3 py-2 mt-1 rounded-pill"><i class="fas fa-crown me-1"></i> Sistem Yöneticisi</span>
+                        }
+                        else if (User.IsInRole("Yonetici"))
+                        {
+                            <span class="badge bg-warning text-dark shadow-sm px-3 py-2 mt-1 rounded-pill"><i class="fas fa-star me-1"></i> Departman Yöneticisi</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-info text-dark shadow-sm px-3 py-2 mt-1 rounded-pill"><i class="fas fa-user me-1"></i> Personel</span>
+                        }
+                    </li>
+
+                    <li><hr class="dropdown-divider opacity-25"></li>
+
+                    <li>
+                        <a class="dropdown-item" href="#">
+                            <i class="far fa-id-card me-2 text-secondary" style="width: 20px;"></i> Hesabım
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link menu-link" href="/Rooms/Index">
-                            <i class="fas fa-building me-1"></i> Odalar
+                    <li>
+                        <a class="dropdown-item" href="#">
+                            <i class="fas fa-sliders-h me-2 text-secondary" style="width: 20px;"></i> Tercihler
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link menu-link menu-aktif" href="/Reservations/Index">
-                            <i class="fas fa-calendar-alt me-1"></i> Rezervasyonlar
+
+                    <li><hr class="dropdown-divider opacity-25"></li>
+
+                    <li>
+                        <a class="dropdown-item text-danger fw-bold" href="/Auth/Logout">
+                            <i class="fas fa-sign-out-alt me-2" style="width: 20px;"></i> Güvenli Çıkış
                         </a>
                     </li>
                 </ul>
             </div>
+        </div>
 
-        </nav>
-    </div>
-    </div>
+        <div class="content-body">
+            @RenderBody()
+        </div>
 
-    <div class="container body-content">
-        @RenderBody()
-
-        <hr class="mt-5" style="border-top: 1px solid #e2e8f0;" />
-        <footer class="text-center py-3">
-            <p class="text-muted small fw-semibold">&copy; @DateTime.Now.Year - BookRoom Rezervasyon Yönetim Sistemi</p>
+        <footer class="text-center py-4 bg-white mt-auto border-top">
+            <p class="text-muted small fw-semibold mb-0">&copy; @DateTime.Now.Year - BookRoom Rezervasyon Yönetim Sistemi</p>
         </footer>
     </div>
 

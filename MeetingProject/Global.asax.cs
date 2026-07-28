@@ -27,7 +27,18 @@ namespace MeetingProject
                 var authTicket = FormsAuthentication.Decrypt(authCookie.Value);
                 if (authTicket != null && !authTicket.Expired)
                 {
-                    var roles = authTicket.UserData.Split(',');
+                    var userDataParts = authTicket.UserData.Split('|');
+
+                    var roles = userDataParts[0].Split(',');
+
+                    if (userDataParts.Length > 1)
+                    {
+                        HttpContext.Current.Items["UserFullName"] = userDataParts[1];
+                    }
+                    else
+                    {
+                        HttpContext.Current.Items["UserFullName"] = authTicket.Name; // Yedeğimiz
+                    }
 
                     HttpContext.Current.User = new GenericPrincipal(new GenericIdentity(authTicket.Name), roles);
                 }
