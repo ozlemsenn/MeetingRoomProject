@@ -7,7 +7,7 @@ using MeetingProject.Models;
 
 namespace MeetingProject.Controllers
 {
-    [AllowAnonymous] // Giriş sayfasına herkesin erişebilmesi için kiliti açıyoruz
+    [AllowAnonymous] 
     public class AuthController : Controller
     {
         private MeetingAppEntities1 db = new MeetingAppEntities1();
@@ -25,18 +25,17 @@ namespace MeetingProject.Controllers
 
             if (user != null)
             {
-                // Biletin içine gömeceğimiz veriyi hazırlıyoruz (Rol|Ad Soyad)
+                // 1. Şirket ID'sini de veritabanından çekiyoruz
                 string adSoyad = user.Name + " " + user.Surname;
-                string userData = user.Role + "|" + adSoyad;
+                string sirketId = user.CompanyId.ToString();
 
-                // 1. GİRİŞ BAŞARILI! Bilet (Ticket) ve Cookie oluşturma işlemleri...
+                // 2. Araya bir çizgi daha koyup 3 parçalı yapıyoruz: Rol|AdSoyad|SirketId
+                // Örnek: "Personel|Ahmet Yılmaz|1"
+                string userData = user.Role + "|" + adSoyad + "|" + sirketId;
+
                 var ticket = new FormsAuthenticationTicket(
-                    1,
-                    user.Email,
-                    DateTime.Now,
-                    DateTime.Now.AddHours(24),
-                    false,
-                    userData // <--- SADECE BURAYI DEĞİŞTİRDİK (user.Role yerine userData yazdık)
+                    1, user.Email, DateTime.Now, DateTime.Now.AddHours(24), false, userData
+                
                 );
 
                 string encryptedTicket = FormsAuthentication.Encrypt(ticket);
@@ -48,26 +47,21 @@ namespace MeetingProject.Controllers
                 Session["UserName"] = user.Name + " " + user.Surname;
                 Session["UserRole"] = user.Role;
 
-                // 2. YENİ EKLENEN KISIM: ROL BAZLI YÖNLENDİRME (ROUTING)
                 if (user.Role == "Admin")
                 {
-                    // Admin giriş yaparsa özel Admin paneline (Dashboard) gitsin
                     return RedirectToAction("Index", "Admin");
                 }
                 else if (user.Role == "Yonetici")
                 {
-                    // Yöneticiler için ayrı bir ekrana gitsin (şimdilik adminle aynı yapabiliriz)
                     return RedirectToAction("Index", "Yonetici");
                 }
                 else
                 {
-                    // Standart Personel giriş yaparsa doğrudan Takvim/Rezervasyon sayfasına gitsin
                     return RedirectToAction("Index", "Reservations");
                 }
             }
             else
             {
-                // 3. GİRİŞ BAŞARISIZ!
                 ViewBag.Hata = "E-posta adresi veya şifre hatalı!";
                 return View();
             }

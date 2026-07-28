@@ -9,86 +9,58 @@
 
         <form id="formRezervasyon">
             @Html.AntiForgeryToken()
-                <div class="row g-3 mb-3">
 
-                    <div class="col-md-6">
-                        <label class="form-label text-muted small fw-bold mb-1">Toplantı Odası</label>
-                        @Html.DropDownList("RoomId", (SelectList)ViewBag.Rooms, "Oda Seçiniz", new { @class = "form-select shadow-sm border-0 bg-light", @required = "required" })
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label text-muted small fw-bold mb-1 d-flex align-items-center">
-                            Kullanıcı
-                            <i class="fas fa-info-circle ms-2 text-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Arama yapabilirsiniz" style="cursor: help; font-size: 0.9rem;"></i>
-                        </label>
-                        @Html.DropDownList("UserId", (SelectList)ViewBag.Users, "Kullanıcı Seçiniz", new { @class = "form-select shadow-sm border-0 bg-light select2-kullanici", @required = "required", style = "width: 100%;" })
-                 
-
+            <!-- 1. ODA VE KULLANICI -->
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label text-muted small fw-bold mb-1">Toplantı Odası</label>
+                    @Html.DropDownList("RoomId", (SelectList)ViewBag.Rooms, "Oda Seçiniz", new { @class = "form-select shadow-sm border-0 bg-light", @required = "required" })
                 </div>
-
-                <style>
-                    .select2-container--default .select2-selection--single {
-                        background-color: #f8f9fa !important;
-                        border: none !important;
-                        border-radius: 0.375rem !important;
-                        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
-                        height: 38px !important;
-                        display: flex;
-                        align-items: center;
-                    }
-
-                        .select2-container--default .select2-selection--single .select2-selection__rendered {
-                            color: #212529 !important;
-                            padding-left: 0.75rem !important;
-                            line-height: normal !important;
-                        }
-
-                        .select2-container--default .select2-selection--single .select2-selection__arrow {
-                            height: 100% !important;
-                            right: 8px !important;
-                        }
-                </style>
-
-                <style>
-                    .select2-container--default .select2-selection--single {
-                        background-color: #f8f9fa !important; 
-                        border: none !important;
-                        border-radius: 0.375rem !important;
-                        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
-                        height: 38px !important; 
-                        display: flex;
-                        align-items: center;
-                    }
-
-                        .select2-container--default .select2-selection--single .select2-selection__rendered {
-                            color: #212529 !important;
-                            padding-left: 0.75rem !important;
-                            line-height: normal !important;
-                        }
-
-                        .select2-container--default .select2-selection--single .select2-selection__arrow {
-                            height: 100% !important;
-                            right: 8px !important;
-                        }
-                </style>
+                <div class="col-md-6">
+                    <label class="form-label text-muted small fw-bold mb-1 d-flex align-items-center">
+                        Kuran Kişi
+                        <i class="fas fa-info-circle ms-2 text-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Arama yapabilirsiniz" style="cursor: help; font-size: 0.9rem;"></i>
+                    </label>
+                    @Html.DropDownList("UserId", (SelectList)ViewBag.Users, "Kullanıcı Seçiniz", new { @class = "form-select shadow-sm border-0 bg-light select2-kullanici", @required = "required", style = "width: 100%;" })
+                </div>
             </div>
 
+            <!-- 2. TOPLANTI BAŞLIĞI (col-12 yapıldı, tam satır uzayacak) -->
             <div class="row mb-3">
-                <div class="col-md-4">
+                <div class="col-12">
+                    <label class="form-label text-muted small fw-bold mb-1">Toplantı Başlığı</label>
+                    <input type="text" name="Title" class="form-control shadow-sm border-0 bg-light" style="width: 100% !important; max-width: 100% !important;" placeholder="Örn: 2026 Q3 Finansal Değerlendirme" required />
+                </div>
+            </div>
+
+            <!-- 3. TARİH VE SAATLER (Aynı row içine alındı, yan yana duracaklar) -->
+            <div class="row mb-3">
+                <div class="col-4">
                     <label class="form-label text-muted small fw-bold mb-1">Tarih</label>
                     <input type="date" name="Date" id="tarihInput" class="form-control shadow-sm border-0 bg-light" required onchange="TarihSecildi()">
                 </div>
-                <div class="col-md-4">
+                <div class="col-4">
                     <label class="form-label text-muted small fw-bold mb-1">Başlangıç</label>
                     <input type="time" name="StartTime" class="form-control shadow-sm border-0 bg-light" required />
                 </div>
-                <div class="col-md-4">
+                <div class="col-4">
                     <label class="form-label text-muted small fw-bold mb-1">Bitiş</label>
                     <input type="time" name="EndTime" class="form-control shadow-sm border-0 bg-light" required />
                 </div>
             </div>
 
-            <div class="row mb-2">
-                <div class="mb-2">
+            <!-- 4. KATILIMCILAR -->
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label class="form-label text-muted small fw-bold mb-1><span class="fw-normal">Katılımcılar (Birden fazla seçebilirsiniz)</span></label> 
+                    @Html.ListBox("SecilenKatilimcilar", (SelectList)ViewBag.KullaniciListesi,
+                        new { @class = "form-control shadow-sm border-0 bg-light select2-multiple", multiple = "multiple", style = "width: 100%;" })
+                </div>
+            </div>
+
+            <!-- 5. AÇIKLAMA -->
+            <div class="row mb-3">
+                <div class="col-12">
                     <label class="form-label text-muted small fw-bold mb-1">Açıklama / Amacı</label>
                     <textarea name="Description" class="form-control shadow-sm border-0 bg-light" rows="3" style="width: 100% !important; max-width: 100% !important; resize: none;" placeholder="Örn: Bütçe değerlendirmesi..." required></textarea>
                 </div>
@@ -115,12 +87,79 @@
         </div>
     </div>
 </div>
+
+<style>
+    /* --- 1. AÇILIR LİSTEDEKİ YEŞİL TİK GÖRÜNÜMÜ --- */
+    .select2-results__option[aria-selected="true"] {
+        background-color: #f1f5f9 !important;
+        color: #1e3a8a !important;
+        position: relative;
+        padding-right: 30px !important;
+    }
+
+        .select2-results__option[aria-selected="true"]::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #10b981;
+            font-size: 1.1rem;
+        }
+
+    /* --- 2. SEÇİLEN KİŞİLERİN LACİVERT KUTUCUK (TAG) GÖRÜNÜMÜ --- */
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background-color: #1e3a8a !important;
+        color: #ffffff !important;
+        border: none !important;
+        border-radius: 6px !important;
+        padding: 5px 12px !important;
+        margin-top: 6px !important;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+        color: #ffffff !important;
+        margin-right: 10px !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.3) !important;
+        padding-right: 8px !important;
+    }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+            background: transparent !important;
+            color: #ff4d4d !important; /* Çarpı işaretinin üzerine gelince kırmızı olur */
+        }
+
+    /* Çoklu seçim kutusunun genel yüksekliği ve arkaplanı */
+    .select2-container .select2-selection--multiple {
+        min-height: 45px !important;
+        border: 0px !important;
+        background-color: #f8f9fa !important;
+        padding-bottom: 5px;
+    }
+</style>
+
+<!-- DİKKAT: bloğunu sildik, script direkt çalışacak -->
 <script>
     $(document).ready(function () {
+
+        // Tekli Kullanıcı Seçici
         $('.select2-kullanici').select2({
             dropdownParent: $('#islemModali'),
             placeholder: "Kullanıcı Ara...",
             allowClear: true
         });
+
+        // ÇOKLU KATILIMCI SEÇİCİ (Lacivert kutucuklu yapıyı çalıştırır)
+        $('.select2-multiple').select2({
+            dropdownParent: $('#islemModali'),
+            placeholder: "Toplantıya katılacak kişileri seçin...",
+            allowClear: true,
+            width: '100%'
+        });
+
     });
 </script>

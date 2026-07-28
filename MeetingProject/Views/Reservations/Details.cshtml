@@ -5,12 +5,17 @@
     string rozetRengi = "bg-success";
     if (ViewBag.GuncelDurum == "Tamamlandı") { rozetRengi = "bg-secondary"; }
     else if (ViewBag.GuncelDurum == "İptal Edildi") { rozetRengi = "bg-danger"; }
+
+    // Katılımcılar verisini (Örn: "Ahmet, Ayşe") virgüllerden bölüp bir diziye çeviriyoruz
+    var katilimcilar = Model.Attendees;
+    var katilimciListesi = !string.IsNullOrEmpty(katilimcilar) && katilimcilar != "Katılımcı yok" ? katilimcilar.Split(',') : new string[0];
 }
 
 <div class="modal-body py-4">
     <div class="card border-0 shadow-sm" style="border-radius: 15px; background-color: #f8f9fa;">
         <div class="card-body">
 
+            <!-- DURUM -->
             <div class="row mb-3 pb-2 border-bottom">
                 <div class="col-sm-4 text-muted fw-bold align-self-center">Durum:</div>
                 <div class="col-sm-8">
@@ -18,25 +23,65 @@
                 </div>
             </div>
 
+            <!-- YENİ: TOPLANTI BAŞLIĞI -->
+            <div class="row mb-3">
+                <div class="col-sm-4 text-muted fw-bold align-self-center">Toplantı Başlığı:</div>
+                <div class="col-sm-8 text-dark fw-bold" style="font-size: 1.1rem; color: #1e3a8a !important;">
+                    @Model.Title
+                </div>
+            </div>
+
             <div class="row mb-3">
                 <div class="col-sm-4 text-muted fw-bold">Toplantı Odası:</div>
                 <div class="col-sm-8 text-dark">@ViewBag.RoomName</div>
             </div>
+
             <div class="row mb-3">
-                <div class="col-sm-4 text-muted fw-bold">Kullanıcı:</div>
+                <div class="col-sm-4 text-muted fw-bold">Kullanıcı (Oluşturan):</div>
                 <div class="col-sm-8 text-dark">@ViewBag.UserName</div>
             </div>
+
             <div class="row mb-3">
                 <div class="col-sm-4 text-muted fw-bold">Tarih:</div>
                 <div class="col-sm-8 text-dark">@(Model.Date.HasValue ? Model.Date.Value.ToString("dd.MM.yyyy") : "")</div>
             </div>
-            <div class="row mb-3">
+
+            <div class="row mb-4">
                 <div class="col-sm-4 text-muted fw-bold">Saat Aralığı:</div>
                 <div class="col-sm-8 text-dark">
                     <span class="badge bg-secondary">@(Model.StartTime.HasValue ? Model.StartTime.Value.ToString(@"hh\:mm") : "") - @(Model.EndTime.HasValue ? Model.EndTime.Value.ToString(@"hh\:mm") : "")</span>
                 </div>
             </div>
-            <div class="row mb-3">
+
+            <!-- YENİ: KATILIMCILAR LİSTESİ -->
+            <div class="row mb-4">
+                <div class="col-sm-12 text-muted fw-bold mb-2">
+                    <i class="fas fa-users text-primary me-1"></i> Katılımcılar:
+                </div>
+                <div class="col-sm-12">
+                    @if (katilimciListesi.Length > 0)
+                    {
+                        <!-- Katılımcıları modern etiketler (chip) halinde yan yana dizer -->
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach (var kisi in katilimciListesi)
+                            {
+                                <span class="badge" style="background-color: #e2e8f0; color: #1e293b; padding: 8px 12px; border-radius: 8px; font-weight: 500; font-size: 0.9rem; border: 1px solid #cbd5e1;">
+                                    <i class="fas fa-user-circle text-secondary me-1"></i> @kisi.Trim()
+                                </span>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-muted small" style="background-color: white; padding: 10px 15px; border-radius: 10px; border: 1px solid #e9ecef;">
+                            <i class="fas fa-info-circle me-1"></i> Bu toplantı için ekstra katılımcı belirtilmemiş.
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- AÇIKLAMA -->
+            <div class="row mb-2">
                 <div class="col-sm-12 text-muted fw-bold mb-2">Açıklama (Toplantı Konusu):</div>
                 <div class="col-sm-12 text-dark" style="background-color: white; padding: 15px; border-radius: 10px; border: 1px solid #e9ecef; white-space: pre-wrap;">@Model.Description</div>
             </div>

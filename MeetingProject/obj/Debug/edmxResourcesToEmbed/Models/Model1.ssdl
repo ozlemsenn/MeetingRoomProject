@@ -13,6 +13,9 @@
     <Property Name="Description" Type="nvarchar" MaxLength="500" Nullable="false" />
     <Property Name="Status" Type="nvarchar" MaxLength="20" />
     <Property Name="CancelReason" Type="nvarchar(max)" />
+    <Property Name="CompanyId" Type="int" />
+    <Property Name="Attendees" Type="nvarchar(max)" />
+    <Property Name="Title" Type="nvarchar" MaxLength="100" />
   </EntityType>
   <EntityType Name="Rooms">
     <Key>
@@ -22,6 +25,7 @@
     <Property Name="Name" Type="nvarchar" MaxLength="50" />
     <Property Name="Capacity" Type="int" />
     <Property Name="HasProjector" Type="bit" />
+    <Property Name="CompanyId" Type="int" />
   </EntityType>
   <EntityType Name="Users">
     <Key>
@@ -34,6 +38,7 @@
     <Property Name="Department" Type="nvarchar" MaxLength="50" />
     <Property Name="Password" Type="nvarchar" MaxLength="50" />
     <Property Name="Role" Type="nvarchar" MaxLength="50" />
+    <Property Name="CompanyId" Type="int" />
   </EntityType>
   <EntityContainer Name="MeetingAppModelStoreContainer">
     <EntitySet Name="Reservations" EntityType="Self.Reservations" Schema="dbo" store:Type="Tables" />

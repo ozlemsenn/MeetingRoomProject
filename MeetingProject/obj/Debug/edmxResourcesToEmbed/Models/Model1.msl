@@ -4,6 +4,7 @@
     <EntitySetMapping Name="Rooms">
       <EntityTypeMapping TypeName="MeetingAppModel.Rooms">
         <MappingFragment StoreEntitySet="Rooms">
+          <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
           <ScalarProperty Name="Id" ColumnName="Id" />
           <ScalarProperty Name="Name" ColumnName="Name" />
           <ScalarProperty Name="Capacity" ColumnName="Capacity" />
@@ -14,6 +15,7 @@
     <EntitySetMapping Name="Users">
       <EntityTypeMapping TypeName="MeetingAppModel.Users">
         <MappingFragment StoreEntitySet="Users">
+          <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
           <ScalarProperty Name="Role" ColumnName="Role" />
           <ScalarProperty Name="Password" ColumnName="Password" />
           <ScalarProperty Name="Department" ColumnName="Department" />
@@ -27,6 +29,9 @@
     <EntitySetMapping Name="Reservations">
       <EntityTypeMapping TypeName="MeetingAppModel.Reservations">
         <MappingFragment StoreEntitySet="Reservations">
+          <ScalarProperty Name="Title" ColumnName="Title" />
+          <ScalarProperty Name="Attendees" ColumnName="Attendees" />
+          <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
           <ScalarProperty Name="CancelReason" ColumnName="CancelReason" />
           <ScalarProperty Name="Status" ColumnName="Status" />
           <ScalarProperty Name="Description" ColumnName="Description" />

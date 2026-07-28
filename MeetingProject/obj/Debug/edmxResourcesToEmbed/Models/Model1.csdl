@@ -8,6 +8,7 @@
     <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
     <Property Name="Capacity" Type="Int32" />
     <Property Name="HasProjector" Type="Boolean" />
+    <Property Name="CompanyId" Type="Int32" />
   </EntityType>
   <EntityContainer Name="MeetingAppEntities1" annotation:LazyLoadingEnabled="true">
     <EntitySet Name="Rooms" EntityType="Self.Rooms" />
@@ -25,6 +26,7 @@
     <Property Name="Department" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
     <Property Name="Password" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
     <Property Name="Role" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="CompanyId" Type="Int32" />
   </EntityType>
   <EntityType Name="Reservations">
     <Key>
@@ -39,5 +41,8 @@
     <Property Name="Description" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
     <Property Name="Status" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
     <Property Name="CancelReason" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="CompanyId" Type="Int32" />
+    <Property Name="Attendees" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="Title" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
   </EntityType>
 </Schema>

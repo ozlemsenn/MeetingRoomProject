@@ -31,9 +31,10 @@ namespace MeetingProject
 
                     var roles = userDataParts[0].Split(',');
 
-                    if (userDataParts.Length > 1)
+                    if (userDataParts.Length > 2)
                     {
                         HttpContext.Current.Items["UserFullName"] = userDataParts[1];
+                        HttpContext.Current.Items["CompanyId"] = userDataParts[2]; 
                     }
                     else
                     {

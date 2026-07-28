@@ -13,7 +13,21 @@ namespace MeetingProject.Controllers
 
         public ActionResult Index()
         {
-            return View();
+            if (User.IsInRole("Admin"))
+            {
+                var butunSistemRezervasyonlari = db.Reservations.ToList();
+                return View(butunSistemRezervasyonlari);
+            }
+            else
+            {
+                int aktifSirketId = Convert.ToInt32(HttpContext.Items["CompanyId"]);
+
+                var sirketRezervasyonlari = db.Reservations
+                                              .Where(x => x.CompanyId == aktifSirketId)
+                                              .ToList();
+
+                return View(sirketRezervasyonlari);
+            }
         }
 
         public ActionResult GetReservations()
@@ -23,6 +37,7 @@ namespace MeetingProject.Controllers
                 r.Id,
                 RoomName = db.Rooms.FirstOrDefault(room => room.Id == r.RoomId).Name,
                 UserName = db.Users.FirstOrDefault(user => user.Id == r.UserId).Name + " " + db.Users.FirstOrDefault(user => user.Id == r.UserId).Surname,
+                Title = r.Title,
                 Date = r.Date,
                 StartTime = r.StartTime,
                 EndTime = r.EndTime,
@@ -60,6 +75,7 @@ namespace MeetingProject.Controllers
                 return new
                 {
                     r.Id,
+                    r.Title,
                     r.RoomName,
                     r.UserName,
                     Date = r.Date.HasValue ? r.Date.Value.ToString("dd.MM.yyyy") : "",
@@ -72,49 +88,65 @@ namespace MeetingProject.Controllers
 
             return Json(formattedList, JsonRequestBehavior.AllowGet);
         }
-
+        // 1. GET: Sayfa açılırken tüm listeleri View'a gönderiyoruz
+        [HttpGet]
         public ActionResult Create()
         {
-            ViewBag.Rooms = new SelectList(db.Rooms, "Id", "Name");
-            ViewBag.Users = new SelectList(db.Users, "Id", "Name");
+            // 1. Oda Listesi (Önceki hatayı çözen kısım)
+            ViewBag.Rooms = new SelectList(db.Rooms.ToList(), "Id", "Name");
+
+            // 2. Rezervasyonu Yapan Kullanıcı Listesi (ŞU ANKİ HATAYI ÇÖZEN KISIM)
+            // Edit metodunda gördüğüm kadarıyla veritabanından Id ve Name çekiyorsun
+            ViewBag.Users = new SelectList(db.Users.ToList(), "Id", "Name");
+
+            // 3. Çoklu Katılımcılar Listesi (Bizim yeni eklediğimiz kısım)
+            var kullanicilar = db.Users.Select(u => new {
+                AdSoyad = u.Name + " " + u.Surname,
+                Email = u.Email
+            }).ToList();
+            ViewBag.KullaniciListesi = new SelectList(kullanicilar, "AdSoyad", "AdSoyad");
+
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Reservations res)
+        public ActionResult Create(Reservations res, string[] SecilenKatilimcilar)
         {
-            if (!res.RoomId.HasValue || res.RoomId == 0)
+            // 1. ÇOKLU KATILIMCILARI BİRLEŞTİR VE MODELE EKLE
+            if (SecilenKatilimcilar != null && SecilenKatilimcilar.Length > 0)
             {
-                return Json(new { success = false, message = "Lütfen bir toplantı odası seçiniz." });
+                res.Attendees = string.Join(", ", SecilenKatilimcilar);
             }
+            else
+            {
+                res.Attendees = "Katılımcı yok";
+            }
+
+            // 2. GÜVENLİK VE BOŞ ALAN KONTROLLERİ
+            if (!res.RoomId.HasValue || res.RoomId == 0)
+                return Json(new { success = false, message = "Lütfen bir toplantı odası seçiniz." });
 
             if (!res.UserId.HasValue || res.UserId == 0)
-            {
                 return Json(new { success = false, message = "Lütfen rezervasyonu yapacak kullanıcıyı seçiniz." });
-            }
+
+            // YENİ EKLENEN BAŞLIK KONTROLÜ
+            if (string.IsNullOrWhiteSpace(res.Title))
+                return Json(new { success = false, message = "Lütfen toplantı başlığı giriniz." });
 
             if (!res.Date.HasValue)
-            {
                 return Json(new { success = false, message = "Lütfen rezervasyon tarihini seçiniz." });
-            }
 
             if (!res.StartTime.HasValue || !res.EndTime.HasValue)
-            {
                 return Json(new { success = false, message = "Lütfen başlangıç ve bitiş saatlerini eksiksiz giriniz." });
-            }
 
             if (res.StartTime >= res.EndTime)
-            {
                 return Json(new { success = false, message = "Bitiş saati, başlangıç saatinden önce veya aynı olamaz." });
-            }
 
             if (string.IsNullOrWhiteSpace(res.Description))
-            {
-                return Json(new { success = false, message = "Lütfen toplantı için bir açıklama (konu) giriniz." });
-            }
+                return Json(new { success = false, message = "Lütfen toplantı için bir açıklama giriniz." });
 
-
+            // 3. SAAT ÇAKIŞMASI (OVERLAP) KONTROLÜ
             bool isOverlap = db.Reservations.Any(r =>
                 r.Status != "İptal Edildi" &&
                 r.RoomId == res.RoomId &&
@@ -128,10 +160,10 @@ namespace MeetingProject.Controllers
 
             if (isOverlap)
             {
-                return Json(new { success = false, message = "Seçtiğiniz saat aralığında bu oda doludur. Lütfen farklı bir saat veya oda seçiniz." });
+                return Json(new { success = false, message = "Seçtiğiniz saat aralığında bu oda doludur." });
             }
 
-
+            // 4. VERİTABANINA KAYIT İŞLEMİ
             res.Status = "Aktif";
             db.Reservations.Add(res);
 
@@ -141,7 +173,9 @@ namespace MeetingProject.Controllers
             }
             catch (System.Exception ex)
             {
-                return Json(new { success = false, message = "Veritabanına kaydedilirken bir hata oluştu." });
+                // MÜHENDİSLİK İPUCU: Eğer hala hata verirse, hatanın tam ne olduğunu görmek için
+                // aşağıdaki satırı aktif edip (ex.Message veya ex.InnerException) hatayı ekrana yazdırabilirsin.
+                return Json(new { success = false, message = "Veritabanı Hatası: " + ex.Message });
             }
 
             return Json(new { success = true, message = "Rezervasyon başarıyla oluşturuldu!" });
@@ -193,13 +227,18 @@ namespace MeetingProject.Controllers
         public ActionResult Edit(int id)
         {
             var res = db.Reservations.Find(id);
-            if (res == null)
-            {
-                return HttpNotFound();
-            }
+            if (res == null) return HttpNotFound();
 
+            // 1. Oda ve Kullanıcı listelerini mevcut tut
             ViewBag.Rooms = new SelectList(db.Rooms, "Id", "Name", res.RoomId);
             ViewBag.Users = new SelectList(db.Users, "Id", "Name", res.UserId);
+
+            // 2. Çoklu katılımcı listesini buraya da ekle (Create'dekinin aynısı)
+            var kullanicilar = db.Users.Select(u => new {
+                AdSoyad = u.Name + " " + u.Surname,
+                Email = u.Email
+            }).ToList();
+            ViewBag.KullaniciListesi = new SelectList(kullanicilar, "AdSoyad", "AdSoyad");
 
             return View(res);
         }

@@ -21,5 +21,6 @@ namespace MeetingProject.Models
         public string Department { get; set; }
         public string Password { get; set; }
         public string Role { get; set; }
+        public Nullable<int> CompanyId { get; set; }
     }
 }

@@ -23,5 +23,8 @@ namespace MeetingProject.Models
         public string Description { get; set; }
         public string Status { get; set; }
         public string CancelReason { get; set; }
+        public Nullable<int> CompanyId { get; set; }
+        public string Attendees { get; set; }
+        public string Title { get; set; }
     }
 }

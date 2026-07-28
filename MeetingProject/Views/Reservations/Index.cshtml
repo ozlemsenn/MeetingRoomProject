@@ -38,7 +38,7 @@
             <div class="col-md-5 col-lg-4 text-start">
                 <div class="input-group shadow-sm" style="border-radius: 12px; overflow: hidden; border: 1px solid #ced4da;">
                     <span class="input-group-text bg-white border-0 fw-bold text-muted" style="padding-right: 5px;">
-                        🎯 Filtrele:
+                        Filtrele:
                     </span>
                     <select id="rezervasyonFiltre" class="form-select border-0 text-dark fw-semibold" style="cursor: pointer; background-color: #f8f9fa;" onchange="TabloyuDoldur()">
                         <option value="Tümü">Tüm Rezervasyonlar</option>
@@ -59,8 +59,8 @@
                     <th class="text-center align-middle" style="width: 10%;">Tarih</th>
                     <th class="text-center align-middle" style="width: 10%;">Saat Aralığı</th>
                     <th class="text-center align-middle" style="width: 20%;">Oda</th>
-                    <th class="text-center align-middle" style="width: 20%;">Kullanıcı</th>
-                    <th class="text-center align-middle" style="width: 30%;">Açıklama</th>
+                    <th class="text-center align-middle" style="width: 20%;">Kuran Kişi</th>
+                    <th class="text-center align-middle" style="width: 30%;">Başlık</th>
                     <th class="text-center align-middle" style="width: 10%;">Durum</th>
                     <th class="text-center align-middle" style="width: 15%;">İşlemler</th>
                 </tr>
@@ -120,12 +120,13 @@
                         html += '<td class="text-center align-middle"><span class="badge bg-light text-dark">' + item.StartTime + ' - ' + item.EndTime + '</span></td>';
                         html += '<td class="text-center align-middle">' + item.RoomName + '</td>';
                         html += '<td class="text-center align-middle">' + item.UserName + '</td>';
-
-                        var kisaAciklama = item.Description;
-                        if (kisaAciklama && kisaAciklama.length > 30) {
-                            kisaAciklama = kisaAciklama.substring(0, 30) + '...';
+                        var kisaBaslik = item.Title; // Description yerine Title çekiyoruz
+                        if (kisaBaslik && kisaBaslik.length > 30) {
+                            kisaBaslik = kisaBaslik.substring(0, 30) + '...';
                         }
-                        html += '<td class="align-middle">' + (kisaAciklama || '-') + '</td>';
+
+                        // fw-medium sınıfı ile başlığı tabloda biraz daha vurgulu hale getirdik
+                        html += '<td class="align-middle fw-medium text-dark">' + (kisaBaslik || '-') + '</td>';
 
                         var badgeRengi = "bg-success"; 
                         var ikonKodu = "";
