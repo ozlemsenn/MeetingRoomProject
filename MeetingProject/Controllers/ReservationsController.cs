@@ -6,6 +6,7 @@ using Microsoft.Ajax.Utilities;
 
 namespace MeetingProject.Controllers
 {
+    [Authorize] //sonradan ekledim
     public class ReservationsController : Controller
     {
         MeetingAppEntities1 db = new MeetingAppEntities1();

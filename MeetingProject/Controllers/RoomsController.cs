@@ -10,6 +10,7 @@ using MeetingProject.Models;
 
 namespace MeetingProject.Controllers
 {
+    [Authorize] 
     public class RoomsController : Controller
     {
         private MeetingAppEntities1 db = new MeetingAppEntities1();
