@@ -8,6 +8,7 @@
         <EntityTypeShape EntityType="MeetingAppModel.Rooms" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="MeetingAppModel.Users" Width="1.5" PointX="3.375" PointY="0.75" />
         <EntityTypeShape EntityType="MeetingAppModel.Reservations" Width="1.5" PointX="2.125" PointY="1.625" />
+        <EntityTypeShape EntityType="MeetingAppModel.Companies" Width="1.5" PointX="5" PointY="2.5" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -14,6 +14,7 @@
     <EntitySet Name="Rooms" EntityType="Self.Rooms" />
     <EntitySet Name="Users" EntityType="MeetingAppModel.Users" />
     <EntitySet Name="Reservations" EntityType="MeetingAppModel.Reservations" />
+    <EntitySet Name="Companies" EntityType="MeetingAppModel.Companies" />
   </EntityContainer>
   <EntityType Name="Users">
     <Key>
@@ -44,5 +45,12 @@
     <Property Name="CompanyId" Type="Int32" />
     <Property Name="Attendees" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
     <Property Name="Title" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+  </EntityType>
+  <EntityType Name="Companies">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
   </EntityType>
 </Schema>

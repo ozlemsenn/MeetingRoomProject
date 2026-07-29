@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Net;
 using System.Web.Mvc;
 using MeetingProject.Models; 
 
@@ -11,30 +13,106 @@ namespace MeetingProject.Controllers
 
         public ActionResult Index()
         {
-            return View();
+            int aktifSirketId = 0;
+            if (Session["CompanyId"] != null)
+            {
+                aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
+            }
+
+            bool isAdmin = User.IsInRole("Admin");
+
+            var filtreliKullanicilar = db.Users.Where(x => isAdmin || x.CompanyId == aktifSirketId).ToList();
+            return View(filtreliKullanicilar);
         }
         [HttpGet]
         public ActionResult Create()
         {
+            bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
+
+            if (isAdmin)
+            {
+                ViewBag.CompanyId = new SelectList(db.Companies.ToList(), "Id", "Name");
+            }
             return View();
         }
 
         [HttpGet]
-        public ActionResult Edit(int id)
+        public ActionResult Edit(int? id)
         {
-            return View();
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Users user = db.Users.Find(id);
+            if (user == null)
+            {
+                return HttpNotFound();
+            }
+
+            bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
+            int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
+
+            if (!isAdmin && user.CompanyId != aktifSirketId)
+            {
+                return RedirectToAction("Index", "Users");
+            }
+            if (isAdmin)
+            {
+                ViewBag.CompanyId = new SelectList(db.Companies.ToList(), "Id", "Name", user.CompanyId);
+            }
+
+            return View(user);
         }
 
         [HttpGet]
-        public ActionResult Details(int id)
+        public ActionResult Details(int? id)
         {
-            return View();
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Users user = db.Users.Find(id);
+            if (user == null)
+            {
+                return HttpNotFound();
+            }
+
+            bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
+            int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
+
+            if (!isAdmin && user.CompanyId != aktifSirketId)
+            {
+                return RedirectToAction("Index", "Users"); 
+            }
+
+            return View(user); 
         }
 
         [HttpGet]
-        public ActionResult Delete(int id)
+        public ActionResult Delete(int? id)
         {
-            return View();
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Users user = db.Users.Find(id);
+            if (user == null)
+            {
+                return HttpNotFound();
+            }
+
+            bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
+            int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
+
+            if (!isAdmin && user.CompanyId != aktifSirketId)
+            {
+                return RedirectToAction("Index", "Users");
+            }
+
+            return View(user);
         }
 
         [HttpGet]
@@ -65,18 +143,27 @@ namespace MeetingProject.Controllers
             return Json(user, JsonRequestBehavior.AllowGet);
         }
         [HttpPost]
-        public JsonResult Create(Users model) 
+        [ValidateAntiForgeryToken]
+        public ActionResult Create([Bind(Include = "Id,Name,Surname,Email,Password,Role,CompanyId")] Users user)
         {
-            try
+            if (Session["UserRole"] == null || Session["UserRole"].ToString() != "Admin")
             {
-                db.Users.Add(model);
-                db.SaveChanges(); 
-                return Json(new { success = true });
+                user.CompanyId = Convert.ToInt32(Session["CompanyId"]);
             }
-            catch
+
+            if (ModelState.IsValid)
             {
-                return Json(new { success = false });
+                db.Users.Add(user);
+                db.SaveChanges();
+                return RedirectToAction("Index");
             }
+
+            if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
+            {
+                ViewBag.CompanyId = new SelectList(db.Companies.ToList(), "Id", "Name", user.CompanyId);
+            }
+
+            return View(user);
         }
 
         [HttpPost]
@@ -84,45 +171,59 @@ namespace MeetingProject.Controllers
         {
             try
             {
+                bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
+                int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
+
                 var guncellenecekKullanici = db.Users.Find(model.Id);
 
-                if (guncellenecekKullanici != null)
+                if (guncellenecekKullanici == null || (!isAdmin && guncellenecekKullanici.CompanyId != aktifSirketId))
                 {
-                    guncellenecekKullanici.Name = model.Name;
-                    guncellenecekKullanici.Surname = model.Surname;
-                    guncellenecekKullanici.Email = model.Email;
-                    guncellenecekKullanici.Department = model.Department;
-
-                    db.SaveChanges();
-                    return Json(new { success = true });
+                    return Json(new { success = false, message = "Yetkisiz erişim veya kullanıcı bulunamadı!" });
                 }
-                return Json(new { success = false });
+
+                guncellenecekKullanici.Name = model.Name;
+                guncellenecekKullanici.Surname = model.Surname;
+                guncellenecekKullanici.Email = model.Email;
+                guncellenecekKullanici.Department = model.Department;
+
+                if (isAdmin)
+                {
+                    guncellenecekKullanici.Role = model.Role;
+                }
+
+                db.SaveChanges();
+                return Json(new { success = true });
             }
-            catch
+            catch (Exception ex)
             {
-                return Json(new { success = false });
+                return Json(new { success = false, message = "Bir hata oluştu: " + ex.Message });
             }
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken] 
         public JsonResult DeleteConfirmed(int id)
         {
             try
             {
+                bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
+                int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
+
                 var silinecekKullanici = db.Users.Find(id);
 
-                if (silinecekKullanici != null)
+                if (silinecekKullanici == null || (!isAdmin && silinecekKullanici.CompanyId != aktifSirketId))
                 {
-                    db.Users.Remove(silinecekKullanici);
-                    db.SaveChanges();
-
-                    return Json(new { success = true });
+                    return Json(new { success = false, message = "Yetkisiz işlem veya kullanıcı bulunamadı." });
                 }
-                return Json(new { success = false });
+
+                db.Users.Remove(silinecekKullanici);
+                db.SaveChanges();
+
+                return Json(new { success = true });
             }
-            catch
+            catch (Exception ex)
             {
-                return Json(new { success = false });
+                return Json(new { success = false, message = "Bir hata oluştu." });
             }
         }
     }

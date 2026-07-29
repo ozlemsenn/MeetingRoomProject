@@ -43,6 +43,7 @@ namespace MeetingProject.Controllers
                 Session["UserId"] = user.Id;
                 Session["UserName"] = user.Name + " " + user.Surname;
                 Session["UserRole"] = user.Role;
+                Session["CompanyId"] = user.CompanyId;
 
                 if (user.Role == "Admin")
                 {

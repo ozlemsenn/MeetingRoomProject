@@ -20,8 +20,7 @@ namespace MeetingProject.Controllers
             }
             else
             {
-                int aktifSirketId = Convert.ToInt32(HttpContext.Items["CompanyId"]);
-
+                int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
                 var sirketRezervasyonlari = db.Reservations
                                               .Where(x => x.CompanyId == aktifSirketId)
                                               .ToList();
@@ -91,16 +90,22 @@ namespace MeetingProject.Controllers
         [HttpGet]
         public ActionResult Create()
         {
-            ViewBag.Rooms = new SelectList(db.Rooms.ToList(), "Id", "Name");
+            int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
+            bool isAdmin = User.IsInRole("Admin");
 
-            ViewBag.Users = new SelectList(db.Users.ToList(), "Id", "Name");
+            var sirketOdalari = db.Rooms.Where(x => isAdmin || x.CompanyId == aktifSirketId).ToList();
+            ViewBag.Rooms = new SelectList(sirketOdalari, "Id", "Name");
 
-            var kullanicilar = db.Users.Select(u => new {
+            var sirketKullanicilari = db.Users.Where(x => isAdmin || x.CompanyId == aktifSirketId).ToList();
+            ViewBag.Users = new SelectList(sirketKullanicilari, "Id", "Name");
+
+            var kullanicilar = sirketKullanicilari.Select(u => new
+            {
                 AdSoyad = u.Name + " " + u.Surname,
                 Email = u.Email
             }).ToList();
-            ViewBag.KullaniciListesi = new SelectList(kullanicilar, "AdSoyad", "AdSoyad");
 
+            ViewBag.KullaniciListesi = new SelectList(kullanicilar, "AdSoyad", "AdSoyad");
             return View();
         }
 
@@ -214,14 +219,20 @@ namespace MeetingProject.Controllers
             var res = db.Reservations.Find(id);
             if (res == null) return HttpNotFound();
 
-            ViewBag.Rooms = new SelectList(db.Rooms, "Id", "Name", res.RoomId);
-            ViewBag.Users = new SelectList(db.Users, "Id", "Name", res.UserId);
+            int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
+            bool isAdmin = User.IsInRole("Admin");
 
-            var kullanicilar = db.Users.Select(u => new {
+            var sirketOdalari = db.Rooms.Where(x => isAdmin || x.CompanyId == aktifSirketId).ToList();
+            ViewBag.Rooms = new SelectList(sirketOdalari, "Id", "Name", res.RoomId);
+
+            var sirketKullanicilari = db.Users.Where(x => isAdmin || x.CompanyId == aktifSirketId).ToList();
+            ViewBag.Users = new SelectList(sirketKullanicilari, "Id", "Name", res.UserId);
+
+            var kullanicilar = sirketKullanicilari.Select(u => new {
                 AdSoyad = u.Name + " " + u.Surname,
                 Email = u.Email
             }).ToList();
-            ViewBag.KullaniciListesi = new SelectList(kullanicilar, "AdSoyad", "AdSoyad");
+            ViewBag.KullaniciListesi = new SelectList(kullanicilar, "AdSoyad", "AdSoyad", res.Attendees);
 
             return View(res);
         }

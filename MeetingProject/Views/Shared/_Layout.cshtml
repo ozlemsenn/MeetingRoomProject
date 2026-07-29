@@ -140,14 +140,14 @@
                 <i class="fas fa-calendar-alt text-primary me-3"></i> Rezervasyonlar
             </a>
 
-            @if (User.IsInRole("Admin") || User.IsInRole("Yonetici"))
+            @if (Session["UserRole"] != null && (Session["UserRole"].ToString() == "Admin" || Session["UserRole"].ToString() == "Yönetici"))
             {
                 <a class="sidebar-link mb-2" href="/Rooms/Index">
                     <i class="fas fa-building text-warning me-3"></i> Odalar
                 </a>
             }
 
-            @if (User.IsInRole("Admin"))
+            @if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
             {
                 <hr style="opacity: 0.1; margin: 15px 0;">
                 <small class="text-muted fw-bold mb-3 ms-2" style="font-size: 0.75rem; letter-spacing: 1px;">YÖNETİM</small>
