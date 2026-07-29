@@ -108,14 +108,11 @@ namespace MeetingProject.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(Reservations res, string[] SecilenKatilimcilar)
         {
-            if (SecilenKatilimcilar != null && SecilenKatilimcilar.Length > 0)
+            if (SecilenKatilimcilar == null || SecilenKatilimcilar.Length == 0)
             {
-                res.Attendees = string.Join(", ", SecilenKatilimcilar);
+                return Json(new { success = false, message = "En az bir katılımcı seçilmelidir." });
             }
-            else
-            {
-                res.Attendees = "Katılımcı yok";
-            }
+            res.Attendees = string.Join(", ", SecilenKatilimcilar);
 
             if (!res.RoomId.HasValue || res.RoomId == 0)
                 return Json(new { success = false, message = "Lütfen bir toplantı odası seçiniz." });
@@ -231,10 +228,20 @@ namespace MeetingProject.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(Reservations res)
+        public ActionResult Edit(Reservations res, string[] SecilenKatilimcilar)
         {
+            if (SecilenKatilimcilar == null || SecilenKatilimcilar.Length == 0)
+            {
+                return Json(new { success = false, message = "En az bir katılımcı seçmelisiniz." });
+            }
+
+            res.Attendees = string.Join(", ", SecilenKatilimcilar);
+
             if (!res.RoomId.HasValue || res.RoomId == 0) return Json(new { success = false, message = "Lütfen bir toplantı odası seçiniz." });
             if (!res.UserId.HasValue || res.UserId == 0) return Json(new { success = false, message = "Lütfen rezervasyonu yapacak kullanıcıyı seçiniz." });
+
+            if (string.IsNullOrWhiteSpace(res.Title)) return Json(new { success = false, message = "Lütfen toplantı başlığı giriniz." });
+
             if (!res.Date.HasValue) return Json(new { success = false, message = "Lütfen rezervasyon tarihini seçiniz." });
             if (!res.StartTime.HasValue || !res.EndTime.HasValue) return Json(new { success = false, message = "Lütfen başlangıç ve bitiş saatlerini eksiksiz giriniz." });
             if (res.StartTime >= res.EndTime) return Json(new { success = false, message = "Bitiş saati, başlangıç saatinden önce veya aynı olamaz." });
@@ -260,6 +267,9 @@ namespace MeetingProject.Controllers
             var existingRes = db.Reservations.Find(res.Id);
             if (existingRes != null)
             {
+                existingRes.Title = res.Title;
+                existingRes.Attendees = res.Attendees;
+
                 existingRes.RoomId = res.RoomId;
                 existingRes.UserId = res.UserId;
                 existingRes.Date = res.Date;

@@ -51,7 +51,7 @@ namespace MeetingProject.Controllers
                 {
                     OdaAdi = oda != null ? oda.Name : "Oda Bulunamadı",
                     Tarih = rez.Date.HasValue ? rez.Date.Value.ToString("dd MMM yyyy") : "",
-                    Saat = rez.StartTime.HasValue ? rez.StartTime.Value.Hours.ToString("D2") + ":" + rez.StartTime.Value.Minutes.ToString("D2") : ""
+                    Saat = rez.StartTime.HasValue ? rez.StartTime.Value.ToString(@"hh\:mm") : ""
                 });
             }
 
@@ -114,7 +114,7 @@ namespace MeetingProject.Controllers
                 bugunkuToplantilar.Add(new ToplantiOzet
                 {
                     OdaAdi = oda != null ? oda.Name : "Bilinmeyen Oda",
-                    Saat = rez.StartTime.HasValue ? rez.StartTime.Value.Hours.ToString("D2") + ":" + rez.StartTime.Value.Minutes.ToString("D2") : "",
+                    Saat = rez.StartTime.HasValue ? rez.StartTime.Value.ToString(@"hh\:mm") : "",
                     Durum = guncelDurum
                 });
             }
@@ -198,21 +198,29 @@ namespace MeetingProject.Controllers
                     renk = "#0d6efd";
 
                 string startDateTime = "";
+                string endDateTime = "";
                 if (rez.Date.HasValue && rez.StartTime.HasValue)
                 {
                     startDateTime = rez.Date.Value.ToString("yyyy-MM-dd") + "T" + rez.StartTime.Value.ToString(@"hh\:mm\:ss");
                 }
 
+                if (rez.Date.HasValue && rez.EndTime.HasValue)
+                {
+                    endDateTime = rez.Date.Value.ToString("yyyy-MM-dd") + "T" + rez.EndTime.Value.ToString(@"hh\:mm\:ss");
+                }
 
                 events.Add(new
                 {
                     title = odaAdi,
                     start = startDateTime,
+                    end = endDateTime,
                     color = renk,
                     extendedProps = new
                     {
                         kisi = kisiAdi,
-                        durum = durum
+                        durum = durum,
+                        konu = rez.Title,
+                        katilimcilar = rez.Attendees
                     }
                 });
             }
