@@ -144,26 +144,31 @@ namespace MeetingProject.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Name,Surname,Email,Password,Role,CompanyId")] Users user)
+        public JsonResult Create([Bind(Include = "Id,Name,Surname,Email,Password,Role,CompanyId")] Users user)
         {
-            if (Session["UserRole"] == null || Session["UserRole"].ToString() != "Admin")
+            try
             {
-                user.CompanyId = Convert.ToInt32(Session["CompanyId"]);
-            }
+                bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
 
-            if (ModelState.IsValid)
+                if (!isAdmin)
+                {
+                    user.CompanyId = Convert.ToInt32(Session["CompanyId"]);
+                }
+
+                if (ModelState.IsValid)
+                {
+                    db.Users.Add(user);
+                    db.SaveChanges();
+
+                    return Json(new { success = true, message = "Kullanıcı başarıyla oluşturuldu." });
+                }
+
+                return Json(new { success = false, message = "Lütfen alanları kontrol ediniz. Tüm alanlar zorunludur." });
+            }
+            catch (Exception ex)
             {
-                db.Users.Add(user);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                return Json(new { success = false, message = "Bir hata oluştu: " + ex.Message });
             }
-
-            if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
-            {
-                ViewBag.CompanyId = new SelectList(db.Companies.ToList(), "Id", "Name", user.CompanyId);
-            }
-
-            return View(user);
         }
 
         [HttpPost]

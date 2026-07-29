@@ -3,6 +3,7 @@ using System.Linq;
 using System.Web.Mvc;
 using MeetingProject.Models;
 using Microsoft.Ajax.Utilities;
+using System.Data.Entity;
 
 namespace MeetingProject.Controllers
 {
@@ -13,20 +14,19 @@ namespace MeetingProject.Controllers
 
         public ActionResult Index()
         {
-            if (User.IsInRole("Admin"))
+            if (Session["UserRole"] == null)
             {
-                var butunSistemRezervasyonlari = db.Reservations.ToList();
-                return View(butunSistemRezervasyonlari);
+                return RedirectToAction("Login", "Account");
             }
-            else
-            {
-                int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
-                var sirketRezervasyonlari = db.Reservations
-                                              .Where(x => x.CompanyId == aktifSirketId)
-                                              .ToList();
 
-                return View(sirketRezervasyonlari);
-            }
+            bool isAdmin = Session["UserRole"].ToString() == "Admin";
+            int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
+
+            var rezervasyonlar = db.Reservations
+                                  .Where(x => isAdmin || x.CompanyId == aktifSirketId)
+                                  .ToList();
+
+            return View(rezervasyonlar);
         }
 
         public ActionResult GetReservations()
@@ -113,6 +113,20 @@ namespace MeetingProject.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(Reservations res, string[] SecilenKatilimcilar)
         {
+            bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
+            int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
+
+            var secilenOda = db.Rooms.FirstOrDefault(r => r.Id == res.RoomId);
+
+            if (secilenOda == null || (!isAdmin && secilenOda.CompanyId != aktifSirketId))
+            {
+                return Json(new { success = false, message = "Bu odayı seçme yetkiniz yok!" });
+            }
+
+            if (!isAdmin)
+            {
+                res.CompanyId = aktifSirketId;
+            }
             if (SecilenKatilimcilar == null || SecilenKatilimcilar.Length == 0)
             {
                 return Json(new { success = false, message = "En az bir katılımcı seçilmelidir." });
@@ -153,22 +167,13 @@ namespace MeetingProject.Controllers
 
             if (isOverlap)
             {
-                return Json(new { success = false, message = "Seçtiğiniz saat aralığında bu oda doludur." });
+                return Json(new { success = false, message = "Bu saat aralığında odada başka bir toplantı var!" });
             }
 
-            res.Status = "Aktif";
             db.Reservations.Add(res);
+            db.SaveChanges();
 
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (System.Exception ex)
-            {
-                return Json(new { success = false, message = "Veritabanı Hatası: " + ex.Message });
-            }
-
-            return Json(new { success = true, message = "Rezervasyon başarıyla oluşturuldu!" });
+            return Json(new { success = true });
         }
         [HttpGet]
         public ActionResult GetReservationsByDate(DateTime date, int? excludeId = null)
@@ -202,39 +207,65 @@ namespace MeetingProject.Controllers
             return PartialView(res);
         }
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirm(int id)
+        [ActionName("Delete")]
+        [ValidateAntiForgeryToken] 
+        public ActionResult DeleteConfirmed(int id)
         {
-            var res = db.Reservations.Find(id);
-            if (res != null)
+            int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
+            bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
+
+            var rezervasyon = db.Reservations.Find(id);
+
+            if (rezervasyon == null || (!isAdmin && rezervasyon.CompanyId != aktifSirketId))
             {
-                db.Reservations.Remove(res);
-                db.SaveChanges();
+                return Json(new { success = false, message = "Yetkisiz işlem!" });
             }
+
+            db.Reservations.Remove(rezervasyon);
+            db.SaveChanges();
             return Json(new { success = true });
         }
 
-        public ActionResult Edit(int id)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(Reservations res)
         {
-            var res = db.Reservations.Find(id);
-            if (res == null) return HttpNotFound();
-
             int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
-            bool isAdmin = User.IsInRole("Admin");
+            bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
 
-            var sirketOdalari = db.Rooms.Where(x => isAdmin || x.CompanyId == aktifSirketId).ToList();
-            ViewBag.Rooms = new SelectList(sirketOdalari, "Id", "Name", res.RoomId);
+            var mevcutRezervasyon = db.Reservations.Find(res.Id);
 
-            var sirketKullanicilari = db.Users.Where(x => isAdmin || x.CompanyId == aktifSirketId).ToList();
-            ViewBag.Users = new SelectList(sirketKullanicilari, "Id", "Name", res.UserId);
+            if (mevcutRezervasyon == null || (!isAdmin && mevcutRezervasyon.CompanyId != aktifSirketId))
+            {
+                return Json(new { success = false, message = "Bu rezervasyona müdahale etme yetkiniz yok!" });
+            }
 
-            var kullanicilar = sirketKullanicilari.Select(u => new {
-                AdSoyad = u.Name + " " + u.Surname,
-                Email = u.Email
-            }).ToList();
-            ViewBag.KullaniciListesi = new SelectList(kullanicilar, "AdSoyad", "AdSoyad", res.Attendees);
+            bool isOverlap = db.Reservations.Any(r =>
+                r.Id != res.Id &&
+                r.Status != "İptal Edildi" &&
+                r.RoomId == res.RoomId && 
+                r.Date == res.Date &&     
+                (
+                    (res.StartTime >= r.StartTime && res.StartTime < r.EndTime) ||
+                    (res.EndTime > r.StartTime && res.EndTime <= r.EndTime) ||
+                    (res.StartTime <= r.StartTime && res.EndTime >= r.EndTime)
+                )
+            );
 
-            return View(res);
+            if (isOverlap)
+            {
+                return Json(new { success = false, message = "Bu saat aralığında odada başka bir toplantı var!" });
+            }
+
+            mevcutRezervasyon.Title = res.Title;
+            mevcutRezervasyon.StartTime = res.StartTime;
+            mevcutRezervasyon.EndTime = res.EndTime;
+            mevcutRezervasyon.Date = res.Date;       
+            mevcutRezervasyon.RoomId = res.RoomId; 
+            mevcutRezervasyon.Description = res.Description; 
+
+            db.SaveChanges();
+            return Json(new { success = true });
         }
 
         [HttpPost]
