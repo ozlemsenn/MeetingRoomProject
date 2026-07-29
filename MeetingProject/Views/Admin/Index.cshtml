@@ -314,12 +314,19 @@
             buttonText: { today: 'Bugün', month: 'Ay', week: 'Hafta' },
             height: 500,
 
-            events: '/Admin/GetCalendarEvents',
+            events: '/Admin/GetCalendarEvents'
 
             eventClick: function (info) {
                 var baslik = info.event.title;
-                var saat = info.event.start.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+
+                // SAAT FORMATLAMA DÜZELTMESİ (Garantili HH:mm)
+                var startDate = info.event.start;
+                var h = ("0" + startDate.getHours()).slice(-2);
+                var m = ("0" + startDate.getMinutes()).slice(-2);
+                var saat = h + ":" + m;
+
                 var tarih = info.event.start.toLocaleDateString('tr-TR');
+            // ... geri kalan kodlar aynı ...
                 var kisi = info.event.extendedProps.kisi;
                 var durum = info.event.extendedProps.durum;
                 var renk = info.event.backgroundColor || '#0d6efd';

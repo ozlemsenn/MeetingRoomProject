@@ -1,7 +1,6 @@
 ﻿@model MeetingProject.Models.Reservations
 @{
     Layout = null;
-    // Mevcut katılımcıları virgülle bölüp listeye çeviriyoruz ki otomatik seçili gelsinler
     var seciliKatilimcilar = !string.IsNullOrEmpty(Model.Attendees) ? Model.Attendees.Split(',').Select(s => s.Trim()).ToArray() : new string[0];
 }
 
@@ -24,7 +23,6 @@
                 </div>
             </div>
 
-            <!-- BAŞLIK -->
             <div class="row mb-3">
                 <div class="col-12">
                     <label class="form-label text-muted small fw-bold mb-1">Toplantı Başlığı</label>
@@ -32,7 +30,6 @@
                 </div>
             </div>
 
-            <!-- TARİH VE SAAT -->
             <div class="row mb-3">
                 <div class="col-4">
                     <label class="form-label text-muted small fw-bold mb-1">Tarih</label>
@@ -48,11 +45,9 @@
                 </div>
             </div>
 
-            <!-- KATILIMCILAR (MultiSelect) -->
             <div class="row mb-3">
                 <div class="col-12">
                     <label class="form-label text-muted small fw-bold mb-1">Katılımcılar</label>
-                    <!-- MultiSelectList ile mevcut kayıtlı olanları 'seciliKatilimcilar' listesiyle işaretliyoruz -->
                     @Html.ListBox("SecilenKatilimcilar", new MultiSelectList((SelectList)ViewBag.KullaniciListesi, "Value", "Text", seciliKatilimcilar),
                         new { @class = "form-control shadow-sm border-0 bg-light select2-multiple", multiple = "multiple", style = "width: 100%;" })
                 </div>
@@ -68,7 +63,6 @@
     </div>
 </div>
 <style>
-    /* --- 1. AÇILIR LİSTEDEKİ YEŞİL TİK GÖRÜNÜMÜ --- */
     .select2-results__option[aria-selected="true"] {
         background-color: #f1f5f9 !important;
         color: #1e3a8a !important;
@@ -88,7 +82,6 @@
             font-size: 1.1rem;
         }
 
-    /* --- 2. SEÇİLEN KİŞİLERİN LACİVERT KUTUCUK (TAG) GÖRÜNÜMÜ --- */
     .select2-container--default .select2-selection--multiple .select2-selection__choice {
         background-color: #1e3a8a !important;
         color: #ffffff !important;
@@ -109,10 +102,9 @@
 
         .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
             background: transparent !important;
-            color: #ff4d4d !important; /* Çarpı işaretinin üzerine gelince kırmızı olur */
+            color: #ff4d4d !important; 
         }
 
-    /* Çoklu seçim kutusunun genel yüksekliği ve arkaplanı */
     .select2-container .select2-selection--multiple {
         min-height: 45px !important;
         border: 0px !important;
@@ -121,18 +113,15 @@
     }
 </style>
 
-<!-- DİKKAT: bloğunu sildik, script direkt çalışacak -->
 <script>
     $(document).ready(function () {
 
-        // Tekli Kullanıcı Seçici
         $('.select2-kullanici').select2({
             dropdownParent: $('#islemModali'),
             placeholder: "Kullanıcı Ara...",
             allowClear: true
         });
 
-        // ÇOKLU KATILIMCI SEÇİCİ (Lacivert kutucuklu yapıyı çalıştırır)
         $('.select2-multiple').select2({
             dropdownParent: $('#islemModali'),
             placeholder: "Toplantıya katılacak kişileri seçin...",
@@ -142,4 +131,3 @@
 
     });
 </script>
-<!-- FOOTER VE SCRIPTS (Create.cshtml'deki ile aynı) -->

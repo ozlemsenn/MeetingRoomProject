@@ -88,18 +88,13 @@ namespace MeetingProject.Controllers
 
             return Json(formattedList, JsonRequestBehavior.AllowGet);
         }
-        // 1. GET: Sayfa açılırken tüm listeleri View'a gönderiyoruz
         [HttpGet]
         public ActionResult Create()
         {
-            // 1. Oda Listesi (Önceki hatayı çözen kısım)
             ViewBag.Rooms = new SelectList(db.Rooms.ToList(), "Id", "Name");
 
-            // 2. Rezervasyonu Yapan Kullanıcı Listesi (ŞU ANKİ HATAYI ÇÖZEN KISIM)
-            // Edit metodunda gördüğüm kadarıyla veritabanından Id ve Name çekiyorsun
             ViewBag.Users = new SelectList(db.Users.ToList(), "Id", "Name");
 
-            // 3. Çoklu Katılımcılar Listesi (Bizim yeni eklediğimiz kısım)
             var kullanicilar = db.Users.Select(u => new {
                 AdSoyad = u.Name + " " + u.Surname,
                 Email = u.Email
@@ -113,7 +108,6 @@ namespace MeetingProject.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(Reservations res, string[] SecilenKatilimcilar)
         {
-            // 1. ÇOKLU KATILIMCILARI BİRLEŞTİR VE MODELE EKLE
             if (SecilenKatilimcilar != null && SecilenKatilimcilar.Length > 0)
             {
                 res.Attendees = string.Join(", ", SecilenKatilimcilar);
@@ -123,14 +117,12 @@ namespace MeetingProject.Controllers
                 res.Attendees = "Katılımcı yok";
             }
 
-            // 2. GÜVENLİK VE BOŞ ALAN KONTROLLERİ
             if (!res.RoomId.HasValue || res.RoomId == 0)
                 return Json(new { success = false, message = "Lütfen bir toplantı odası seçiniz." });
 
             if (!res.UserId.HasValue || res.UserId == 0)
                 return Json(new { success = false, message = "Lütfen rezervasyonu yapacak kullanıcıyı seçiniz." });
 
-            // YENİ EKLENEN BAŞLIK KONTROLÜ
             if (string.IsNullOrWhiteSpace(res.Title))
                 return Json(new { success = false, message = "Lütfen toplantı başlığı giriniz." });
 
@@ -146,7 +138,6 @@ namespace MeetingProject.Controllers
             if (string.IsNullOrWhiteSpace(res.Description))
                 return Json(new { success = false, message = "Lütfen toplantı için bir açıklama giriniz." });
 
-            // 3. SAAT ÇAKIŞMASI (OVERLAP) KONTROLÜ
             bool isOverlap = db.Reservations.Any(r =>
                 r.Status != "İptal Edildi" &&
                 r.RoomId == res.RoomId &&
@@ -163,7 +154,6 @@ namespace MeetingProject.Controllers
                 return Json(new { success = false, message = "Seçtiğiniz saat aralığında bu oda doludur." });
             }
 
-            // 4. VERİTABANINA KAYIT İŞLEMİ
             res.Status = "Aktif";
             db.Reservations.Add(res);
 
@@ -173,8 +163,6 @@ namespace MeetingProject.Controllers
             }
             catch (System.Exception ex)
             {
-                // MÜHENDİSLİK İPUCU: Eğer hala hata verirse, hatanın tam ne olduğunu görmek için
-                // aşağıdaki satırı aktif edip (ex.Message veya ex.InnerException) hatayı ekrana yazdırabilirsin.
                 return Json(new { success = false, message = "Veritabanı Hatası: " + ex.Message });
             }
 
@@ -229,11 +217,9 @@ namespace MeetingProject.Controllers
             var res = db.Reservations.Find(id);
             if (res == null) return HttpNotFound();
 
-            // 1. Oda ve Kullanıcı listelerini mevcut tut
             ViewBag.Rooms = new SelectList(db.Rooms, "Id", "Name", res.RoomId);
             ViewBag.Users = new SelectList(db.Users, "Id", "Name", res.UserId);
 
-            // 2. Çoklu katılımcı listesini buraya da ekle (Create'dekinin aynısı)
             var kullanicilar = db.Users.Select(u => new {
                 AdSoyad = u.Name + " " + u.Surname,
                 Email = u.Email

@@ -51,7 +51,7 @@ namespace MeetingProject.Controllers
                 {
                     OdaAdi = oda != null ? oda.Name : "Oda Bulunamadı",
                     Tarih = rez.Date.HasValue ? rez.Date.Value.ToString("dd MMM yyyy") : "",
-                    Saat = rez.StartTime.HasValue ? rez.StartTime.Value.ToString(@"hh\:mm") : ""
+                    Saat = rez.StartTime.HasValue ? rez.StartTime.Value.Hours.ToString("D2") + ":" + rez.StartTime.Value.Minutes.ToString("D2") : ""
                 });
             }
 
@@ -114,8 +114,7 @@ namespace MeetingProject.Controllers
                 bugunkuToplantilar.Add(new ToplantiOzet
                 {
                     OdaAdi = oda != null ? oda.Name : "Bilinmeyen Oda",
-                    Saat = rez.StartTime.HasValue ? rez.StartTime.Value.ToString(@"hh\:mm") : "",
-                    Tarih = "Bugün",
+                    Saat = rez.StartTime.HasValue ? rez.StartTime.Value.Hours.ToString("D2") + ":" + rez.StartTime.Value.Minutes.ToString("D2") : "",
                     Durum = guncelDurum
                 });
             }

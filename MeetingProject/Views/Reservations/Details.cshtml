@@ -5,8 +5,6 @@
     string rozetRengi = "bg-success";
     if (ViewBag.GuncelDurum == "Tamamlandı") { rozetRengi = "bg-secondary"; }
     else if (ViewBag.GuncelDurum == "İptal Edildi") { rozetRengi = "bg-danger"; }
-
-    // Katılımcılar verisini (Örn: "Ahmet, Ayşe") virgüllerden bölüp bir diziye çeviriyoruz
     var katilimcilar = Model.Attendees;
     var katilimciListesi = !string.IsNullOrEmpty(katilimcilar) && katilimcilar != "Katılımcı yok" ? katilimcilar.Split(',') : new string[0];
 }
@@ -15,7 +13,6 @@
     <div class="card border-0 shadow-sm" style="border-radius: 15px; background-color: #f8f9fa;">
         <div class="card-body">
 
-            <!-- DURUM -->
             <div class="row mb-3 pb-2 border-bottom">
                 <div class="col-sm-4 text-muted fw-bold align-self-center">Durum:</div>
                 <div class="col-sm-8">
@@ -23,7 +20,6 @@
                 </div>
             </div>
 
-            <!-- YENİ: TOPLANTI BAŞLIĞI -->
             <div class="row mb-3">
                 <div class="col-sm-4 text-muted fw-bold align-self-center">Toplantı Başlığı:</div>
                 <div class="col-sm-8 text-dark fw-bold" style="font-size: 1.1rem; color: #1e3a8a !important;">
@@ -53,7 +49,6 @@
                 </div>
             </div>
 
-            <!-- YENİ: KATILIMCILAR LİSTESİ -->
             <div class="row mb-4">
                 <div class="col-sm-12 text-muted fw-bold mb-2">
                     <i class="fas fa-users text-primary me-1"></i> Katılımcılar:
@@ -61,7 +56,6 @@
                 <div class="col-sm-12">
                     @if (katilimciListesi.Length > 0)
                     {
-                        <!-- Katılımcıları modern etiketler (chip) halinde yan yana dizer -->
                         <div class="d-flex flex-wrap gap-2">
                             @foreach (var kisi in katilimciListesi)
                             {
@@ -80,7 +74,6 @@
                 </div>
             </div>
 
-            <!-- AÇIKLAMA -->
             <div class="row mb-2">
                 <div class="col-sm-12 text-muted fw-bold mb-2">Açıklama (Toplantı Konusu):</div>
                 <div class="col-sm-12 text-dark" style="background-color: white; padding: 15px; border-radius: 10px; border: 1px solid #e9ecef; white-space: pre-wrap;">@Model.Description</div>

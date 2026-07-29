@@ -71,7 +71,6 @@
     </div>
 </div>
 
-<!-- Modal Kalıbı -->
 <div class="modal fade" id="islemModali" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
@@ -120,12 +119,11 @@
                         html += '<td class="text-center align-middle"><span class="badge bg-light text-dark">' + item.StartTime + ' - ' + item.EndTime + '</span></td>';
                         html += '<td class="text-center align-middle">' + item.RoomName + '</td>';
                         html += '<td class="text-center align-middle">' + item.UserName + '</td>';
-                        var kisaBaslik = item.Title; // Description yerine Title çekiyoruz
+                        var kisaBaslik = item.Title; 
                         if (kisaBaslik && kisaBaslik.length > 30) {
                             kisaBaslik = kisaBaslik.substring(0, 30) + '...';
                         }
 
-                        // fw-medium sınıfı ile başlığı tabloda biraz daha vurgulu hale getirdik
                         html += '<td class="align-middle fw-medium text-dark">' + (kisaBaslik || '-') + '</td>';
 
                         var badgeRengi = "bg-success"; 

@@ -25,12 +25,9 @@ namespace MeetingProject.Controllers
 
             if (user != null)
             {
-                // 1. Şirket ID'sini de veritabanından çekiyoruz
                 string adSoyad = user.Name + " " + user.Surname;
                 string sirketId = user.CompanyId.ToString();
 
-                // 2. Araya bir çizgi daha koyup 3 parçalı yapıyoruz: Rol|AdSoyad|SirketId
-                // Örnek: "Personel|Ahmet Yılmaz|1"
                 string userData = user.Role + "|" + adSoyad + "|" + sirketId;
 
                 var ticket = new FormsAuthenticationTicket(
