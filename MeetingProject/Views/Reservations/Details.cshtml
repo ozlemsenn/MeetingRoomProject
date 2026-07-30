@@ -3,10 +3,8 @@
     Layout = null;
 
     string rozetRengi = "bg-success";
-    if (ViewBag.GuncelDurum == "Tamamlandı") { rozetRengi = "bg-secondary"; }
-    else if (ViewBag.GuncelDurum == "İptal Edildi") { rozetRengi = "bg-danger"; }
-    var katilimcilar = Model.Attendees;
-    var katilimciListesi = !string.IsNullOrEmpty(katilimcilar) && katilimcilar != "Katılımcı yok" ? katilimcilar.Split(',') : new string[0];
+    if (ViewBag.GercekDurum == "Tamamlandı") { rozetRengi = "bg-secondary"; }
+    else if (ViewBag.GercekDurum == "İptal Edildi") { rozetRengi = "bg-danger"; }
 }
 
 <div class="modal-body py-4">
@@ -16,7 +14,7 @@
             <div class="row mb-3 pb-2 border-bottom">
                 <div class="col-sm-4 text-muted fw-bold align-self-center">Durum:</div>
                 <div class="col-sm-8">
-                    <span class="badge @rozetRengi shadow-sm" style="font-size: 0.95rem; padding: 8px 15px;">@ViewBag.GuncelDurum</span>
+                    <span class="badge @rozetRengi shadow-sm" style="font-size: 0.95rem; padding: 8px 15px;">@ViewBag.GercekDurum</span>
                 </div>
             </div>
 
@@ -54,22 +52,25 @@
                     <i class="fas fa-users text-primary me-1"></i> Katılımcılar:
                 </div>
                 <div class="col-sm-12">
-                    @if (katilimciListesi.Length > 0)
+                    @{
+                        // Controllerdan gelen listeyi güvenli bir şekilde alıyoruz
+                        var liste = ViewBag.KatilimciListesi as List<string>;
+                    }
+
+                    @if (liste != null && liste.Count > 0)
                     {
                         <div class="d-flex flex-wrap gap-2">
-                            @foreach (var kisi in katilimciListesi)
+                            @foreach (var kisi in liste)
                             {
                                 <span class="badge" style="background-color: #e2e8f0; color: #1e293b; padding: 8px 12px; border-radius: 8px; font-weight: 500; font-size: 0.9rem; border: 1px solid #cbd5e1;">
-                                    <i class="fas fa-user-circle text-secondary me-1"></i> @kisi.Trim()
+                                    <i class="fas fa-user-circle text-secondary me-1"></i> @kisi
                                 </span>
                             }
                         </div>
                     }
                     else
                     {
-                        <div class="text-muted small" style="background-color: white; padding: 10px 15px; border-radius: 10px; border: 1px solid #e9ecef;">
-                            <i class="fas fa-info-circle me-1"></i> Bu toplantı için ekstra katılımcı belirtilmemiş.
-                        </div>
+                        <span class="text-muted small">Katılımcı seçilmemiş.</span>
                     }
                 </div>
             </div>

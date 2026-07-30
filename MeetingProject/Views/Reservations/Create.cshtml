@@ -10,6 +10,20 @@
         <form id="formRezervasyon">
             @Html.AntiForgeryToken()
 
+            @if (ViewBag.IsAdmin != null && (bool)ViewBag.IsAdmin)
+            {
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label class="form-label text-muted small fw-bold mb-1">Rezervasyon Yapılacak Şirket</label>
+                        @Html.DropDownList("CompanyId", (SelectList)ViewBag.Companies, "Lütfen Şirket Seçiniz", new { @class = "form-select shadow-sm border-0 bg-light", @id = "sirketSecimi", @required = "required" })
+                    </div>
+                </div>
+            }
+            else
+            {
+                <input type="hidden" name="CompanyId" value="@Session["CompanyId"]" />
+            }
+
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
                     <label class="form-label text-muted small fw-bold mb-1">Toplantı Odası</label>
@@ -48,7 +62,7 @@
 
             <div class="row mb-3">
                 <div class="col-12">
-                    <label class="form-label text-muted small fw-bold mb-1><span class="fw-normal">Katılımcılar (Birden fazla seçebilirsiniz)</span></label> 
+                    <label class="form-label text-muted small fw-bold mb-1><span class="fw-normal">Katılımcılar (Birden fazla seçebilirsiniz)</span></label>
                     @Html.ListBox("SecilenKatilimcilar", (SelectList)ViewBag.KullaniciListesi,
                         new { @class = "form-control shadow-sm border-0 bg-light select2-multiple", multiple = "multiple", style = "width: 100%;" })
                 </div>
@@ -136,6 +150,61 @@
 
 <script>
     $(document).ready(function () {
+        var guncelKullaniciListesi = [];
+
+        $('select[name="UserId"] option').each(function () {
+            var kisiId = $(this).val();
+            var kisiAd = $(this).text();
+
+            if (kisiId) {
+                guncelKullaniciListesi.push({ Id: kisiId, TamAd: kisiAd });
+            }
+        });
+
+        $('#sirketSecimi').change(function () {
+            var secilenSirketId = $(this).val();
+
+            var odaDropdown = $('select[name="RoomId"]');
+            var kullaniciDropdown = $('select[name="UserId"]');
+            var katilimciDropdown = $('select[name="SecilenKatilimcilar"]');
+
+            odaDropdown.empty().append('<option value="">Yükleniyor...</option>');
+            kullaniciDropdown.empty().append('<option value="">Yükleniyor...</option>');
+            katilimciDropdown.empty();
+
+            if (secilenSirketId) {
+                $.ajax({
+                    url: '/Reservations/SirketeGoreVerileriGetir',
+                    type: 'GET',
+                    data: { sirketId: secilenSirketId },
+                    success: function (data) {
+                        guncelKullaniciListesi = data.kullanicilar;
+
+                        odaDropdown.empty().append('<option value="">Oda Seçiniz</option>');
+                        $.each(data.odalar, function (i, oda) {
+                            odaDropdown.append('<option value="' + oda.Id + '">' + oda.Name + '</option>');
+                        });
+
+                        kullaniciDropdown.empty().append('<option value="">Kullanıcı Seçiniz</option>');
+                        $.each(guncelKullaniciListesi, function (i, kullanici) {
+                            kullaniciDropdown.append('<option value="' + kullanici.Id + '">' + kullanici.TamAd + '</option>');
+                        });
+
+                        katilimciDropdown.empty();
+                        $.each(guncelKullaniciListesi, function (i, kullanici) {
+                            katilimciDropdown.append('<option value="' + kullanici.Id + '">' + kullanici.TamAd + '</option>');
+                        });
+
+                        $('.select2-kullanici, .select2-multiple').trigger('change');
+                    }
+                });
+            } else {
+                odaDropdown.empty().append('<option value="">Önce Şirket Seçiniz</option>');
+                kullaniciDropdown.empty().append('<option value="">Önce Şirket Seçiniz</option>');
+                katilimciDropdown.empty();
+                $('.select2-kullanici, .select2-multiple').trigger('change');
+            }
+        });
 
         $('.select2-kullanici').select2({
             dropdownParent: $('#islemModali'),
@@ -150,5 +219,24 @@
             width: '100%'
         });
 
+        $('#UserId').change(function () {
+            var secilenKuranKisi = $(this).val();
+            var katilimciDropdown = $('select[name="SecilenKatilimcilar"]');
+
+            var mevcutSecimler = katilimciDropdown.val() || [];
+
+            katilimciDropdown.empty();
+
+            if (guncelKullaniciListesi && guncelKullaniciListesi.length > 0) {
+                $.each(guncelKullaniciListesi, function (i, kullanici) {
+                    if (String(kullanici.Id) !== String(secilenKuranKisi)) {
+                        katilimciDropdown.append('<option value="' + kullanici.Id + '">' + kullanici.TamAd + '</option>');
+                    }
+                });
+            }
+
+            katilimciDropdown.val(mevcutSecimler);
+
+            katilimciDropdown.trigger('change.select2'); 
     });
 </script>

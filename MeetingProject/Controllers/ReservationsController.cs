@@ -42,7 +42,7 @@ namespace MeetingProject.Controllers
             int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
 
             var reservations = db.Reservations
-                .Where(r => isAdmin || r.CompanyId == aktifSirketId) // Eğer rezervasyon tablosunda CompanyId yoksa burayı: r.Room.CompanyId == aktifSirketId yapabilirsin.
+                .Where(r => isAdmin || r.CompanyId == aktifSirketId) 
                 .Select(r => new
                 {
                     r.Id,
@@ -100,25 +100,76 @@ namespace MeetingProject.Controllers
 
             return Json(formattedList, JsonRequestBehavior.AllowGet);
         }
+
+        [HttpGet]
+        public JsonResult SirketeGoreVerileriGetir(int sirketId)
+        {
+            var odalar = db.Rooms
+                           .Where(r => r.CompanyId == sirketId)
+                           .Select(r => new { Id = r.Id, Name = r.Name })
+                           .ToList();
+
+            var personeller = db.Users
+                                .Where(u => u.CompanyId == sirketId)
+                                .Select(u => new { Id = u.Id, TamAd = u.Name + " " + u.Surname })
+                                .ToList();
+
+            var adminler = db.Users
+                             .Where(u => u.Role == "Admin") 
+                             .Select(u => new { Id = u.Id, TamAd = u.Name + " " + u.Surname + " (Admin)" })
+                             .ToList();
+
+            var kullanicilar = personeller.ToList();
+
+            foreach (var admin in adminler)
+            {
+                if (!kullanicilar.Any(k => k.Id == admin.Id))
+                {
+                    kullanicilar.Add(admin);
+                }
+            }
+
+            kullanicilar = kullanicilar.OrderBy(u => u.TamAd).ToList();
+
+            return Json(new { odalar = odalar, kullanicilar = kullanicilar }, JsonRequestBehavior.AllowGet);
+        }
+
         [HttpGet]
         public ActionResult Create()
         {
+            bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
             int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
-            bool isAdmin = User.IsInRole("Admin");
 
-            var sirketOdalari = db.Rooms.Where(x => isAdmin || x.CompanyId == aktifSirketId).ToList();
-            ViewBag.Rooms = new SelectList(sirketOdalari, "Id", "Name");
+            ViewBag.IsAdmin = isAdmin;
 
-            var sirketKullanicilari = db.Users.Where(x => isAdmin || x.CompanyId == aktifSirketId).ToList();
-            ViewBag.Users = new SelectList(sirketKullanicilari, "Id", "Name");
-
-            var kullanicilar = sirketKullanicilari.Select(u => new
+            if (isAdmin)
             {
-                AdSoyad = u.Name + " " + u.Surname,
-                Email = u.Email
-            }).ToList();
+                ViewBag.Companies = new SelectList(db.Companies.ToList(), "Id", "CompanyName");
+                ViewBag.Rooms = new SelectList(new List<object>(), "Id", "Name");
+                ViewBag.Users = new SelectList(new List<object>(), "Id", "TamAd");
+                ViewBag.KullaniciListesi = new SelectList(new List<object>(), "Id", "TamAd");
+            }
+            else
+            {
+                var sirketOdalar = db.Rooms.Where(r => r.CompanyId == aktifSirketId).ToList();
+                ViewBag.Rooms = new SelectList(sirketOdalar, "Id", "Name");
 
-            ViewBag.KullaniciListesi = new SelectList(kullanicilar, "AdSoyad", "AdSoyad");
+                var sirketKullanicilar = db.Users
+                                           .Where(u => u.CompanyId == aktifSirketId)
+                                           .Select(u => new { Id = u.Id, TamAd = u.Name + " " + u.Surname })
+                                           .ToList();
+
+                var adminler = db.Users
+                                 .Where(u => u.Role == "Admin")
+                                 .Select(u => new { Id = u.Id, TamAd = u.Name + " " + u.Surname + " (Admin)" })
+                                 .ToList();
+
+                var birlesikKullanicilar = sirketKullanicilar.Concat(adminler).OrderBy(u => u.TamAd).ToList();
+
+                ViewBag.Users = new SelectList(birlesikKullanicilar, "Id", "TamAd");
+                ViewBag.KullaniciListesi = new SelectList(birlesikKullanicilar, "Id", "TamAd");
+            }
+
             return View();
         }
 
@@ -129,7 +180,15 @@ namespace MeetingProject.Controllers
             bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
             int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
 
-            var secilenOda = db.Rooms.FirstOrDefault(r => r.Id == res.RoomId);
+            if (isAdmin)
+            {
+                res.CompanyId = Convert.ToInt32(Request.Form["CompanyId"]);
+            }
+            else
+            {
+                res.CompanyId = Convert.ToInt32(Session["CompanyId"]);
+            }
+                var secilenOda = db.Rooms.FirstOrDefault(r => r.Id == res.RoomId);
 
             if (secilenOda == null || (!isAdmin && secilenOda.CompanyId != aktifSirketId))
             {
@@ -368,33 +427,78 @@ namespace MeetingProject.Controllers
             }
             return Json(new { success = false, message = "Kayıt bulunamadı." });
         }
-        public ActionResult Details(int id)
+        [HttpGet]
+        public ActionResult Details(int? id)
         {
-            var res = db.Reservations.Find(id);
-            if (res == null)
+            if (id == null)
             {
-                return HttpNotFound();
+                return new HttpStatusCodeResult(System.Net.HttpStatusCode.BadRequest);
             }
 
-            ViewBag.RoomName = db.Rooms.FirstOrDefault(r => r.Id == res.RoomId)?.Name;
+            int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
+            bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
 
-            var user = db.Users.FirstOrDefault(u => u.Id == res.UserId);
-            ViewBag.UserName = user != null ? user.Name + " " + user.Surname : "";
-
-            string guncelDurum = res.Status;
-
-            if (guncelDurum != "İptal Edildi" && res.Date.HasValue && res.EndTime.HasValue)
+            var rezervasyon = db.Reservations.Find(id);
+            if (rezervasyon == null || (!isAdmin && rezervasyon.CompanyId != aktifSirketId))
             {
-                DateTime toplantininBitisZamani = res.Date.Value.Add(res.EndTime.Value);
-                if (toplantininBitisZamani < DateTime.Now)
+                return HttpNotFound("Kayıt bulunamadı veya yetkiniz yok.");
+            }
+
+            var oda = db.Rooms.FirstOrDefault(r => r.Id == rezervasyon.RoomId);
+            ViewBag.RoomName = oda != null ? oda.Name : "Bilinmeyen Oda";
+
+            var kuranKisi = db.Users.FirstOrDefault(u => u.Id == rezervasyon.UserId);
+            ViewBag.UserName = kuranKisi != null ? kuranKisi.Name + " " + kuranKisi.Surname : "Bilinmeyen Kullanıcı";
+
+            List<string> katilimciListesi = new List<string>();
+
+            if (!string.IsNullOrEmpty(rezervasyon.Attendees))
+            {
+                var idStringListesi = rezervasyon.Attendees.Split(',');
+                List<int> idListesi = new List<int>();
+
+                foreach (var idStr in idStringListesi)
                 {
-                    guncelDurum = "Tamamlandı";
+                    if (int.TryParse(idStr.Trim(), out int parseEdilenId))
+                    {
+                        idListesi.Add(parseEdilenId);
+                    }
+                }
+
+                katilimciListesi = db.Users
+                                     .Where(u => idListesi.Contains(u.Id))
+                                     .Select(u => u.Name + " " + u.Surname)
+                                     .ToList();
+            }
+
+            ViewBag.KatilimciListesi = katilimciListesi;
+
+            string gercekDurum = "Planlandı";
+            if (rezervasyon.Status != "İptal Edildi" && rezervasyon.Status != "Bekliyor")
+            {
+                DateTime rezTarihi = rezervasyon.Date ?? DateTime.Today;
+                TimeSpan baslangicSaati = rezervasyon.StartTime ?? TimeSpan.Zero;
+                TimeSpan bitisSaati = rezervasyon.EndTime ?? TimeSpan.Zero;
+
+                DateTime baslangic = rezTarihi.Add(baslangicSaati);
+                DateTime bitis = rezTarihi.Add(bitisSaati);
+
+                if (DateTime.Now >= baslangic && DateTime.Now <= bitis)
+                {
+                    gercekDurum = "Devam Ediyor";
+                }
+                else if (DateTime.Now > bitis)
+                {
+                    gercekDurum = "Tamamlandı";
                 }
             }
+            else
+            {
+                gercekDurum = rezervasyon.Status;
+            }
+            ViewBag.GercekDurum = gercekDurum;
 
-            ViewBag.GuncelDurum = guncelDurum;
-
-            return View(res);
+            return View(rezervasyon);
         }
     }
 }
