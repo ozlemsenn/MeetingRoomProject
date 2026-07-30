@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -13,17 +14,24 @@ namespace MeetingProject.Controllers
 
         public ActionResult Index()
         {
+            if (Session["UserRole"] == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             int aktifSirketId = 0;
             if (Session["CompanyId"] != null)
             {
                 aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
             }
 
-            bool isAdmin = User.IsInRole("Admin");
+            bool isAdmin = Session["UserRole"].ToString() == "Admin";
 
             var filtreliKullanicilar = db.Users.Where(x => isAdmin || x.CompanyId == aktifSirketId).ToList();
+
             return View(filtreliKullanicilar);
         }
+
         [HttpGet]
         public ActionResult Create()
         {
@@ -118,15 +126,27 @@ namespace MeetingProject.Controllers
         [HttpGet]
         public JsonResult GetUsers()
         {
-            var userList = db.Users.Select(u => new {
-                u.Id,
-                u.Name,
-                u.Surname,
-                u.Email,
-                u.Department
-            }).ToList();
+            if (Session["UserRole"] == null)
+            {
+                return Json(new List<object>(), JsonRequestBehavior.AllowGet);
+            }
 
-            return Json(userList, JsonRequestBehavior.AllowGet);
+            bool isAdmin = Session["UserRole"].ToString() == "Admin";
+            int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
+
+            var kullanicilar = db.Users
+                                 .Where(x => isAdmin || x.CompanyId == aktifSirketId)
+                                 .Select(x => new
+                                 {
+                                     Id = x.Id,
+                                     Name = x.Name,
+                                     Surname = x.Surname,
+                                     Email = x.Email,
+                                     Department = x.Department
+                                 })
+                                 .ToList();
+
+            return Json(kullanicilar, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]

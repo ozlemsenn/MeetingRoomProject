@@ -3,20 +3,32 @@
   "WorkspaceRootPath": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\meetingproject\\views\\users\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|solutionrelative:meetingproject\\views\\users\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|c:\\users\\pc\\onedrive\\desktop\\staj 1\\meetingproject\\meetingproject\\views\\auth\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|solutionrelative:meetingproject\\views\\auth\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|c:\\users\\pc\\onedrive\\desktop\\staj 1\\meetingproject\\meetingproject\\views\\reservations\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|solutionrelative:meetingproject\\views\\reservations\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|c:\\users\\pc\\onedrive\\desktop\\staj 1\\meetingproject\\meetingproject\\views\\reservations\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|solutionrelative:meetingproject\\views\\reservations\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|c:\\users\\pc\\onedrive\\desktop\\staj 1\\meetingproject\\meetingproject\\controllers\\reservationscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|solutionrelative:meetingproject\\controllers\\reservationscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|c:\\users\\pc\\onedrive\\desktop\\staj 1\\meetingproject\\meetingproject\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|c:\\users\\pc\\onedrive\\desktop\\staj 1\\meetingproject\\meetingproject\\views\\users\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|solutionrelative:meetingproject\\views\\users\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\meetingproject\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|solutionrelative:meetingproject\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\meetingproject\\views\\users\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|solutionrelative:meetingproject\\views\\users\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|c:\\users\\pc\\onedrive\\desktop\\staj 1\\meetingproject\\meetingproject\\controllers\\roomscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|solutionrelative:meetingproject\\controllers\\roomscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\meetingproject\\views\\admin\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
@@ -25,10 +37,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\meetingproject\\views\\rooms\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|solutionrelative:meetingproject\\views\\rooms\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\meetingproject\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{EB264880-64A4-4CEC-8B6A-7E61CE49C685}|MeetingProject\\MeetingProject.csproj|solutionrelative:meetingproject\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     }
   ],
   "DocumentGroupContainers": [
@@ -51,51 +59,77 @@
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "ReservationsController.cs",
-              "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Controllers\\ReservationsController.cs",
-              "RelativeDocumentMoniker": "MeetingProject\\Controllers\\ReservationsController.cs",
-              "ToolTip": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Controllers\\ReservationsController.cs",
-              "RelativeToolTip": "MeetingProject\\Controllers\\ReservationsController.cs",
-              "ViewState": "AgIAAA8BAAAAAAAAAAArwAgBAAA9AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-29T13:32:53.54Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Create.cshtml",
-              "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Users\\Create.cshtml",
-              "RelativeDocumentMoniker": "MeetingProject\\Views\\Users\\Create.cshtml",
-              "ToolTip": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Users\\Create.cshtml",
-              "RelativeToolTip": "MeetingProject\\Views\\Users\\Create.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
+              "Title": "Edit.cshtml",
+              "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Reservations\\Edit.cshtml",
+              "RelativeDocumentMoniker": "MeetingProject\\Views\\Reservations\\Edit.cshtml",
+              "ToolTip": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Reservations\\Edit.cshtml",
+              "RelativeToolTip": "MeetingProject\\Views\\Reservations\\Edit.cshtml",
+              "ViewState": "AgIAANUAAAAAAAAAAAAiwPUAAAAHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-07-29T12:11:46.152Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Index.cshtml",
-              "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Users\\Index.cshtml",
-              "RelativeDocumentMoniker": "MeetingProject\\Views\\Users\\Index.cshtml",
-              "ToolTip": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Users\\Index.cshtml",
-              "RelativeToolTip": "MeetingProject\\Views\\Users\\Index.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAOAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-07-29T11:58:42.211Z",
+              "WhenOpened": "2026-07-30T08:03:30.808Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Reservations\\Index.cshtml",
+              "RelativeDocumentMoniker": "MeetingProject\\Views\\Reservations\\Index.cshtml",
+              "ToolTip": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Reservations\\Index.cshtml",
+              "RelativeToolTip": "MeetingProject\\Views\\Reservations\\Index.cshtml",
+              "ViewState": "AgIAAI8AAAAAAAAAAAAiwK8AAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-07-30T07:54:17.952Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Login.cshtml",
+              "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Auth\\Login.cshtml",
+              "RelativeDocumentMoniker": "MeetingProject\\Views\\Auth\\Login.cshtml",
+              "ToolTip": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Auth\\Login.cshtml",
+              "RelativeToolTip": "MeetingProject\\Views\\Auth\\Login.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-07-30T07:48:54.683Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ReservationsController.cs",
+              "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Controllers\\ReservationsController.cs",
+              "RelativeDocumentMoniker": "MeetingProject\\Controllers\\ReservationsController.cs",
+              "ToolTip": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Controllers\\ReservationsController.cs",
+              "RelativeToolTip": "MeetingProject\\Controllers\\ReservationsController.cs",
+              "ViewState": "AgIAAFIBAAAAAAAAAAAAAGIBAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-30T07:46:10.13Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "RoomsController.cs",
+              "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Controllers\\RoomsController.cs",
+              "RelativeDocumentMoniker": "MeetingProject\\Controllers\\RoomsController.cs",
+              "ToolTip": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Controllers\\RoomsController.cs",
+              "RelativeToolTip": "MeetingProject\\Controllers\\RoomsController.cs",
+              "ViewState": "AgIAAB8AAAAAAAAAAAAQwDcAAAA+AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-30T07:32:33.856Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "UsersController.cs",
               "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Controllers\\UsersController.cs",
               "RelativeDocumentMoniker": "MeetingProject\\Controllers\\UsersController.cs",
               "ToolTip": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Controllers\\UsersController.cs",
               "RelativeToolTip": "MeetingProject\\Controllers\\UsersController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAKgAAAANAAAAAAAAAA==",
+              "ViewState": "AgIAAHsAAAAAAAAAAAAowIcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-07-29T11:27:37.849Z",
               "EditorCaption": ""
@@ -104,30 +138,30 @@
               "$type": "Document",
               "DocumentIndex": 4,
               "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Users\\Index.cshtml",
+              "RelativeDocumentMoniker": "MeetingProject\\Views\\Users\\Index.cshtml",
+              "ToolTip": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Users\\Index.cshtml",
+              "RelativeToolTip": "MeetingProject\\Views\\Users\\Index.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAGMAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-07-29T11:58:42.211Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Index.cshtml",
               "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Admin\\Index.cshtml",
               "RelativeDocumentMoniker": "MeetingProject\\Views\\Admin\\Index.cshtml",
               "ToolTip": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Admin\\Index.cshtml",
               "RelativeToolTip": "MeetingProject\\Views\\Admin\\Index.cshtml",
               "ViewState": "AgIAAGABAAAAAAAAAAAwwGoBAABvAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-07-28T14:40:42.444Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-28T14:40:42.444Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "_Layout.cshtml",
-              "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Shared\\_Layout.cshtml",
-              "RelativeDocumentMoniker": "MeetingProject\\Views\\Shared\\_Layout.cshtml",
-              "ToolTip": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Shared\\_Layout.cshtml",
-              "RelativeToolTip": "MeetingProject\\Views\\Shared\\_Layout.cshtml",
-              "ViewState": "AgIAAIQAAAAAAAAAAAAAAJYAAAANAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-07-29T07:24:52.756Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 8,
               "Title": "Create.cshtml",
               "DocumentMoniker": "C:\\Users\\pc\\OneDrive\\Desktop\\staj 1\\MeetingProject\\MeetingProject\\Views\\Rooms\\Create.cshtml",
               "RelativeDocumentMoniker": "MeetingProject\\Views\\Rooms\\Create.cshtml",
@@ -135,8 +169,7 @@
               "RelativeToolTip": "MeetingProject\\Views\\Rooms\\Create.cshtml",
               "ViewState": "AgIAABYAAAAAAAAAAAAtwBEAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-07-29T12:10:58.604Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-29T12:10:58.604Z"
             }
           ]
         }

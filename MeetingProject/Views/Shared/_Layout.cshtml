@@ -120,7 +120,6 @@
 </head>
 <body>
 
-    <!-- SİDEBAR BAŞLANGICI -->
     <div class="sidebar">
         <a class="brand-logo mb-1 text-center mt-2" href="/">
             <i class="fas fa-calendar-check mb-2" style="color: #1e3a8a; font-size: 2.5rem; display: block;"></i>
@@ -147,21 +146,23 @@
                 </a>
             }
 
+            @if (Session["UserRole"] != null && (Session["UserRole"].ToString() == "Admin") || Session["UserRole"].ToString() == "Yönetici"){
+
+                <a class="sidebar-link mb-2" href="/Users/Index">
+                    <i class="fas fa-users text-success me-3"></i> Kullanıcılar
+                </a>
+            }
             @if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
             {
                 <hr style="opacity: 0.1; margin: 15px 0;">
                 <small class="text-muted fw-bold mb-3 ms-2" style="font-size: 0.75rem; letter-spacing: 1px;">YÖNETİM</small>
 
-                <a class="sidebar-link mb-2" href="/Users/Index">
-                    <i class="fas fa-users text-success me-3"></i> Kullanıcılar
-                </a>
                 <a class="sidebar-link mb-2" href="/Admin/Index">
                     <i class="fas fa-chart-pie text-danger me-3"></i> Admin Paneli
                 </a>
             }
         </div>
 
-        <!-- SOL ALT: PROFİL VE ÇIKIŞ BUTONU -->
         <div class="mt-auto px-3 pb-4 pt-3 border-top" style="border-color: #e2e8f0 !important; background-color: #fafbfc;">
             <div class="d-flex align-items-center w-100 p-2 rounded-3 bg-white shadow-sm border">
 
@@ -188,18 +189,14 @@
             </div>
         </div>
     </div>
-    <!-- SİDEBAR BİTİŞİ -->
-    <!-- ANA İÇERİK (MAIN WRAPPER) BAŞLANGICI -->
     <div class="main-wrapper">
 
-        <!-- ÜST BAR (TOPBAR) -->
         <div class="topbar">
             <div>
                 <h4 class="mb-0 fw-bold text-dark">Hoş Geldiniz, @Context.Items["UserFullName"]</h4>
                 <small class="text-muted fw-semibold"><i class="far fa-calendar me-1"></i> @DateTime.Now.ToString("dd MMMM yyyy, dddd")</small>
             </div>
 
-            <!-- SAĞ KISIM: IT Destek Butonu -->
             <a href="mailto:itdestek@sirket.com" class="d-flex align-items-center text-decoration-none bg-white p-2 pe-3 rounded-pill shadow-sm border" style="transition: all 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'">
                 <div class="bg-primary bg-gradient text-white rounded-circle d-flex justify-content-center align-items-center me-2 shadow-sm" style="width: 38px; height: 38px;">
                     <i class="fas fa-headset"></i>
@@ -211,19 +208,15 @@
             </a>
         </div>
 
-        <!-- DİNAMİK İÇERİK (SAYFALARIN YÜKLENDİĞİ YER) -->
         <div class="content-body">
             @RenderBody()
         </div>
 
-        <!-- FOOTER -->
         <footer class="text-center py-4 bg-white mt-auto border-top">
             <p class="text-muted small fw-semibold mb-0">&copy; @DateTime.Now.Year - BookRoom Rezervasyon Yönetim Sistemi</p>
         </footer>
 
     </div>
-    <!-- ANA İÇERİK BİTİŞİ -->
-    <!-- SCRİPTLER -->
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)

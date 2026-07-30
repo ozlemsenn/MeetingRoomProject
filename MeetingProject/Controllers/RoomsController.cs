@@ -18,27 +18,42 @@ namespace MeetingProject.Controllers
 
         public ActionResult Index()
         {
+            if (Session["UserRole"] == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             int aktifSirketId = 0;
             if (Session["CompanyId"] != null)
             {
                 aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
             }
+            bool isAdmin = Session["UserRole"].ToString() == "Admin";
+            var filtreliOdalar = db.Rooms.Where(x => isAdmin || x.CompanyId == aktifSirketId).ToList();
 
-            bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin"; var filtreliOdalar = db.Rooms.Where(x => isAdmin || x.CompanyId == aktifSirketId).ToList();
             return View(filtreliOdalar);
         }
-        
+
         [HttpGet]
         public JsonResult GetRooms()
         {
-            var roomList = db.Rooms.Select(r => new {
-                r.Id,
-                r.Name,
-                r.Capacity,
-                r.HasProjector
-            }).ToList();
+            if (Session["UserRole"] == null) return Json(new List<object>(), JsonRequestBehavior.AllowGet);
 
-            return Json(roomList, JsonRequestBehavior.AllowGet);
+            bool isAdmin = Session["UserRole"].ToString() == "Admin";
+            int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
+
+            var odalar = db.Rooms
+                           .Where(x => isAdmin || x.CompanyId == aktifSirketId)
+                           .Select(x => new
+                           {
+                               Id = x.Id,
+                               Name = x.Name,
+                               Capacity = x.Capacity,
+                               HasProjector = x.HasProjector,
+                           })
+                           .ToList();
+
+            return Json(odalar, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult Details(int? id)

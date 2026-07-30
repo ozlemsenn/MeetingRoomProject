@@ -204,31 +204,35 @@
 
         var form = $(this);
         var hataAlani = $('#hataMesajiAlaniDuzenle');
-
         var btn = $('button[form="formDuzenle"]');
         var orjinalBtnMetni = btn.html();
+
         btn.html('<i class="fas fa-spinner fa-spin me-1"></i> Kaydediliyor...').prop('disabled', true);
         hataAlani.addClass('d-none');
 
         $.ajax({
             url: '/Reservations/Edit',
             type: 'POST',
-            data: form.serialize(), 
+            data: form.serialize(),
             success: function (response) {
                 if (response.success) {
+
                     $('#islemModali').modal('hide');
+
+                    TabloyuDoldur();
 
                     Swal.fire({
                         icon: 'success',
                         title: 'Harika!',
                         text: response.message,
-                        confirmButtonColor: '#10b981'
-                    }).then((result) => {
-                        window.location.reload(); 
+                        confirmButtonColor: '#10b981',
+                        timer: 1500,
+                        showConfirmButton: false
                     });
+
                 } else {
                     hataAlani.html('<i class="fas fa-exclamation-triangle me-2"></i>' + response.message).removeClass('d-none');
-                    btn.html(orjinalBtnMetni).prop('disabled', false); 
+                    btn.html(orjinalBtnMetni).prop('disabled', false);
                 }
             },
             error: function () {
