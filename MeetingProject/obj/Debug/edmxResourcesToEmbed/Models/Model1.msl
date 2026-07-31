@@ -29,6 +29,8 @@
     <EntitySetMapping Name="Reservations">
       <EntityTypeMapping TypeName="MeetingAppModel.Reservations">
         <MappingFragment StoreEntitySet="Reservations">
+          <ScalarProperty Name="TransactionTime" ColumnName="TransactionTime" />
+          <ScalarProperty Name="TransactionDate" ColumnName="TransactionDate" />
           <ScalarProperty Name="Title" ColumnName="Title" />
           <ScalarProperty Name="Attendees" ColumnName="Attendees" />
           <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />

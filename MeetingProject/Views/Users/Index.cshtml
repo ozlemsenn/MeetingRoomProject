@@ -27,7 +27,6 @@
                     <span class="input-group-text bg-white border-0 fw-bold text-muted">
                         <i class="fas fa-building text-primary me-1"></i> Şirket:
                     </span>
-                    <!-- DİKKAT: onchange="KullanicilariYukle()" OLARAK DÜZELTİLDİ -->
                     @Html.DropDownList("sirketFiltre", (SelectList)ViewBag.Companies, "Tüm Şirketler", new { @class = "form-select border-0 text-dark fw-semibold", @id = "sirketFiltre", @style = "cursor: pointer; background-color: #f8f9fa;", onchange = "KullanicilariYukle()" })
                 </div>
             </div>
@@ -80,7 +79,6 @@
                 type: 'GET',
                 success: function (data) {
 
-                    // Tabloyu yeniden çizebilmek için eski DataTables kütüphanesini temizliyoruz
                     if ($.fn.DataTable.isDataTable('#kullaniciTablosu')) {
                         $('#kullaniciTablosu').DataTable().clear().destroy();
                     }
@@ -90,11 +88,9 @@
 
                     $.each(data, function (index, user) {
 
-                        // FİLTRELEME MANTIĞI: Tabloya HTML çizmeden ÖNCE kontrol ediyoruz.
                         if (secilenSirket && secilenSirket !== "") {
-                            // C#'tan gelen JSON paketinde CompanyId olduğundan emin ol!
                             if (String(user.CompanyId) !== String(secilenSirket)) {
-                                return true; // Eğer şirket id'si eşleşmiyorsa bu kullanıcıyı atla
+                                return true; 
                             }
                         }
 
@@ -123,15 +119,12 @@
                         tabloIcerigi += '</tr>';
                     });
 
-                    // Filtreleme sonucu hiçbir kullanıcı kalmadıysa uyarı ver
                     if (tabloIcerigi === '') {
                         tabloIcerigi = '<tr><td colspan="5" class="text-center text-muted" style="padding: 20px;">Bu kriterlere uygun kullanıcı bulunmuyor.</td></tr>';
                     }
 
-                    // İşlenmiş HTML'i tablo iskeletinin içine gönderiyoruz
                     $('#kullaniciListesi').html(tabloIcerigi);
 
-                    // DataTables Eklentisini tekrar başlatıyoruz
                     $('#kullaniciTablosu').DataTable({
                         language: {
                             url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json"
@@ -145,10 +138,8 @@
         }
 
         $(document).ready(function () {
-            // Sayfa yüklendiğinde kullanıcıları otomatik getir
             KullanicilariYukle();
 
-            // Modal İşlemleri
             $(document).on('click', '.modal-tetikle', function (Olay) {
                 Olay.preventDefault();
                 var gidilecekAdres = $(this).attr('href');
@@ -214,7 +205,6 @@
                 });
             });
 
-            // Form Gönderim (CRUD) İşlemleri
             $(document).on("submit", "#createForm", function (e) {
                 e.preventDefault();
                 $.ajax({

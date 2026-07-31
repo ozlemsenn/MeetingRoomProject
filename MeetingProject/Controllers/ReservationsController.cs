@@ -247,6 +247,9 @@ namespace MeetingProject.Controllers
                 return Json(new { success = false, message = "Bu saat aralığında odada başka bir toplantı var!" });
             }
 
+
+            res.TransactionDate = DateTime.Now;
+            res.TransactionTime = DateTime.Now.TimeOfDay;
             db.Reservations.Add(res);
             db.SaveChanges();
 
@@ -426,6 +429,11 @@ namespace MeetingProject.Controllers
             {
                 res.Status = "İptal Edildi";
                 res.CancelReason = CancelReason;
+
+                res.TransactionDate = DateTime.Now;
+                res.TransactionTime = DateTime.Now.TimeOfDay;
+
+                db.Reservations.Add(res);
 
                 db.SaveChanges();
                 return Json(new { success = true });

@@ -26,7 +26,6 @@ namespace MeetingProject.Controllers
             for (int i = 0; i < 7; i++)
             {
                 var aktifTarih = bugun.AddDays(i);
-
                 grafikGunler.Add(aktifTarih.ToString("dd MMM dddd"));
 
                 var gunlukSayi = db.Reservations.Count(x => x.Date == aktifTarih && x.Status != "İptal Edildi");
@@ -35,6 +34,51 @@ namespace MeetingProject.Controllers
 
             ViewBag.GrafikGunler = grafikGunler;
             ViewBag.GrafikSayilar = grafikSayilar;
+
+            var bugunList = db.Reservations
+    .Where(x => x.Date == bugun)
+    .ToList();
+
+            var bugunkuToplantilar = new List<ToplantiOzet>();
+            foreach (var rez in bugunList)
+            {
+                var oda = db.Rooms.Find(rez.RoomId);
+                var user = db.Users.Find(rez.UserId);
+                var sirket = user != null ? db.Companies.Find(user.CompanyId) : null;
+
+                string kurucuRol = user != null && !string.IsNullOrEmpty(user.Role) ? user.Role : "Personel";
+                if (kurucuRol == "Yonetici") kurucuRol = "Yönetici";
+
+                string durum = rez.Status ?? "Planlandı";
+                if (durum != "İptal Edildi" && durum != "Bekliyor")
+                {
+                    TimeSpan baslangicSaati = rez.StartTime ?? new TimeSpan(0, 0, 0);
+                    TimeSpan bitisSaati = rez.EndTime ?? baslangicSaati.Add(new TimeSpan(1, 0, 0));
+
+                    DateTime baslangicZamani = bugun.Add(baslangicSaati);
+                    DateTime bitisZamani = bugun.Add(bitisSaati);
+
+                    if (DateTime.Now >= baslangicZamani && DateTime.Now <= bitisZamani)
+                        durum = "Devam Ediyor";
+                    else if (DateTime.Now > bitisZamani)
+                        durum = "Tamamlandı";
+                    else
+                        durum = "Planlandı";
+                }
+
+                bugunkuToplantilar.Add(new ToplantiOzet
+                {
+                    OdaAdi = oda != null ? oda.Name : "Oda Yok",
+                    Durum = rez.Status,
+                    Baslik = rez.Title,
+                    Saat = rez.StartTime.HasValue ? rez.StartTime.Value.ToString(@"hh\:mm") : "",
+
+                    SirketAdi = sirket != null ? sirket.Name : "Şirket Belirtilmemiş",
+                    KurucuAdi = user != null ? (user.Name + " " + user.Surname) : "Bilinmeyen Kullanıcı",
+                    KurucuRol = kurucuRol
+                });
+            }
+            ViewBag.BugunkuToplantilar = bugunkuToplantilar;
 
             var hamListe = db.Reservations
                 .Where(x => x.Status != "İptal Edildi" && x.Date >= bugun)
@@ -58,69 +102,58 @@ namespace MeetingProject.Controllers
             ViewBag.SiradakiToplantilar = siradakiToplantilar;
 
             var sonIslemler = db.Reservations
-                .OrderByDescending(x => x.Id)
+                .OrderByDescending(x => x.TransactionDate)
+                .ThenByDescending(x => x.TransactionTime)
                 .Take(5)
                 .ToList();
 
             var aktiviteler = new List<AktiviteOzet>();
+
             foreach (var islem in sonIslemler)
             {
                 var oda = db.Rooms.Find(islem.RoomId);
                 var user = db.Users.Find(islem.UserId);
 
+                var sirket = user != null ? db.Companies.Find(user.CompanyId) : null;
+
                 string odaAd = oda != null ? oda.Name : "Bilinmeyen Oda";
                 string kullaniciAd = user != null ? (user.Name + " " + user.Surname) : "Bilinmeyen Kullanıcı";
+                string sirketAd = sirket != null ? sirket.Name : "Şirket Belirtilmemiş";
+
+                string rolAd = user != null && !string.IsNullOrEmpty(user.Role) ? user.Role : "Personel";
 
                 bool iptalMi = islem.Status == "İptal Edildi";
+
+                string toplantiAni = islem.Date.HasValue ? islem.Date.Value.ToString("dd.MM.yyyy")
+                     + " " + (islem.EndTime.HasValue ? islem.EndTime.Value.ToString(@"hh\:mm") : "")
+         : "Tarih Yok";
+
+                string islemYapilmaAni = islem.TransactionDate.HasValue ? islem.TransactionDate.Value.ToString("dd.MM.yyyy") 
+                    + " " + (islem.TransactionTime.HasValue ? islem.TransactionTime.Value.ToString(@"hh\:mm") : "")
+        : "Tarih Yok";
+
 
                 aktiviteler.Add(new AktiviteOzet
                 {
                     Aciklama = iptalMi
-                        ? $"{kullaniciAd}, {odaAd} için yaptığı rezervasyonu iptal etti."
-                        : $"{kullaniciAd}, {odaAd} için yeni bir rezervasyon oluşturdu.",
-                    TarihSaat = islem.Date.HasValue ? islem.Date.Value.ToString("dd MMM yyyy") : "",
+                        ? $"{odaAd} için planlanan ({toplantiAni}) tarihli rezervasyon iptal edildi."
+                        : $"{odaAd} için ({toplantiAni}) tarihine yeni bir rezervasyon oluşturuldu.",
+
+                    TarihSaat = toplantiAni,
+                    IslemTarihi = islemYapilmaAni,
+
                     RenkSinifi = iptalMi ? "danger" : "success",
-                    Ikon = iptalMi ? "fa-times-circle" : "fa-check-circle"
+                    Ikon = iptalMi ? "fa-times-circle" : "fa-check-circle",
+                    Kullanici = kullaniciAd,
+                    SirketAdi = sirketAd,
+
+                    Rol = rolAd
                 });
             }
 
             ViewBag.Aktiviteler = aktiviteler;
 
-
-            var bugunkuListe = db.Reservations
-                .Where(x => x.Date == bugun && x.Status != "İptal Edildi")
-                .OrderBy(x => x.StartTime)
-                .ToList();
-
-            var bugunkuToplantilar = new List<ToplantiOzet>();
-            foreach (var rez in bugunkuListe)
-            {
-                var oda = db.Rooms.Find(rez.RoomId);
-
-                TimeSpan rezSaati = rez.StartTime ?? new TimeSpan(0, 0, 0);
-                DateTime baslangicZamani = bugun.Add(rezSaati);
-                DateTime bitisZamani = baslangicZamani.AddHours(1); // 1 saatlik toplantı varsayıyoruz
-
-                string guncelDurum = "Planlandı";
-                if (DateTime.Now >= baslangicZamani && DateTime.Now <= bitisZamani)
-                {
-                    guncelDurum = "Devam Ediyor";
-                }
-                else if (DateTime.Now > bitisZamani)
-                {
-                    guncelDurum = "Tamamlandı";
-                }
-
-                bugunkuToplantilar.Add(new ToplantiOzet
-                {
-                    OdaAdi = oda != null ? oda.Name : "Bilinmeyen Oda",
-                    Saat = rez.StartTime.HasValue ? rez.StartTime.Value.ToString(@"hh\:mm") : "",
-                    Durum = guncelDurum
-                });
-            }
-            ViewBag.BugunkuToplantilar = bugunkuToplantilar;
             return View();
-
         }
         public ActionResult ExcelIndir()
         {
@@ -152,7 +185,7 @@ namespace MeetingProject.Controllers
         public JsonResult GetCalendarEvents()
         {
             var reservations = db.Reservations.ToList();
-            var kullanicilar = db.Users.ToList(); // Tüm kullanıcıları döngüye girmeden 1 kez çekiyoruz
+            var kullanicilar = db.Users.ToList(); 
 
             var events = new List<object>();
 
@@ -268,6 +301,11 @@ namespace MeetingProject.Controllers
             public string Tarih { get; set; }
             public string Saat { get; set; }
             public string Durum { get; set; }
+            public string Baslik { get; set; }
+
+            public string SirketAdi { get; set; }
+            public string KurucuAdi { get; set; }
+            public string KurucuRol { get; set; }
         }
 
         public class AktiviteOzet
@@ -276,6 +314,11 @@ namespace MeetingProject.Controllers
             public string TarihSaat { get; set; }
             public string RenkSinifi { get; set; }
             public string Ikon { get; set; }
+
+            public string Kullanici { get; set; }
+            public string SirketAdi { get; set; }
+            public string Rol { get; set; }
+            public string IslemTarihi { get; set; }
         }
     }
 }

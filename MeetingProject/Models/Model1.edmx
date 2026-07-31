@@ -28,6 +28,8 @@
           <Property Name="CompanyId" Type="int" />
           <Property Name="Attendees" Type="nvarchar(max)" />
           <Property Name="Title" Type="nvarchar" MaxLength="100" />
+          <Property Name="TransactionDate" Type="date" />
+          <Property Name="TransactionTime" Type="time" Precision="7" />
         </EntityType>
         <EntityType Name="Rooms">
           <Key>
@@ -107,6 +109,8 @@
           <Property Name="CompanyId" Type="Int32" />
           <Property Name="Attendees" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Title" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="TransactionDate" Type="DateTime" Precision="0" />
+          <Property Name="TransactionTime" Type="Time" Precision="7" />
         </EntityType>
         <EntityType Name="Companies">
           <Key>
@@ -149,6 +153,8 @@
           <EntitySetMapping Name="Reservations">
             <EntityTypeMapping TypeName="MeetingAppModel.Reservations">
               <MappingFragment StoreEntitySet="Reservations">
+                <ScalarProperty Name="TransactionTime" ColumnName="TransactionTime" />
+                <ScalarProperty Name="TransactionDate" ColumnName="TransactionDate" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="Attendees" ColumnName="Attendees" />
                 <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />

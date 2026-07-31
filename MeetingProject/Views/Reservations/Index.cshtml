@@ -36,7 +36,6 @@
     <div class="card-body">
         <div class="row mb-4 mt-2">
 
-            <!-- 1. Şirket Filtresi (YALNIZCA ADMİN GÖRÜR - En Sola Alındı) -->
             @if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
             {
                 <div class="col-md-4 text-start mb-2">
@@ -49,7 +48,6 @@
                 </div>
             }
 
-            <!-- 2. Durum Filtresi (Sağa Kaydırıldı) -->
             <div class="col-md-4 text-start mb-2">
                 <div class="input-group shadow-sm" style="border-radius: 12px; overflow: hidden; border: 1px solid #ced4da;">
                     <span class="input-group-text bg-white border-0 fw-bold text-muted" style="padding-right: 5px;">
@@ -66,7 +64,6 @@
             </div>
 
             <div class="col-md-4 text-end align-self-center">
-                <!-- Gelecekte buraya ek butonlar vb. eklenebilir -->
             </div>
 
         </div>
@@ -278,23 +275,23 @@
             modalBaslik.removeClass('text-primary text-warning text-info text-danger text-white text-light');
 
             if (url.indexOf('Create') !== -1) {
-                modalBaslik.text('✨ Yeni Rezervasyon Ekle').addClass('text-white');
+                modalBaslik.text(' Yeni Rezervasyon Ekle').addClass('text-white');
                 modalCerceve.removeClass('modal-lg');
             }
             else if (url.indexOf('Edit') !== -1) {
-                modalBaslik.text('✏️ Rezervasyonu Düzenle').addClass('text-white');
+                modalBaslik.text(' Rezervasyonu Düzenle').addClass('text-white');
                 modalCerceve.removeClass('modal-lg');
             }
             else if (url.indexOf('Details') !== -1) {
-                modalBaslik.text('🔍 Rezervasyon Detayları').addClass('text-white');
+                modalBaslik.text(' Rezervasyon Detayları').addClass('text-white');
                 modalCerceve.removeClass('modal-lg');
             }
             else if (url.indexOf('Delete') !== -1) {
-                modalBaslik.text('🗑️ Rezervasyonu Kalıcı Olarak Sil').addClass('text-white');
+                modalBaslik.text(' Rezervasyonu Kalıcı Olarak Sil').addClass('text-white');
                 modalCerceve.removeClass('modal-lg');
             }
             else if (url.indexOf('Cancel') !== -1) {
-                modalBaslik.text('🚫 Rezervasyonu İptal Et').addClass('text-white');
+                modalBaslik.text(' Rezervasyonu İptal Et').addClass('text-white');
                 modalCerceve.removeClass('modal-lg');
             }
             else {
@@ -353,11 +350,11 @@
                         $('#islemModali').modal('hide');
                         TabloyuDoldur();
                     } else {
-                        $('#hataMesajiAlaniDuzenle').removeClass('d-none').html('<strong>⚠️ Uyarı:</strong> ' + response.message);
+                        $('#hataMesajiAlaniDuzenle').removeClass('d-none').html('<strong> Uyarı:</strong> ' + response.message);
                     }
                 },
                 error: function () {
-                    $('#hataMesajiAlaniDuzenle').removeClass('d-none').html('<strong>❌ Sunucu Hatası.</strong>');
+                    $('#hataMesajiAlaniDuzenle').removeClass('d-none').html('<strong> Sunucu Hatası.</strong>');
                 }
             });
         }

@@ -45,6 +45,8 @@
     <Property Name="CompanyId" Type="Int32" />
     <Property Name="Attendees" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
     <Property Name="Title" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="TransactionDate" Type="DateTime" Precision="0" />
+    <Property Name="TransactionTime" Type="Time" Precision="7" />
   </EntityType>
   <EntityType Name="Companies">
     <Key>

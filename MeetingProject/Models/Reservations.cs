@@ -26,5 +26,7 @@ namespace MeetingProject.Models
         public Nullable<int> CompanyId { get; set; }
         public string Attendees { get; set; }
         public string Title { get; set; }
+        public Nullable<System.DateTime> TransactionDate { get; set; }
+        public Nullable<System.TimeSpan> TransactionTime { get; set; }
     }
 }

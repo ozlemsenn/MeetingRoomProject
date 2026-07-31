@@ -23,6 +23,8 @@
     <Property Name="CompanyId" Type="int" />
     <Property Name="Attendees" Type="nvarchar(max)" />
     <Property Name="Title" Type="nvarchar" MaxLength="100" />
+    <Property Name="TransactionDate" Type="date" />
+    <Property Name="TransactionTime" Type="time" Precision="7" />
   </EntityType>
   <EntityType Name="Rooms">
     <Key>

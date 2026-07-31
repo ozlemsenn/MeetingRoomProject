@@ -163,8 +163,6 @@
             }
         });
 
-        // 2. Select2 Kütüphanesini Başlat (Çirkin textbox'ları listeye çevir)
-        // Not: AJAX ile yüklendiğinde modalın açık olduğundan emin olmak için ufak bir gecikme iyidir.
         setTimeout(function () {
             $('.select2-kullanici').select2({
                 dropdownParent: $('#islemModali'),
@@ -180,7 +178,6 @@
             });
         }, 100);
 
-        // 3. Şirket Değiştiğinde Çalışacak AJAX (Admin İçin)
         $('#sirketSecimi').change(function () {
             var secilenSirketId = $(this).val();
 
@@ -215,7 +212,6 @@
                             katilimciDropdown.append('<option value="' + kullanici.Id + '">' + kullanici.TamAd + '</option>');
                         });
 
-                        // Seçenekler dolduktan sonra Select2'yi güncelle
                         $('.select2-kullanici, .select2-multiple').trigger('change.select2');
                     }
                 });
@@ -227,12 +223,10 @@
             }
         });
 
-        // 4. Admin sayfayı ilk açtığında şirket seçiliyse (veya hafızada varsa) listeyi otomatik doldur
         if ($('#sirketSecimi').val()) {
             $('#sirketSecimi').trigger('change');
         }
 
-        // 5. Kuran Kişi (UserId) Değiştiğinde Katılımcılardan Çıkar
         $('#UserId').change(function () {
             var secilenKuranKisi = $(this).val();
             var katilimciDropdown = $('select[name="SecilenKatilimcilar"]');
@@ -249,12 +243,10 @@
                 });
             }
 
-            // Kuran kişi dışındaki mevcut seçimleri geri yükle
             katilimciDropdown.val(mevcutSecimler);
 
-            // Select2 görünümünü güncelle
             katilimciDropdown.trigger('change.select2');
         });
 
-    }); // <-- İŞTE EKSİK OLAN HAYAT KURTARICI PARANTEZ BURADA!
+    }); 
 </script>
