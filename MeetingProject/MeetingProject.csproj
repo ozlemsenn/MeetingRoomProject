@@ -131,6 +131,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PersonelController.cs" />
     <Compile Include="Controllers\ReservationsController.cs" />
@@ -260,6 +261,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Account\" />
+    <Folder Include="Views\Base\" />
     <Folder Include="Views\Personel\" />
   </ItemGroup>
   <ItemGroup>

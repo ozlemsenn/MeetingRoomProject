@@ -8,9 +8,8 @@ using System.Text;
 namespace MeetingProject.Controllers
 {
     [Authorize(Roles = "Admin")]
-    public class AdminController : Controller
+    public class AdminController : BaseController
     {
-        Models.MeetingAppEntities1 db = new Models.MeetingAppEntities1();
         public ActionResult Index()
         {
             var bugun = DateTime.Today;

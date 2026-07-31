@@ -149,12 +149,11 @@
 </style>
 
 <script>
-    // AJAX ile Modal yüklendiğinde bu kod çalışır
     $(document).ready(function () {
         var guncelKullaniciListesi = [];
 
-        // 1. Sayfa (veya modal) ilk açıldığında UserId kutusunda veri varsa hafızaya al
-        $('select[name="UserId"] option').each(function () {
+        // ÇÖZÜM: Artık tüm şirketin geldiği Katılımcılar kutusuna bakıyor!
+        $('select[name="SecilenKatilimcilar"] option').each(function () {
             var kisiId = $(this).val();
             var kisiAd = $(this).text();
 
@@ -162,7 +161,6 @@
                 guncelKullaniciListesi.push({ Id: kisiId, TamAd: kisiAd });
             }
         });
-
         setTimeout(function () {
             $('.select2-kullanici').select2({
                 dropdownParent: $('#islemModali'),

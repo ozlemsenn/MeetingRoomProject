@@ -9,26 +9,52 @@ using System.Collections.Generic;
 namespace MeetingProject.Controllers
 {
     [Authorize] //sonradan ekledim
-    public class ReservationsController : Controller
+    public class ReservationsController : BaseController
     {
-        MeetingAppEntities1 db = new MeetingAppEntities1();
 
         public ActionResult Index()
         {
-            if (Session["UserRole"] == null)
+            if (string.IsNullOrEmpty(GecerliRol()))
             {
                 return RedirectToAction("Login", "Account");
             }
-            if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
+
+            bool isAdmin = GecerliRol() == "Admin";
+            bool isPersonel = GecerliRol() == "Personel";
+            int aktifSirketId = GecerliSirketId();
+            int aktifKullaniciId = GecerliKullaniciId();
+
+            if (isAdmin)
             {
                 ViewBag.Companies = new SelectList(db.Companies.ToList(), "Id", "Name");
             }
-            bool isAdmin = Session["UserRole"].ToString() == "Admin";
-            int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
 
-            var rezervasyonlar = db.Reservations
-                                  .Where(x => isAdmin || x.CompanyId == aktifSirketId)
-                                  .ToList();
+            // PERFORMANS: Veritabanından veriyi çekerken ön filtreleme yapıyoruz
+            var query = db.Reservations.AsQueryable();
+
+            if (!isAdmin)
+            {
+                query = query.Where(x => x.CompanyId == aktifSirketId);
+            }
+
+            if (isPersonel)
+            {
+                // SQL Seviyesinde Filtre: Sadece benim kurduklarım veya katılımcı listesi hiç boş olmayanlar
+                query = query.Where(x => x.UserId == aktifKullaniciId || (x.Attendees != null && x.Attendees != ""));
+            }
+
+            // Veriyi SQL'den RAM'e İndiriyoruz (Eskisine göre çok daha az veri iniyor)
+            var rezervasyonlar = query.ToList();
+
+            if (isPersonel)
+            {
+                // RAM Seviyesinde Süzme: İçinde adımın geçtiği virgüllü kayıtları bul
+                rezervasyonlar = rezervasyonlar
+                    .Where(x => x.UserId == aktifKullaniciId
+                             || (!string.IsNullOrEmpty(x.Attendees)
+                                 && x.Attendees.Split(',').Select(a => a.Trim()).Contains(aktifKullaniciId.ToString())))
+                    .ToList();
+            }
 
             return View(rezervasyonlar);
         }
@@ -36,29 +62,53 @@ namespace MeetingProject.Controllers
         [HttpGet]
         public ActionResult GetReservations()
         {
-            if (Session["UserRole"] == null)
+            if (string.IsNullOrEmpty(GecerliRol()))
             {
                 return Json(new List<object>(), JsonRequestBehavior.AllowGet);
             }
 
-            bool isAdmin = Session["UserRole"].ToString() == "Admin";
-            int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
+            bool isAdmin = GecerliRol() == "Admin";
+            bool isPersonel = GecerliRol() == "Personel";
+            int aktifSirketId = GecerliSirketId();
+            int aktifKullaniciId = GecerliKullaniciId();
 
-            var reservations = db.Reservations
-                .Where(r => isAdmin || r.CompanyId == aktifSirketId) 
-                .Select(r => new
-                {
-                    r.Id,
-                    r.CompanyId,
-                    RoomName = db.Rooms.FirstOrDefault(room => room.Id == r.RoomId).Name,
-                    UserName = db.Users.FirstOrDefault(user => user.Id == r.UserId).Name + " " + db.Users.FirstOrDefault(user => user.Id == r.UserId).Surname,
-                    Title = r.Title,
-                    Date = r.Date,
-                    StartTime = r.StartTime,
-                    EndTime = r.EndTime,
-                    Description = r.Description,
-                    Status = r.Status
-                }).ToList();
+            var query = db.Reservations.AsQueryable();
+
+            if (!isAdmin)
+            {
+                query = query.Where(r => r.CompanyId == aktifSirketId);
+            }
+
+            if (isPersonel)
+            {
+                // Sadece ilgili olabilecek veriyi SQL'den iste (Performans)
+                query = query.Where(r => r.UserId == aktifKullaniciId || (r.Attendees != null && r.Attendees != ""));
+            }
+
+            var reservations = query.Select(r => new
+            {
+                r.Id,
+                r.CompanyId,
+                r.UserId,
+                r.Attendees,
+                RoomName = db.Rooms.FirstOrDefault(room => room.Id == r.RoomId).Name,
+                UserName = db.Users.FirstOrDefault(user => user.Id == r.UserId).Name + " " + db.Users.FirstOrDefault(user => user.Id == r.UserId).Surname,
+                Title = r.Title,
+                Date = r.Date,
+                StartTime = r.StartTime,
+                EndTime = r.EndTime,
+                Description = r.Description,
+                Status = r.Status
+            }).ToList();
+
+            if (isPersonel)
+            {
+                reservations = reservations
+                    .Where(r => r.UserId == aktifKullaniciId
+                             || (!string.IsNullOrEmpty(r.Attendees)
+                                 && r.Attendees.Split(',').Select(a => a.Trim()).Contains(aktifKullaniciId.ToString())))
+                    .ToList();
+            }
 
             var formattedList = reservations.Select(r => {
 
@@ -142,8 +192,10 @@ namespace MeetingProject.Controllers
         [HttpGet]
         public ActionResult Create()
         {
-            bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
-            int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
+            // BaseController içindeki kendi yazdığımız güvenli metotları kullanıyoruz
+            bool isAdmin = GecerliRol() == "Admin";
+            int aktifSirketId = GecerliSirketId();
+            int aktifKullaniciId = GecerliKullaniciId();
 
             ViewBag.IsAdmin = isAdmin;
 
@@ -171,7 +223,11 @@ namespace MeetingProject.Controllers
 
                 var birlesikKullanicilar = sirketKullanicilar.Concat(adminler).OrderBy(u => u.TamAd).ToList();
 
-                ViewBag.Users = new SelectList(birlesikKullanicilar, "Id", "TamAd");
+                // 1. DOKUNUŞ: Kuran kişi listesinde SADECE aktif kullanıcının kendisi kalsın
+                var sadeceBen = birlesikKullanicilar.Where(u => u.Id == aktifKullaniciId).ToList();
+                ViewBag.Users = new SelectList(sadeceBen, "Id", "TamAd");
+
+                // 2. DOKUNUŞ: Katılımcılar kısmında ise şirketteki herkes görünsün
                 ViewBag.KullaniciListesi = new SelectList(birlesikKullanicilar, "Id", "TamAd");
             }
 
@@ -182,8 +238,10 @@ namespace MeetingProject.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(Reservations res, string[] SecilenKatilimcilar)
         {
-            bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
-            int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
+            // BaseController metotları
+            bool isAdmin = GecerliRol() == "Admin";
+            int aktifSirketId = GecerliSirketId();
+            int aktifKullaniciId = GecerliKullaniciId();
 
             if (isAdmin)
             {
@@ -191,19 +249,20 @@ namespace MeetingProject.Controllers
             }
             else
             {
-                res.CompanyId = Convert.ToInt32(Session["CompanyId"]);
+                res.CompanyId = aktifSirketId;
+
+                // GÜVENLİK KİLİDİ: Personel ise, Kuran Kişi (UserId) kesinlikle o anki oturum sahibidir!
+                // HTML tarafından (Öğeyi İncele ile vs.) başka ID gönderilse bile burada eziyoruz.
+                res.UserId = aktifKullaniciId;
             }
-                var secilenOda = db.Rooms.FirstOrDefault(r => r.Id == res.RoomId);
+
+            var secilenOda = db.Rooms.FirstOrDefault(r => r.Id == res.RoomId);
 
             if (secilenOda == null || (!isAdmin && secilenOda.CompanyId != aktifSirketId))
             {
                 return Json(new { success = false, message = "Bu odayı seçme yetkiniz yok!" });
             }
 
-            if (!isAdmin)
-            {
-                res.CompanyId = aktifSirketId;
-            }
             if (SecilenKatilimcilar == null || SecilenKatilimcilar.Length == 0)
             {
                 return Json(new { success = false, message = "En az bir katılımcı seçilmelidir." });
@@ -247,7 +306,6 @@ namespace MeetingProject.Controllers
                 return Json(new { success = false, message = "Bu saat aralığında odada başka bir toplantı var!" });
             }
 
-
             res.TransactionDate = DateTime.Now;
             res.TransactionTime = DateTime.Now.TimeOfDay;
             db.Reservations.Add(res);
@@ -272,11 +330,21 @@ namespace MeetingProject.Controllers
 
             return Json(sonuc, JsonRequestBehavior.AllowGet);
         }
-        
+
+        [HttpGet]
         public ActionResult Delete(int id)
         {
             var res = db.Reservations.Find(id);
             if (res == null) return HttpNotFound();
+
+            // BaseController metodlarını kullanıyoruz
+            bool isAdmin = GecerliRol() == "Admin";
+
+            // 1. KESİN KURAL: Admin değilse (Personelse) silme ekranı ASLA açılmasın!
+            if (!isAdmin)
+            {
+                return Content("<div class='alert alert-danger text-center m-4' style='border-radius:10px;'><i class='fas fa-shield-alt fa-3x mb-3 text-danger'></i><br><b class='d-block fs-5 mb-2'>Yetkisiz İşlem</b> Sadece sistem yöneticileri (Admin) kalıcı silme işlemi yapabilir. Rezervasyonu kaldırmak için lütfen 'İptal Et' (Yasak sembolü) butonunu kullanınız.</div>");
+            }
 
             var oda = db.Rooms.Find(res.RoomId);
             var user = db.Users.Find(res.UserId);
@@ -286,23 +354,31 @@ namespace MeetingProject.Controllers
 
             return PartialView(res);
         }
+
         [HttpPost]
         [ActionName("Delete")]
-        [ValidateAntiForgeryToken] 
+        [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirm(int id)
         {
-            int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
-            bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
+            // BaseController metodlarını kullanıyoruz
+            bool isAdmin = GecerliRol() == "Admin";
+
+            // 2. ARKA PLAN GÜVENLİĞİ: URL üzerinden zorla silmeye çalışırlarsa engelle
+            if (!isAdmin)
+            {
+                return Json(new { success = false, message = "Sadece sistem yöneticileri kalıcı silme işlemi yapabilir!" });
+            }
 
             var rezervasyon = db.Reservations.Find(id);
 
-            if (rezervasyon == null || (!isAdmin && rezervasyon.CompanyId != aktifSirketId))
+            if (rezervasyon == null)
             {
-                return Json(new { success = false, message = "Yetkisiz işlem!" });
+                return Json(new { success = false, message = "Kayıt bulunamadı!" });
             }
 
             db.Reservations.Remove(rezervasyon);
             db.SaveChanges();
+
             return Json(new { success = true });
         }
 
@@ -314,8 +390,11 @@ namespace MeetingProject.Controllers
                 return new HttpStatusCodeResult(System.Net.HttpStatusCode.BadRequest);
             }
 
-            bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
-            int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
+            // BaseController metodlarını kullanıyoruz
+            bool isAdmin = GecerliRol() == "Admin";
+            bool isPersonel = GecerliRol() == "Personel";
+            int aktifSirketId = GecerliSirketId();
+            int aktifKullaniciId = GecerliKullaniciId();
 
             var rezervasyon = db.Reservations.Find(id);
 
@@ -324,26 +403,35 @@ namespace MeetingProject.Controllers
                 return HttpNotFound("Bu rezervasyonu düzenleme yetkiniz yok veya kayıt bulunamadı.");
             }
 
-            var sirketOdalar = db.Rooms.Where(r => isAdmin || r.CompanyId == aktifSirketId).ToList();
-            var sirketKullanicilar = db.Users.Where(u => isAdmin || u.CompanyId == aktifSirketId).ToList();
+            if (isPersonel && rezervasyon.UserId != aktifKullaniciId)
+            {
+                return HttpNotFound("Sadece kendi oluşturduğunuz rezervasyonu düzenleyebilirsiniz.");
+            }
 
+            var sirketOdalar = db.Rooms.Where(r => isAdmin || r.CompanyId == aktifSirketId).ToList();
             ViewBag.Rooms = new SelectList(sirketOdalar, "Id", "Name", rezervasyon.RoomId);
 
-            var kullaniciSecimleri = sirketKullanicilar.Select(u => new
-            {
-                Id = u.Id,
-                TamAd = u.Name + " " + u.Surname
-            }).ToList();
-            ViewBag.Users = new SelectList(kullaniciSecimleri, "Id", "TamAd", rezervasyon.UserId);
+            // Listeleri Tek Seferde Çekelim
+            var sirketKullanicilar = db.Users
+                .Where(u => isAdmin || u.CompanyId == aktifSirketId)
+                .Select(u => new { Value = u.Id.ToString(), Text = u.Name + " " + u.Surname })
+                .ToList();
 
-            var katilimciSecimleri = sirketKullanicilar.Select(x => new
+            // DÜZENLEME EKRANI GÜVENLİĞİ: Personel ise "Kuran Kişi" listesinde sadece kendini görsün
+            if (isPersonel)
             {
-                Value = x.Id.ToString(), 
-                Text = x.Name + " " + x.Surname
-            }).ToList();
-            ViewBag.KullaniciListesi = new SelectList(katilimciSecimleri, "Value", "Text");
+                var sadeceBen = sirketKullanicilar.Where(u => u.Value == aktifKullaniciId.ToString()).ToList();
+                ViewBag.Users = new SelectList(sadeceBen, "Value", "Text", rezervasyon.UserId);
+            }
+            else
+            {
+                ViewBag.Users = new SelectList(sirketKullanicilar, "Value", "Text", rezervasyon.UserId);
+            }
 
-            return View(rezervasyon); 
+            // Katılımcılar listesinde herkes görünsün
+            ViewBag.KullaniciListesi = new SelectList(sirketKullanicilar, "Value", "Text");
+
+            return View(rezervasyon);
         }
 
         [HttpPost]
@@ -353,7 +441,9 @@ namespace MeetingProject.Controllers
             try
             {
                 int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
+                int aktifKullaniciId = Convert.ToInt32(Session["UserId"]);
                 bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
+                bool isPersonel = Session["UserRole"] != null && Session["UserRole"].ToString() == "Personel";
 
                 var mevcutRezervasyon = db.Reservations.Find(res.Id);
 
@@ -362,6 +452,10 @@ namespace MeetingProject.Controllers
                     return Json(new { success = false, message = "Bu rezervasyona müdahale etme yetkiniz yok!" });
                 }
 
+                if (isPersonel && mevcutRezervasyon.UserId != aktifKullaniciId)
+                {
+                    return Json(new { success = false, message = "Sadece kendi oluşturduğunuz rezervasyonu düzenleyebilirsiniz!" });
+                }
                 bool isOverlap = db.Reservations.Any(r =>
                     r.Id != res.Id &&
                     r.Status != "İptal Edildi" &&
@@ -406,7 +500,7 @@ namespace MeetingProject.Controllers
             }
         }
 
-        
+
         public ActionResult Cancel(int id)
         {
             var res = db.Reservations.Find(id);
@@ -414,6 +508,21 @@ namespace MeetingProject.Controllers
             {
                 return HttpNotFound();
             }
+
+            bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
+            bool isPersonel = Session["UserRole"] != null && Session["UserRole"].ToString() == "Personel";
+            int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
+            int aktifKullaniciId = Convert.ToInt32(Session["UserId"]);
+
+            if (!isAdmin && res.CompanyId != aktifSirketId)
+            {
+                return HttpNotFound("Bu kaydı iptal etme yetkiniz yok.");
+            }
+            if (isPersonel && res.UserId != aktifKullaniciId)
+            {
+                return HttpNotFound("Sadece kendi rezervasyonunuzu iptal edebilirsiniz.");
+            }
+
             var oda = db.Rooms.Find(res.RoomId);
             ViewBag.OdaAdi = oda != null ? oda.Name : "Oda Bilgisi Bulunamadı";
 
@@ -425,6 +534,22 @@ namespace MeetingProject.Controllers
         public ActionResult CancelConfirm(int id, string CancelReason)
         {
             var res = db.Reservations.Find(id);
+
+            // Artık BaseController'daki güvenli metotları kullanıyoruz
+            bool isAdmin = GecerliRol() == "Admin";
+            bool isPersonel = GecerliRol() == "Personel";
+            int aktifSirketId = GecerliSirketId();
+            int aktifKullaniciId = GecerliKullaniciId();
+
+            if (res == null || (!isAdmin && res.CompanyId != aktifSirketId))
+            {
+                return Json(new { success = false, message = "Yetkisiz işlem!" });
+            }
+            if (isPersonel && res.UserId != aktifKullaniciId)
+            {
+                return Json(new { success = false, message = "Sadece kendi rezervasyonunuzu iptal edebilirsiniz!" });
+            }
+
             if (res != null)
             {
                 res.Status = "İptal Edildi";
@@ -433,13 +558,14 @@ namespace MeetingProject.Controllers
                 res.TransactionDate = DateTime.Now;
                 res.TransactionTime = DateTime.Now.TimeOfDay;
 
-                db.Reservations.Add(res);
+                // DİKKAT: db.Reservations.Add(res); SATIRINI SİLDİK (Hata verdiriyordu)
 
                 db.SaveChanges();
                 return Json(new { success = true });
             }
             return Json(new { success = false, message = "Kayıt bulunamadı." });
         }
+
         [HttpGet]
         public ActionResult Details(int? id)
         {
@@ -449,12 +575,34 @@ namespace MeetingProject.Controllers
             }
 
             int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
+            int aktifKullaniciId = Convert.ToInt32(Session["UserId"]);
             bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
+            bool isPersonel = Session["UserRole"] != null && Session["UserRole"].ToString() == "Personel";
 
             var rezervasyon = db.Reservations.Find(id);
             if (rezervasyon == null || (!isAdmin && rezervasyon.CompanyId != aktifSirketId))
             {
                 return HttpNotFound("Kayıt bulunamadı veya yetkiniz yok.");
+            }
+
+            if (isPersonel && rezervasyon.UserId != aktifKullaniciId)
+            {
+                bool katilimciMi = false;
+
+                if (!string.IsNullOrEmpty(rezervasyon.Attendees))
+                {
+                    var katilimciIdListesi = rezervasyon.Attendees
+                        .Split(',')
+                        .Select(x => x.Trim())
+                        .ToList();
+
+                    katilimciMi = katilimciIdListesi.Contains(aktifKullaniciId.ToString());
+                }
+
+                if (!katilimciMi)
+                {
+                    return HttpNotFound("Bu rezervasyonun detayına bakma yetkiniz yok.");
+                }
             }
 
             var oda = db.Rooms.FirstOrDefault(r => r.Id == rezervasyon.RoomId);

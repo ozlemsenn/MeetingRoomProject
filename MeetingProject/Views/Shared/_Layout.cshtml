@@ -139,20 +139,16 @@
                 <i class="fas fa-calendar-alt text-primary me-3"></i> Rezervasyonlar
             </a>
 
-            @if (Session["UserRole"] != null && (Session["UserRole"].ToString() == "Admin" || Session["UserRole"].ToString() == "Yönetici"))
-            {
-                <a class="sidebar-link mb-2" href="/Rooms/Index">
-                    <i class="fas fa-building text-warning me-3"></i> Odalar
-                </a>
-            }
+            <!-- ARTIK HERKES GÖREBİLİR: ODALAR VE KULLANICILAR -->
+            <a class="sidebar-link mb-2" href="/Rooms/Index">
+                <i class="fas fa-building text-warning me-3"></i> Odalar
+            </a>
 
-            @if (Session["UserRole"]?.ToString() == "Admin" || Session["UserRole"]?.ToString() == "Yönetici")
-            {
-                <a class="sidebar-link mb-2" href="/Users/Index">
-                    <i class="fas fa-users text-success me-3"></i> Kullanıcılar
-                </a>
-            }
+            <a class="sidebar-link mb-2" href="/Users/Index">
+                <i class="fas fa-users text-success me-3"></i> Kullanıcılar
+            </a>
 
+            <!-- SADECE ADMİN GÖREBİLİR: YÖNETİM PANELİ -->
             @if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
             {
                 <hr style="opacity: 0.1; margin: 15px 0;">

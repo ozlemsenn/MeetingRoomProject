@@ -12,29 +12,33 @@ using MeetingProject.Models;
 namespace MeetingProject.Controllers
 {
     [Authorize] 
-    public class RoomsController : Controller
+    public class RoomsController : BaseController
     {
-        private MeetingAppEntities1 db = new MeetingAppEntities1();
 
         public ActionResult Index()
         {
-            if (Session["UserRole"] == null)
+            // 1. Güvenlik Kontrolü
+            if (string.IsNullOrEmpty(GecerliRol()))
             {
                 return RedirectToAction("Login", "Account");
             }
 
-            int aktifSirketId = 0;
-            if (Session["CompanyId"] != null)
-            {
-                aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
-            }
-            bool isAdmin = Session["UserRole"].ToString() == "Admin";
-            var filtreliOdalar = db.Rooms.Where(x => isAdmin || x.CompanyId == aktifSirketId).ToList();
+            // 2. BaseController'dan verileri temiz bir şekilde alıyoruz
+            bool isAdmin = GecerliRol() == "Admin";
+            int aktifSirketId = GecerliSirketId();
 
-            if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
+            // 3. HTML (View) tarafında "Yeni Ekle, Sil, Düzenle" butonlarını gizlemek için bunu gönderiyoruz!
+            ViewBag.IsAdmin = isAdmin;
+
+            // 4. Eğer Admin ise sayfadaki filtreleme Dropdown'ı için şirket listesini gönderiyoruz
+            if (isAdmin)
             {
                 ViewBag.Companies = new SelectList(db.Companies.ToList(), "Id", "Name");
             }
+
+            // 5. Veritabanından filtreli çekim
+            // Admin ise tüm odalar gelir, personel ise SADECE aktifSirketId'ye uyan odalar gelir.
+            var filtreliOdalar = db.Rooms.Where(x => isAdmin || x.CompanyId == aktifSirketId).ToList();
 
             return View(filtreliOdalar);
         }

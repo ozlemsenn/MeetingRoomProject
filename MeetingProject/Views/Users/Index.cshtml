@@ -12,11 +12,14 @@
             <h2 class="text-primary fw-bold">Kullanıcı (Çalışan) Yönetimi</h2>
             <p class="text-muted">Sistemde kayıtlı kullanıcıları buradan yönetebilir ve yeni kullanıcı ekleyebilirsiniz.</p>
         </div>
-        <div class="col-md-4 text-right" style="display: flex; justify-content: flex-end; align-items: center;">
-            <a href="/Users/Create" class="btn btn-primary modal-tetikle" style="font-weight: bold; min-width: 150px;">
-                + Yeni Kullanıcı
-            </a>
-        </div>
+        @if (ViewBag.IsAdmin != null && (bool)ViewBag.IsAdmin)
+        {
+            <div class="col-md-4 text-right" style="display: flex; justify-content: flex-end; align-items: center;">
+                <a href="/Users/Create" class="btn btn-primary modal-tetikle" style="font-weight: bold; min-width: 150px;">
+                    + Yeni Kullanıcı
+                </a>
+            </div>
+        }
     </div>
 
     @if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
@@ -73,6 +76,9 @@
 
 @section Scripts {
     <script>
+        // Ufak bir yazım hatan vardı (parantez eksikti), onu düzelttim:
+        var isKullaniciAdmin = '@(ViewBag.IsAdmin != null && (bool)ViewBag.IsAdmin ? "true" : "false")' === 'true';
+
         function KullanicilariYukle() {
             $.ajax({
                 url: '/Users/GetUsers',
@@ -90,7 +96,7 @@
 
                         if (secilenSirket && secilenSirket !== "") {
                             if (String(user.CompanyId) !== String(secilenSirket)) {
-                                return true; 
+                                return true;
                             }
                         }
 
@@ -99,24 +105,29 @@
                         tabloIcerigi += '<td class="align-middle">' + user.Surname + '</td>';
                         tabloIcerigi += '<td class="align-middle"><a href="mailto:' + user.Email + '" class="text-info">' + user.Email + '</a></td>';
                         tabloIcerigi += '<td class="align-middle"><span class="badge" style="padding: 6px 10px; background-color: #adb5bd; color: #212529; font-weight: 600;">' + user.Department + '</span></td>';
-                        tabloIcerigi += '<td class="align-middle text-center text-nowrap">' +
-                            '<div class="d-flex justify-content-evenly align-items-center flex-nowrap w-100 px-3">' +
 
+                        // --- İŞLEMLER SÜTUNU BAŞLANGICI ---
+                        var islemButonlari = '<div class="d-flex justify-content-evenly align-items-center flex-nowrap w-100 px-3">' +
+                            // Detaylar butonu HERKESE açık
                             '<a href="/Users/Details/' + user.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Detaylar">' +
                             '<i class="fas fa-eye" style="font-size: 1.1rem;"></i>' +
-                            '</a>' +
+                            '</a>';
 
-                            '<a href="/Users/Edit/' + user.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Düzenle">' +
-                            '<i class="fas fa-edit" style="font-size: 1.15rem;"></i>' +
-                            '</a>' +
+                        // Düzenle ve Sil butonları SADECE ADMİNE açık
+                        if (isKullaniciAdmin) {
+                            islemButonlari += '<a href="/Users/Edit/' + user.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Düzenle">' +
+                                '<i class="fas fa-edit" style="font-size: 1.15rem;"></i>' +
+                                '</a>' +
+                                '<a href="/Users/Delete/' + user.Id + '" class="btn btn-sm text-danger border-0 shadow-none modal-tetikle p-1" title="Sil">' +
+                                '<i class="fas fa-trash-alt" style="font-size: 1.15rem;"></i>' +
+                                '</a>';
+                        }
 
-                            '<a href="/Users/Delete/' + user.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Sil">' +
-                            '<i class="fas fa-trash-alt" style="font-size: 1.15rem;"></i>' +
-                            '</a>' +
+                        islemButonlari += '</div>';
 
-                            '</div>' +
-                            '</td>';
+                        tabloIcerigi += '<td class="align-middle text-center text-nowrap">' + islemButonlari + '</td>';
                         tabloIcerigi += '</tr>';
+                        // --- İŞLEMLER SÜTUNU BİTİŞİ ---
                     });
 
                     if (tabloIcerigi === '') {

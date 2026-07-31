@@ -103,6 +103,9 @@
 </div>
 
 @section scripts {
+    <!-- SweetAlert2 (Şık Uyarı Mesajları İçin) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         $(document).ready(function () {
             TabloyuDoldur();
@@ -114,9 +117,9 @@
             var parcalar = tarihStr.split('.');
             var formatliTarih = tarihStr;
             if (parcalar.length === 3) {
-                formatliTarih = parcalar[2] + parcalar[1] + parcalar[0]; 
+                formatliTarih = parcalar[2] + parcalar[1] + parcalar[0];
             } else {
-                formatliTarih = tarihStr.replace(/-/g, ''); 
+                formatliTarih = tarihStr.replace(/-/g, '');
             }
 
             var formatliSaat = (saatStr || "").replace(/:/g, '').padEnd(4, '0');
@@ -215,59 +218,7 @@
             });
         }
 
-        function TarihSecildi() {
-            var tarih = $('#tarihInput').val();
-            if (tarih) {
-                $('#btnDolulukGoster').removeClass('d-none');
-                if ($('#dolulukAlani').is(':visible')) {
-                    YenidenYukle();
-                }
-            } else {
-                $('#btnDolulukGoster').addClass('d-none');
-                $('#dolulukAlani').hide();
-            }
-        }
-
-        function DolulukDurumunuGetir() {
-            if ($('#dolulukAlani').is(':visible')) {
-                $('#dolulukAlani').slideUp();
-                return;
-            }
-            YenidenYukle();
-        }
-
-        function YenidenYukle() {
-            var secilenTarih = $('#tarihInput').val();
-            var mevcutId = $('#formDuzenle input[name="Id"]').val() || 0;
-
-            $.ajax({
-                url: '/Reservations/GetReservationsByDate',
-                type: 'GET',
-                data: { date: secilenTarih, excludeId: mevcutId },
-                success: function (data) {
-                    var html = '<h6 class="fw-bold mb-3"><i class="fas fa-info-circle"></i> ' + secilenTarih + ' Doluluk Durumu:</h6>';
-
-                    if (data.length === 0) {
-                        html += '<p class="text-muted small">Bu tarihte başka rezervasyon yok.</p>';
-                    } else {
-                        html += '<ul class="list-group list-group-flush">';
-                        $.each(data, function (i, item) {
-                            html += '<li class="list-group-item bg-transparent d-flex justify-content-between">' +
-                                '<span>' + item.RoomName + '</span>' +
-                                '<span class="badge bg-secondary">' + item.StartTime + ' - ' + item.EndTime + '</span></li>';
-                        });
-                        html += '</ul>';
-                    }
-
-                    $('#dolulukIcerik').html(html);
-                    $('#dolulukAlani').slideDown();
-                },
-                error: function () {
-                    alert("Doluluk bilgisi alınırken bir hata oluştu.");
-                }
-            });
-        }
-
+        // MODAL AÇMA KODU (YETKİSİZ GİRİŞLER BURADA YAKALANACAK)
         function ModalAc(url) {
             var modalCerceve = $('#islemModali .modal-dialog');
             var modalBaslik = $('#modalBaslik');
@@ -298,15 +249,26 @@
                 modalBaslik.text('Rezervasyon İşlemi').addClass('text-white');
             }
 
-            $.get(url, function (data) {
-                $('#modalIcerik').html(data);
-                $('#islemModali').modal('show');
-            });
+            // GET İsteğini Başlat
+            $.get(url)
+                .done(function (data) {
+                    // Eğer C# tarafında yetki varsa ve form geldiyse
+                    $('#modalIcerik').html(data);
+                    $('#islemModali').modal('show');
+                })
+                .fail(function (xhr) {
+                    // EĞER C# TARAFINDA HttpNotFound VERİLİRSE (Yetkisiz) BURASI ÇALIŞIR
+                    var hataMesaji = "<div class='alert alert-danger text-center m-4 p-4' style='border-radius:15px;'>" +
+                        "<i class='fas fa-ban fa-3x mb-3 text-danger'></i><br>" +
+                        "<h5 class='fw-bold'>Yetkisiz İşlem!</h5>" +
+                        "<p class='mb-0'>Sadece kendi oluşturduğunuz rezervasyonlara müdahale edebilirsiniz.</p></div>";
+                    $('#modalIcerik').html(hataMesaji);
+                    $('#islemModali').modal('show');
+                });
         }
 
         function Kaydet() {
             var formData = $('#formRezervasyon').serialize();
-
             $('#hataMesajiAlani').addClass('d-none');
 
             $.ajax({
@@ -317,23 +279,31 @@
                     if (response.success) {
                         $('#islemModali').modal('hide');
                         TabloyuDoldur();
+                        Swal.fire('Başarılı!', 'Rezervasyon eklendi.', 'success');
                     } else {
                         $('#hataMesajiAlani').removeClass('d-none').html('<strong>⚠️ Uyarı:</strong> ' + response.message);
                     }
                 },
-                error: function (xhr, status, error) {
+                error: function () {
                     $('#hataMesajiAlani').removeClass('d-none').html('<strong>❌ Sunucu Hatası:</strong> İşlem tamamlanamadı.');
                 }
             });
         }
 
+        // SİLME İŞLEMİ GÜNCELLENDİ (HATA MESAJLARI YAKALANIYOR)
         function Sil() {
             var formData = $('#formSil').serialize();
             $.post('/Reservations/Delete', formData, function (response) {
                 if (response.success) {
                     $('#islemModali').modal('hide');
                     TabloyuDoldur();
+                    Swal.fire({ title: 'Silindi!', text: 'Rezervasyon başarıyla silindi.', icon: 'success', timer: 2000, showConfirmButton: false });
+                } else {
+                    // YETKİ YOKSA BURADA KULLANICIYA MESAJ ÇIKAR
+                    Swal.fire('Yetkisiz İşlem!', response.message || "Bu işlemi yapamazsınız.", 'error');
                 }
+            }).fail(function () {
+                Swal.fire('Hata!', 'Sunucu ile iletişim kurulamadı.', 'error');
             });
         }
 
@@ -349,6 +319,7 @@
                     if (response.success) {
                         $('#islemModali').modal('hide');
                         TabloyuDoldur();
+                        Swal.fire('Başarılı!', 'Rezervasyon güncellendi.', 'success');
                     } else {
                         $('#hataMesajiAlaniDuzenle').removeClass('d-none').html('<strong> Uyarı:</strong> ' + response.message);
                     }
@@ -359,16 +330,20 @@
             });
         }
 
+        // İPTAL İŞLEMİ GÜNCELLENDİ (HATA MESAJLARI YAKALANIYOR)
         function IptalOnayla() {
             var formData = $('#formIptal').serialize();
-
             $.post('/Reservations/CancelConfirm', formData, function (response) {
                 if (response.success) {
                     $('#islemModali').modal('hide');
                     TabloyuDoldur();
+                    Swal.fire({ title: 'İptal Edildi!', text: 'Rezervasyon başarıyla iptal edildi.', icon: 'success', timer: 2000, showConfirmButton: false });
                 } else {
-                    alert("İşlem sırasında bir hata oluştu.");
+                    // YETKİ YOKSA BURADA KULLANICIYA MESAJ ÇIKAR
+                    Swal.fire('Uyarı!', response.message || "İşlem yapılamadı.", 'warning');
                 }
+            }).fail(function () {
+                Swal.fire('Hata!', 'Sunucu ile iletişim kurulamadı.', 'error');
             });
         }
     </script>

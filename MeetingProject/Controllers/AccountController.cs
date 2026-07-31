@@ -68,11 +68,8 @@ namespace MeetingProject.Controllers
         [HttpGet]
         public ActionResult Logout()
         {
-            // 1. Kullanıcının tüm Session (Oturum / Yaka Kartı) bilgilerini temizle
             Session.Clear();
             Session.Abandon();
-
-            // 2. Çerezleri (Cookies) temizlemek istersen (Beni Hatırla yaptıysan)
             if (Request.Cookies["UserCookie"] != null)
             {
                 var cookie = new HttpCookie("UserCookie");
@@ -80,7 +77,6 @@ namespace MeetingProject.Controllers
                 Response.Cookies.Add(cookie);
             }
 
-            // 3. Kullanıcıyı Login (Giriş) ekranına geri postala
             return RedirectToAction("Login", "Auth");
         }
     }

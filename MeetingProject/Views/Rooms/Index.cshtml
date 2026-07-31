@@ -8,12 +8,15 @@
             <h2 class="text-primary fw-bold">Oda Yönetimi</h2>
             <p class="text-muted">Sistemde kayıtlı odaları buradan yönetebilir ve yeni oda ekleyebilirsiniz.</p>
         </div>
-        <div class="col-md-4 text-right" style="display: flex; justify-content: flex-end; align-items: center;">
-
-            <a href="/Rooms/Create" class="btn btn-primary modal-tetikle" style="font-weight: bold; min-width: 150px;">
-                + Yeni Oda
-            </a>
-        </div>
+        <!-- YENİ ODA BUTONU (Sadece Admin Görebilir) -->
+        @if (ViewBag.IsAdmin != null && (bool)ViewBag.IsAdmin)
+        {
+            <div class="col-md-4 text-right" style="display: flex; justify-content: flex-end; align-items: center;">
+                <a href="/Rooms/Create" class="btn btn-primary modal-tetikle" style="font-weight: bold; min-width: 150px;">
+                    + Yeni Oda
+                </a>
+            </div>
+        }
     </div>
 
     @if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
@@ -68,6 +71,8 @@
 
 @section Scripts {
     <script>
+        var isKullaniciAdmin = '@ViewBag.IsAdmin != null && (bool)ViewBag.IsAdmin ? "true" : "false")' === 'true';
+
         function OdalariYukle() {
             $.ajax({
                 url: '/Rooms/GetRooms',
@@ -108,23 +113,27 @@
                         tabloIcerigi += '<td class="align-middle">' + oda.Capacity + ' Kişilik</td>';
                         tabloIcerigi += '<td class="align-middle">' + projeksiyonHtml + '</td>';
 
-                        tabloIcerigi += '<td class="align-middle text-center text-nowrap">' +
-                            '<div class="d-flex justify-content-evenly align-items-center flex-nowrap w-100 px-3">' +
-
+                        // İşlem butonlarını bir değişkende topluyoruz
+                        var islemButonlari = '<div class="d-flex justify-content-evenly align-items-center flex-nowrap w-100 px-3">' +
+                            // 1. Göz (Detay) butonu herkese açık
                             '<a href="/Rooms/Details/' + oda.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Detaylar">' +
                             '<i class="fas fa-eye" style="font-size: 1.1rem;"></i>' +
-                            '</a>' +
+                            '</a>';
 
-                            '<a href="/Rooms/Edit/' + oda.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Düzenle">' +
-                            '<i class="fas fa-edit" style="font-size: 1.15rem;"></i>' +
-                            '</a>' +
+                        // 2. Eğer kullanıcı Admin ise Düzenle ve Sil butonlarını ekle
+                        if (isKullaniciAdmin) {
+                            islemButonlari += '<a href="/Rooms/Edit/' + oda.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Düzenle">' +
+                                '<i class="fas fa-edit" style="font-size: 1.15rem;"></i>' +
+                                '</a>' +
+                                '<a href="/Rooms/Delete/' + oda.Id + '" class="btn btn-sm text-danger border-0 shadow-none modal-tetikle p-1" title="Sil">' +
+                                '<i class="fas fa-trash-alt" style="font-size: 1.15rem;"></i>' +
+                                '</a>';
+                        }
 
-                            '<a href="/Rooms/Delete/' + oda.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Sil">' +
-                            '<i class="fas fa-trash-alt" style="font-size: 1.15rem;"></i>' +
-                            '</a>' +
+                        islemButonlari += '</div>';
 
-                            '</div>' +
-                            '</td>';
+                        // Hazırladığımız butonları tabloya ekliyoruz
+                        tabloIcerigi += '<td class="align-middle text-center text-nowrap">' + islemButonlari + '</td>';
                         tabloIcerigi += '</tr>';
                     });
 
@@ -168,19 +177,19 @@
                 modalBaslik.removeClass('text-primary text-warning text-info text-danger text-white text-light');
 
                 if (gidilecekAdres.indexOf('Create') !== -1) {
-                    modalBaslik.text('✨ Yeni Oda Ekle').addClass('text-white');
+                    modalBaslik.text(' Yeni Oda Ekle').addClass('text-white');
                     modalCerceve.removeClass('modal-lg');
                 }
                 else if (gidilecekAdres.indexOf('Edit') !== -1) {
-                    modalBaslik.text('✏️ Odayı Düzenle').addClass('text-white');
+                    modalBaslik.text(' Odayı Düzenle').addClass('text-white');
                     modalCerceve.removeClass('modal-lg');
                 }
                 else if (gidilecekAdres.indexOf('Details') !== -1) {
-                    modalBaslik.text('🔍 Oda Detayları').addClass('text-white');
+                    modalBaslik.text(' Oda Detayları').addClass('text-white');
                     modalCerceve.removeClass('modal-lg');
                 }
                 else if (gidilecekAdres.indexOf('Delete') !== -1) {
-                    modalBaslik.text('🗑️ Oda Silme Onayı').addClass('text-white');
+                    modalBaslik.text(' Oda Silme Onayı').addClass('text-white');
                     modalCerceve.removeClass('modal-lg');
                 }
 
