@@ -15,22 +15,35 @@
             </a>
         </div>
     </div>
+
+    @if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
+    {
+        <div class="row mb-3">
+            <div class="col-md-4 text-start">
+                <div class="input-group shadow-sm" style="border-radius: 12px; overflow: hidden; border: 1px solid #ced4da;">
+                    <span class="input-group-text bg-white border-0 fw-bold text-muted">
+                        <i class="fas fa-building text-primary me-1"></i> Şirket:
+                    </span>
+                    <!-- DİKKAT: onchange="OdalariYukle()" OLARAK DÜZELTİLDİ -->
+                    @Html.DropDownList("sirketFiltre", (SelectList)ViewBag.Companies, "Tüm Şirketler", new { @class = "form-select border-0 text-dark fw-semibold", @id = "sirketFiltre", @style = "cursor: pointer; background-color: #f8f9fa;", onchange = "OdalariYukle()" })
+                </div>
+            </div>
+        </div>
+    }
+
     <div class="table-responsive" style="overflow-x: auto">
         <table id="odaTablosu" class="table table-hover table-striped table-bordered text-center w-100" style="width: 100%; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
             <thead class="thead-dark" style="background-color: #343a40; color: white;">
                 <tr>
                     <th class="text-center align-middle" style="width: 30%;">Oda Adı</th>
-
                     <th class="text-center align-middle" style="width: 20%;">Kapasite</th>
-
                     <th class="text-center align-middle" style="width: 25%;">Projeksiyon Durumu</th>
-
                     <th class="text-center align-middle" style="width: 15%; min-width: 130px;">İşlemler</th>
                 </tr>
             </thead>
             <tbody id="odaListesi">
                 <tr>
-                    <td colspan="5" class="text-muted" style="padding: 20px;">Kullanıcılar yükleniyor, lütfen bekleyin...</td>
+                    <td colspan="4" class="text-muted" style="padding: 20px;">Odalar yükleniyor, lütfen bekleyin...</td>
                 </tr>
             </tbody>
         </table>
@@ -50,199 +63,228 @@
             </div>
         </div>
     </div>
-    @section Scripts {
-        <script>
-            function OdalariYukle() {
-                $.ajax({
-                    url: '/Rooms/GetRooms',
-                    type: 'GET',
-                    success: function (data) {
-                        var tabloIcerigi = '';
 
-                        $.each(data, function (index, oda) {
-                            var projeksiyonHtml = '<span class="text-muted">Belirtilmedi</span>';
-                            if (oda.HasProjector === true) {
-                                projeksiyonHtml = '<span class="text-success fw-bold">Var</span>';
-                            } else if (oda.HasProjector === false) {
-                                projeksiyonHtml = '<span class="text-danger fw-bold">Yok</span>';
-                            }
+</div>
 
-                            tabloIcerigi += '<tr>';
-                            tabloIcerigi += '<td class="align-middle" style="text-transform: capitalize;">' + oda.Name + '</td>';
-                            tabloIcerigi += '<td class="align-middle">' + oda.Capacity + '</td>';
-                            tabloIcerigi += '<td class="align-middle">' + projeksiyonHtml + '</td>';
+@section Scripts {
+    <script>
+        function OdalariYukle() {
+            $.ajax({
+                url: '/Rooms/GetRooms',
+                type: 'GET',
+                success: function (data) {
 
-                            tabloIcerigi += '<td class="align-middle text-center text-nowrap">' +
-                                '<div class="d-flex justify-content-evenly align-items-center flex-nowrap w-100 px-3">' +
-
-                                '<a href="/Rooms/Details/' + oda.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Detaylar">' +
-                                '<i class="fas fa-eye" style="font-size: 1.1rem;"></i>' +
-                                '</a>' +
-
-                                '<a href="/Rooms/Edit/' + oda.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Düzenle">' +
-                                '<i class="fas fa-edit" style="font-size: 1.15rem;"></i>' +
-                                '</a>' +
-
-                                '<a href="/Rooms/Delete/' + oda.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Sil">' +
-                                '<i class="fas fa-trash-alt" style="font-size: 1.15rem;"></i>' +
-                                '</a>' +
-
-                                '</div>' +
-                                '</td>';
-                            tabloIcerigi += '</tr>';
-                        });
-
-                        $('#odaListesi').html(tabloIcerigi);
-                        if ($.fn.DataTable.isDataTable('#odaTablosu')) {
-                            $('#odaTablosu').DataTable().destroy();
-                        }
-
-                        $('#odaListesi').html(tabloIcerigi);
-
-                        $('#odaTablosu').DataTable({
-                            language: {
-                                url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json"
-                            },
-                            "autowidth": false,
-                            "columnDefs": [
-                                {"width": "140px", "targets": -1}
-                            ]
-                        });
-                    },
-                    error: function () {
-                        console.log("Odalar yüklenirken sunucuya ulaşılamadı.");
-                    }
-                });
-            }
-
-            $(document).ready(function () {
-                OdalariYukle();
-
-                $(document).on('click', '.modal-tetikle', function (Olay) {
-                    Olay.preventDefault();
-                    var gidilecekAdres = $(this).attr('href');
-                    var modalCerceve = $('#odaModali .modal-dialog');
-                    var modalBaslik = $('#modalBaslik');
-
-                    modalBaslik.removeClass('text-primary text-warning text-info text-danger text-white text-light');
-
-                    if (gidilecekAdres.indexOf('Create') !== -1) {
-                        modalBaslik.text('✨ Yeni Oda Ekle').addClass('text-white');
-                        modalCerceve.removeClass('modal-lg');
-                    }
-                    else if (gidilecekAdres.indexOf('Edit') !== -1) {
-                        modalBaslik.text('✏️ Odayı Düzenle').addClass('text-white');
-                        modalCerceve.removeClass('modal-lg');
-                    }
-                    else if (gidilecekAdres.indexOf('Details') !== -1) {
-                        modalBaslik.text('🔍 Oda Detayları').addClass('text-white');
-                        modalCerceve.removeClass('modal-lg');
-                    }
-                    else if (gidilecekAdres.indexOf('Delete') !== -1) {
-                        modalBaslik.text('🗑️ Oda Silme Onayı').addClass('text-white');
-                        modalCerceve.removeClass('modal-lg');
+                    // 1. Önce eski tabloyu tamamen temizle
+                    if ($.fn.DataTable.isDataTable('#odaTablosu')) {
+                        $('#odaTablosu').DataTable().clear().destroy();
                     }
 
-                    $('#modalinIci').load(gidilecekAdres, function () {
-                        $('#odaModali').modal('show');
+                    var tabloIcerigi = '';
 
-                        if (gidilecekAdres.indexOf('/Rooms/Edit/') !== -1 ||
-                            gidilecekAdres.indexOf('/Rooms/Delete/') !== -1 ||
-                            gidilecekAdres.indexOf('/Rooms/Details/') !== -1) {
+                    // 2. Filtre değerini al
+                    var secilenSirket = $('#sirketFiltre').val();
 
-                            var odaId = gidilecekAdres.split('/').pop();
+                    // 3. Tek bir döngüde hem kontrol et hem çiz
+                    $.each(data, function (index, oda) {
 
-                            $.ajax({
-                                url: '/Rooms/GetRoomData/' + odaId,
-                                type: 'GET',
-                                success: function (odaBilgisi) {
-
-                                    if (gidilecekAdres.indexOf('/Rooms/Edit/') !== -1) {
-                                        $('#EditId').val(odaBilgisi.Id);
-                                        $('#EditName').val(odaBilgisi.Name);
-                                        $('#EditCapacity').val(odaBilgisi.Capacity);
-
-                                        if (odaBilgisi.HasProjector === true) $('#EditHasProjector').val("true");
-                                        else if (odaBilgisi.HasProjector === false) $('#EditHasProjector').val("false");
-                                        else $('#EditHasProjector').val("");
-                                    }
-
-                                    else if (gidilecekAdres.indexOf('/Rooms/Delete/') !== -1) {
-                                        $('#DeleteId').val(odaBilgisi.Id);
-                                        $('#DeleteName').text(odaBilgisi.Name);
-                                        $('#DeleteCapacity').text(odaBilgisi.Capacity + ' Kişilik');
-
-                                        if (odaBilgisi.HasProjector === true) $('#DeleteProjector').html('<span class="text-success fw-bold">Var</span>');
-                                        else if (odaBilgisi.HasProjector === false) $('#DeleteProjector').html('<span class="text-danger fw-bold">Yok</span>');
-                                        else $('#DeleteProjector').html('<span class="text-muted">Belirtilmedi</span>');
-                                    }
-
-                                    else if (gidilecekAdres.indexOf('/Rooms/Details/') !== -1) {
-                                        $('#DetailsName').text(odaBilgisi.Name);
-                                        $('#DetailsCapacity').text(odaBilgisi.Capacity + ' Kişilik');
-
-                                        if (odaBilgisi.HasProjector === true) $('#DetailsHasProjector').html('<span class="text-success fw-bold">Var</span>');
-                                        else if (odaBilgisi.HasProjector === false) $('#DetailsHasProjector').html('<span class="text-danger fw-bold">Yok</span>');
-                                        else $('#DetailsHasProjector').html('<span class="text-muted">Belirtilmedi</span>');
-                                    }
-                                }
-                            });
-                        }
-                    });
-                });
-
-                $(document).on("submit", "#createForm", function (e) {
-                    e.preventDefault();
-                    $.ajax({
-                        url: "/Rooms/Create",
-                        type: "POST",
-                        data: $(this).serialize(),
-                        success: function (result) {
-                            if (result.success) {
-                                $('#odaModali').modal('hide');
-                                OdalariYukle();
-                            } else {
-                                alert("Kayıt başarısız oldu.");
+                        // --- FİLTRELEME MANTIĞI BURADA ÇALIŞACAK ---
+                        if (secilenSirket && secilenSirket !== "") {
+                            // C# tarafından küçük 'c' ile (companyId) geliyor
+                            if (String(oda.companyId) !== String(secilenSirket)) {
+                                return true; // Şirket uyuşmuyorsa bu odayı tabloya çizmeden atla
                             }
                         }
-                    });
-                });
+                        // ------------------------------------------
 
-                $(document).on("submit", "#editForm", function (e) {
-                    e.preventDefault();
-                    $.ajax({
-                        url: "/Rooms/Edit",
-                        type: "POST",
-                        data: $(this).serialize(),
-                        success: function (result) {
-                            if (result.success) {
-                                $('#odaModali').modal('hide');
-                                OdalariYukle();
-                            } else {
-                                alert("Güncelleme başarısız oldu.");
-                            }
+                        var projeksiyonHtml = '<span class="text-muted">Belirtilmedi</span>';
+                        if (oda.HasProjector === true) {
+                            projeksiyonHtml = '<span class="text-success fw-bold">Var</span>';
+                        } else if (oda.HasProjector === false) {
+                            projeksiyonHtml = '<span class="text-danger fw-bold">Yok</span>';
                         }
-                    });
-                });
 
-                $(document).on("submit", "#deleteForm", function (e) {
-                    e.preventDefault();
-                    var silinecekId = $('#DeleteId').val();
-                    $.ajax({
-                        url: "/Rooms/Delete/" + silinecekId,
-                        type: "POST",
-                        data: $(this).serialize(),
-                        success: function (result) {
-                            if (result.success) {
-                                $('#odaModali').modal('hide');
-                                OdalariYukle();
-                            } else {
-                                alert("Silme işlemi başarısız oldu.");
-                            }
-                        }
-                    });
-                });
+                        tabloIcerigi += '<tr>';
+                        tabloIcerigi += '<td class="align-middle" style="text-transform: capitalize;">' + oda.Name + '</td>';
+                        tabloIcerigi += '<td class="align-middle">' + oda.Capacity + ' Kişilik</td>';
+                        tabloIcerigi += '<td class="align-middle">' + projeksiyonHtml + '</td>';
 
+                        tabloIcerigi += '<td class="align-middle text-center text-nowrap">' +
+                            '<div class="d-flex justify-content-evenly align-items-center flex-nowrap w-100 px-3">' +
+
+                            '<a href="/Rooms/Details/' + oda.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Detaylar">' +
+                            '<i class="fas fa-eye" style="font-size: 1.1rem;"></i>' +
+                            '</a>' +
+
+                            '<a href="/Rooms/Edit/' + oda.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Düzenle">' +
+                            '<i class="fas fa-edit" style="font-size: 1.15rem;"></i>' +
+                            '</a>' +
+
+                            '<a href="/Rooms/Delete/' + oda.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Sil">' +
+                            '<i class="fas fa-trash-alt" style="font-size: 1.15rem;"></i>' +
+                            '</a>' +
+
+                            '</div>' +
+                            '</td>';
+                        tabloIcerigi += '</tr>';
+                    });
+
+                    // Eğer filtreleme sonucunda hiç oda kalmadıysa kullanıcıya mesaj göster
+                    if (tabloIcerigi === '') {
+                        tabloIcerigi = '<tr><td colspan="4" class="text-center text-muted" style="padding: 20px;">Bu şirkete ait kayıtlı oda bulunmuyor.</td></tr>';
+                    }
+
+                    // HTML'i sayfaya basıyoruz
+                    $('#odaListesi').html(tabloIcerigi);
+
+                    // Ve DataTables'ı yeniden başlatıyoruz
+                    $('#odaTablosu').DataTable({
+                        language: {
+                            url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json"
+                        },
+                        "autowidth": false,
+                        "columnDefs": [
+                            { "width": "140px", "targets": -1 }
+                        ]
+                    });
+                },
+                error: function () {
+                    console.log("Odalar yüklenirken sunucuya ulaşılamadı.");
+                }
             });
-        </script>
-    }
+        }
+
+        $(document).ready(function () {
+
+            // Sayfa açılışında odaları getir
+            OdalariYukle();
+
+            // Modal açma işlemleri
+            $(document).on('click', '.modal-tetikle', function (Olay) {
+                Olay.preventDefault();
+                var gidilecekAdres = $(this).attr('href');
+                var modalCerceve = $('#odaModali .modal-dialog');
+                var modalBaslik = $('#modalBaslik');
+
+                modalBaslik.removeClass('text-primary text-warning text-info text-danger text-white text-light');
+
+                if (gidilecekAdres.indexOf('Create') !== -1) {
+                    modalBaslik.text('✨ Yeni Oda Ekle').addClass('text-white');
+                    modalCerceve.removeClass('modal-lg');
+                }
+                else if (gidilecekAdres.indexOf('Edit') !== -1) {
+                    modalBaslik.text('✏️ Odayı Düzenle').addClass('text-white');
+                    modalCerceve.removeClass('modal-lg');
+                }
+                else if (gidilecekAdres.indexOf('Details') !== -1) {
+                    modalBaslik.text('🔍 Oda Detayları').addClass('text-white');
+                    modalCerceve.removeClass('modal-lg');
+                }
+                else if (gidilecekAdres.indexOf('Delete') !== -1) {
+                    modalBaslik.text('🗑️ Oda Silme Onayı').addClass('text-white');
+                    modalCerceve.removeClass('modal-lg');
+                }
+
+                $('#modalinIci').load(gidilecekAdres, function () {
+                    $('#odaModali').modal('show');
+
+                    if (gidilecekAdres.indexOf('/Rooms/Edit/') !== -1 ||
+                        gidilecekAdres.indexOf('/Rooms/Delete/') !== -1 ||
+                        gidilecekAdres.indexOf('/Rooms/Details/') !== -1) {
+
+                        var odaId = gidilecekAdres.split('/').pop();
+
+                        $.ajax({
+                            url: '/Rooms/GetRoomData/' + odaId,
+                            type: 'GET',
+                            success: function (odaBilgisi) {
+
+                                if (gidilecekAdres.indexOf('/Rooms/Edit/') !== -1) {
+                                    $('#EditId').val(odaBilgisi.Id);
+                                    $('#EditName').val(odaBilgisi.Name);
+                                    $('#EditCapacity').val(odaBilgisi.Capacity);
+
+                                    if (odaBilgisi.HasProjector === true) $('#EditHasProjector').val("true");
+                                    else if (odaBilgisi.HasProjector === false) $('#EditHasProjector').val("false");
+                                    else $('#EditHasProjector').val("");
+                                }
+
+                                else if (gidilecekAdres.indexOf('/Rooms/Delete/') !== -1) {
+                                    $('#DeleteId').val(odaBilgisi.Id);
+                                    $('#DeleteName').text(odaBilgisi.Name);
+                                    $('#DeleteCapacity').text(odaBilgisi.Capacity + ' Kişilik');
+
+                                    if (odaBilgisi.HasProjector === true) $('#DeleteProjector').html('<span class="text-success fw-bold">Var</span>');
+                                    else if (odaBilgisi.HasProjector === false) $('#DeleteProjector').html('<span class="text-danger fw-bold">Yok</span>');
+                                    else $('#DeleteProjector').html('<span class="text-muted">Belirtilmedi</span>');
+                                }
+
+                                else if (gidilecekAdres.indexOf('/Rooms/Details/') !== -1) {
+                                    $('#DetailsName').text(odaBilgisi.Name);
+                                    $('#DetailsCapacity').text(odaBilgisi.Capacity + ' Kişilik');
+
+                                    if (odaBilgisi.HasProjector === true) $('#DetailsHasProjector').html('<span class="text-success fw-bold">Var</span>');
+                                    else if (odaBilgisi.HasProjector === false) $('#DetailsHasProjector').html('<span class="text-danger fw-bold">Yok</span>');
+                                    else $('#DetailsHasProjector').html('<span class="text-muted">Belirtilmedi</span>');
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Form Gönderim İşlemleri (Create, Edit, Delete)
+            $(document).on("submit", "#createForm", function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: "/Rooms/Create",
+                    type: "POST",
+                    data: $(this).serialize(),
+                    success: function (result) {
+                        if (result.success) {
+                            $('#odaModali').modal('hide');
+                            OdalariYukle();
+                        } else {
+                            alert("Kayıt başarısız oldu.");
+                        }
+                    }
+                });
+            });
+
+            $(document).on("submit", "#editForm", function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: "/Rooms/Edit",
+                    type: "POST",
+                    data: $(this).serialize(),
+                    success: function (result) {
+                        if (result.success) {
+                            $('#odaModali').modal('hide');
+                            OdalariYukle();
+                        } else {
+                            alert("Güncelleme başarısız oldu.");
+                        }
+                    }
+                });
+            });
+
+            $(document).on("submit", "#deleteForm", function (e) {
+                e.preventDefault();
+                var silinecekId = $('#DeleteId').val();
+                $.ajax({
+                    url: "/Rooms/Delete/" + silinecekId,
+                    type: "POST",
+                    data: $(this).serialize(),
+                    success: function (result) {
+                        if (result.success) {
+                            $('#odaModali').modal('hide');
+                            OdalariYukle();
+                        } else {
+                            alert("Silme işlemi başarısız oldu.");
+                        }
+                    }
+                });
+            });
+
+        });
+    </script>
+}

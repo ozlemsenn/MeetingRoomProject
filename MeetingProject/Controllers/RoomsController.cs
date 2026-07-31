@@ -31,6 +31,11 @@ namespace MeetingProject.Controllers
             bool isAdmin = Session["UserRole"].ToString() == "Admin";
             var filtreliOdalar = db.Rooms.Where(x => isAdmin || x.CompanyId == aktifSirketId).ToList();
 
+            if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
+            {
+                ViewBag.Companies = new SelectList(db.Companies.ToList(), "Id", "Name");
+            }
+
             return View(filtreliOdalar);
         }
 
@@ -48,6 +53,7 @@ namespace MeetingProject.Controllers
                            {
                                Id = x.Id,
                                Name = x.Name,
+                               companyId = x.CompanyId,
                                Capacity = x.Capacity,
                                HasProjector = x.HasProjector,
                            })

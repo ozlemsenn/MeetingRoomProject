@@ -19,7 +19,10 @@ namespace MeetingProject.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
-
+            if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
+            {
+                ViewBag.Companies = new SelectList(db.Companies.ToList(), "Id", "Name");
+            }
             bool isAdmin = Session["UserRole"].ToString() == "Admin";
             int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
 
@@ -46,6 +49,7 @@ namespace MeetingProject.Controllers
                 .Select(r => new
                 {
                     r.Id,
+                    r.CompanyId,
                     RoomName = db.Rooms.FirstOrDefault(room => room.Id == r.RoomId).Name,
                     UserName = db.Users.FirstOrDefault(user => user.Id == r.UserId).Name + " " + db.Users.FirstOrDefault(user => user.Id == r.UserId).Surname,
                     Title = r.Title,
@@ -87,6 +91,7 @@ namespace MeetingProject.Controllers
                 return new
                 {
                     r.Id,
+                    r.CompanyId,
                     r.Title,
                     r.RoomName,
                     r.UserName,

@@ -13,12 +13,26 @@
             <p class="text-muted">Sistemde kayıtlı kullanıcıları buradan yönetebilir ve yeni kullanıcı ekleyebilirsiniz.</p>
         </div>
         <div class="col-md-4 text-right" style="display: flex; justify-content: flex-end; align-items: center;">
-
             <a href="/Users/Create" class="btn btn-primary modal-tetikle" style="font-weight: bold; min-width: 150px;">
                 + Yeni Kullanıcı
             </a>
         </div>
     </div>
+
+    @if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
+    {
+        <div class="row mb-3">
+            <div class="col-md-4 text-start">
+                <div class="input-group shadow-sm" style="border-radius: 12px; overflow: hidden; border: 1px solid #ced4da;">
+                    <span class="input-group-text bg-white border-0 fw-bold text-muted">
+                        <i class="fas fa-building text-primary me-1"></i> Şirket:
+                    </span>
+                    <!-- DİKKAT: onchange="KullanicilariYukle()" OLARAK DÜZELTİLDİ -->
+                    @Html.DropDownList("sirketFiltre", (SelectList)ViewBag.Companies, "Tüm Şirketler", new { @class = "form-select border-0 text-dark fw-semibold", @id = "sirketFiltre", @style = "cursor: pointer; background-color: #f8f9fa;", onchange = "KullanicilariYukle()" })
+                </div>
+            </div>
+        </div>
+    }
 
     <div class="table-responsive">
         <table id="kullaniciTablosu" class="table table-hover table-striped table-bordered text-center" style="background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
@@ -65,11 +79,26 @@
                 url: '/Users/GetUsers',
                 type: 'GET',
                 success: function (data) {
+
+                    // Tabloyu yeniden çizebilmek için eski DataTables kütüphanesini temizliyoruz
+                    if ($.fn.DataTable.isDataTable('#kullaniciTablosu')) {
+                        $('#kullaniciTablosu').DataTable().clear().destroy();
+                    }
+
                     var tabloIcerigi = '';
+                    var secilenSirket = $('#sirketFiltre').val();
 
                     $.each(data, function (index, user) {
-                        tabloIcerigi += '<tr>';
 
+                        // FİLTRELEME MANTIĞI: Tabloya HTML çizmeden ÖNCE kontrol ediyoruz.
+                        if (secilenSirket && secilenSirket !== "") {
+                            // C#'tan gelen JSON paketinde CompanyId olduğundan emin ol!
+                            if (String(user.CompanyId) !== String(secilenSirket)) {
+                                return true; // Eğer şirket id'si eşleşmiyorsa bu kullanıcıyı atla
+                            }
+                        }
+
+                        tabloIcerigi += '<tr>';
                         tabloIcerigi += '<td class="align-middle"><span class="fw-bold">' + user.Name + '</span></td>';
                         tabloIcerigi += '<td class="align-middle">' + user.Surname + '</td>';
                         tabloIcerigi += '<td class="align-middle"><a href="mailto:' + user.Email + '" class="text-info">' + user.Email + '</a></td>';
@@ -91,21 +120,18 @@
 
                             '</div>' +
                             '</td>';
-
                         tabloIcerigi += '</tr>';
                     });
 
-                    if (data.length === 0) {
-                        tabloIcerigi = '<tr><td colspan="5" class="text-muted" style="padding: 20px;">Sistemde henüz kayıtlı kullanıcı bulunmuyor.</td></tr>';
+                    // Filtreleme sonucu hiçbir kullanıcı kalmadıysa uyarı ver
+                    if (tabloIcerigi === '') {
+                        tabloIcerigi = '<tr><td colspan="5" class="text-center text-muted" style="padding: 20px;">Bu kriterlere uygun kullanıcı bulunmuyor.</td></tr>';
                     }
 
-                    $('#kullaniciListesi').html(tabloIcerigi);
-                    if ($.fn.DataTable.isDataTable('#kullaniciTablosu')) {
-                        $('#kullaniciTablosu').DataTable().destroy();
-                    }
-
+                    // İşlenmiş HTML'i tablo iskeletinin içine gönderiyoruz
                     $('#kullaniciListesi').html(tabloIcerigi);
 
+                    // DataTables Eklentisini tekrar başlatıyoruz
                     $('#kullaniciTablosu').DataTable({
                         language: {
                             url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json"
@@ -119,8 +145,10 @@
         }
 
         $(document).ready(function () {
+            // Sayfa yüklendiğinde kullanıcıları otomatik getir
             KullanicilariYukle();
 
+            // Modal İşlemleri
             $(document).on('click', '.modal-tetikle', function (Olay) {
                 Olay.preventDefault();
                 var gidilecekAdres = $(this).attr('href');
@@ -131,31 +159,30 @@
                 modalBaslik.removeClass('text-primary text-warning text-info text-danger');
 
                 if (gidilecekAdres.indexOf('Create') !== -1) {
-                    modalBaslik.text('✨ Yeni Kullanıcı Ekle').addClass('text-white');
+                    modalBaslik.text(' Yeni Kullanıcı Ekle').addClass('text-white');
                     modalCerceve.removeClass('modal-lg');
                 }
                 else if (gidilecekAdres.indexOf('Edit') !== -1) {
-                    modalBaslik.text('✏️ Kullanıcıyı Düzenle').addClass('text-white');
+                    modalBaslik.text('✏ Kullanıcıyı Düzenle').addClass('text-white');
                     modalCerceve.removeClass('modal-lg');
                 }
                 else if (gidilecekAdres.indexOf('Details') !== -1) {
-                    modalBaslik.text('🔍 Kullanıcı Detayları').addClass('text-white');
+                    modalBaslik.text(' Kullanıcı Detayları').addClass('text-white');
                     modalCerceve.removeClass('modal-lg');
                 }
                 else if (gidilecekAdres.indexOf('Delete') !== -1) {
-                    modalBaslik.text('🗑️ Kullanıcı Silme Onayı').addClass('text-white');
+                    modalBaslik.text(' Kullanıcı Silme Onayı').addClass('text-white');
                     modalCerceve.removeClass('modal-lg');
                 }
-                
+
                 $('#modalinIci').load(gidilecekAdres, function () {
                     $('#kullaniciModali').modal('show');
-            
+
                     if (gidilecekAdres.indexOf('/Users/Edit/') !== -1 ||
                         gidilecekAdres.indexOf('/Users/Delete/') !== -1 ||
                         gidilecekAdres.indexOf('/Users/Details/') !== -1) {
 
                         var userId = gidilecekAdres.split('/').pop();
-
 
                         $.ajax({
                             url: '/Users/GetUserData/' + userId,
@@ -187,6 +214,7 @@
                 });
             });
 
+            // Form Gönderim (CRUD) İşlemleri
             $(document).on("submit", "#createForm", function (e) {
                 e.preventDefault();
                 $.ajax({

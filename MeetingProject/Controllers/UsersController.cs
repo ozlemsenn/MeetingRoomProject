@@ -18,6 +18,10 @@ namespace MeetingProject.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
+            if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
+            {
+                ViewBag.Companies = new SelectList(db.Companies.ToList(), "Id", "Name");
+            }
 
             int aktifSirketId = 0;
             if (Session["CompanyId"] != null)
@@ -141,6 +145,7 @@ namespace MeetingProject.Controllers
                                      Id = x.Id,
                                      Name = x.Name,
                                      Surname = x.Surname,
+                                     CompanyId = x.CompanyId,
                                      Email = x.Email,
                                      Department = x.Department
                                  })
