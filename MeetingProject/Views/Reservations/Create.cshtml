@@ -149,9 +149,11 @@
 </style>
 
 <script>
+    // AJAX ile Modal yüklendiğinde bu kod çalışır
     $(document).ready(function () {
         var guncelKullaniciListesi = [];
 
+        // 1. Sayfa (veya modal) ilk açıldığında UserId kutusunda veri varsa hafızaya al
         $('select[name="UserId"] option').each(function () {
             var kisiId = $(this).val();
             var kisiAd = $(this).text();
@@ -161,6 +163,24 @@
             }
         });
 
+        // 2. Select2 Kütüphanesini Başlat (Çirkin textbox'ları listeye çevir)
+        // Not: AJAX ile yüklendiğinde modalın açık olduğundan emin olmak için ufak bir gecikme iyidir.
+        setTimeout(function () {
+            $('.select2-kullanici').select2({
+                dropdownParent: $('#islemModali'),
+                placeholder: "Kullanıcı Ara...",
+                allowClear: true
+            });
+
+            $('.select2-multiple').select2({
+                dropdownParent: $('#islemModali'),
+                placeholder: "Toplantıya katılacak kişileri seçin...",
+                allowClear: true,
+                width: '100%'
+            });
+        }, 100);
+
+        // 3. Şirket Değiştiğinde Çalışacak AJAX (Admin İçin)
         $('#sirketSecimi').change(function () {
             var secilenSirketId = $(this).val();
 
@@ -168,11 +188,11 @@
             var kullaniciDropdown = $('select[name="UserId"]');
             var katilimciDropdown = $('select[name="SecilenKatilimcilar"]');
 
-            odaDropdown.empty().append('<option value="">Yükleniyor...</option>');
-            kullaniciDropdown.empty().append('<option value="">Yükleniyor...</option>');
-            katilimciDropdown.empty();
-
             if (secilenSirketId) {
+                odaDropdown.empty().append('<option value="">Yükleniyor...</option>');
+                kullaniciDropdown.empty().append('<option value="">Yükleniyor...</option>');
+                katilimciDropdown.empty();
+
                 $.ajax({
                     url: '/Reservations/SirketeGoreVerileriGetir',
                     type: 'GET',
@@ -195,30 +215,24 @@
                             katilimciDropdown.append('<option value="' + kullanici.Id + '">' + kullanici.TamAd + '</option>');
                         });
 
-                        $('.select2-kullanici, .select2-multiple').trigger('change');
+                        // Seçenekler dolduktan sonra Select2'yi güncelle
+                        $('.select2-kullanici, .select2-multiple').trigger('change.select2');
                     }
                 });
             } else {
                 odaDropdown.empty().append('<option value="">Önce Şirket Seçiniz</option>');
                 kullaniciDropdown.empty().append('<option value="">Önce Şirket Seçiniz</option>');
                 katilimciDropdown.empty();
-                $('.select2-kullanici, .select2-multiple').trigger('change');
+                $('.select2-kullanici, .select2-multiple').trigger('change.select2');
             }
         });
 
-        $('.select2-kullanici').select2({
-            dropdownParent: $('#islemModali'),
-            placeholder: "Kullanıcı Ara...",
-            allowClear: true
-        });
+        // 4. Admin sayfayı ilk açtığında şirket seçiliyse (veya hafızada varsa) listeyi otomatik doldur
+        if ($('#sirketSecimi').val()) {
+            $('#sirketSecimi').trigger('change');
+        }
 
-        $('.select2-multiple').select2({
-            dropdownParent: $('#islemModali'),
-            placeholder: "Toplantıya katılacak kişileri seçin...",
-            allowClear: true,
-            width: '100%'
-        });
-
+        // 5. Kuran Kişi (UserId) Değiştiğinde Katılımcılardan Çıkar
         $('#UserId').change(function () {
             var secilenKuranKisi = $(this).val();
             var katilimciDropdown = $('select[name="SecilenKatilimcilar"]');
@@ -235,8 +249,12 @@
                 });
             }
 
+            // Kuran kişi dışındaki mevcut seçimleri geri yükle
             katilimciDropdown.val(mevcutSecimler);
 
-            katilimciDropdown.trigger('change.select2'); 
-    });
+            // Select2 görünümünü güncelle
+            katilimciDropdown.trigger('change.select2');
+        });
+
+    }); // <-- İŞTE EKSİK OLAN HAYAT KURTARICI PARANTEZ BURADA!
 </script>

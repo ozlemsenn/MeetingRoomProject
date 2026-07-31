@@ -144,7 +144,7 @@ namespace MeetingProject.Controllers
 
             if (isAdmin)
             {
-                ViewBag.Companies = new SelectList(db.Companies.ToList(), "Id", "CompanyName");
+                ViewBag.Companies = new SelectList(db.Companies.ToList(), "Id", "Name");
                 ViewBag.Rooms = new SelectList(new List<object>(), "Id", "Name");
                 ViewBag.Users = new SelectList(new List<object>(), "Id", "TamAd");
                 ViewBag.KullaniciListesi = new SelectList(new List<object>(), "Id", "TamAd");

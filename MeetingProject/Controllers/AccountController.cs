@@ -65,13 +65,22 @@ namespace MeetingProject.Controllers
             }
         }
 
+        [HttpGet]
         public ActionResult Logout()
         {
-            FormsAuthentication.SignOut();
-
+            // 1. Kullanıcının tüm Session (Oturum / Yaka Kartı) bilgilerini temizle
             Session.Clear();
             Session.Abandon();
 
+            // 2. Çerezleri (Cookies) temizlemek istersen (Beni Hatırla yaptıysan)
+            if (Request.Cookies["UserCookie"] != null)
+            {
+                var cookie = new HttpCookie("UserCookie");
+                cookie.Expires = DateTime.Now.AddDays(-1);
+                Response.Cookies.Add(cookie);
+            }
+
+            // 3. Kullanıcıyı Login (Giriş) ekranına geri postala
             return RedirectToAction("Login", "Auth");
         }
     }

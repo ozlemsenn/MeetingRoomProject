@@ -148,21 +148,34 @@ namespace MeetingProject.Controllers
             return File(excelBytes, "text/csv", dosyaAdi);
         }
 
+        [HttpGet]
         public JsonResult GetCalendarEvents()
         {
-
             var reservations = db.Reservations.ToList();
-
+            var kullanicilar = db.Users.ToList(); // Tüm kullanıcıları döngüye girmeden 1 kez çekiyoruz
 
             var events = new List<object>();
 
             foreach (var rez in reservations)
             {
                 var oda = db.Rooms.Find(rez.RoomId);
-                var user = db.Users.Find(rez.UserId);
+
+                var user = kullanicilar.FirstOrDefault(u => u.Id == rez.UserId);
 
                 string odaAdi = oda != null ? oda.Name : "Bilinmeyen Oda";
-                string kisiAdi = user != null ? (user.Name + " " + user.Surname) : "Bilinmeyen Kullanıcı";
+
+                string kisiAdi = "Bilinmeyen Kullanıcı";
+                if (user != null)
+                {
+                    string kuranDepartman = !string.IsNullOrEmpty(user.Department) ? user.Department : "Belirtilmemiş";
+
+                    string rol = !string.IsNullOrEmpty(user.Role) ? user.Role : "Personel";
+
+                    if (rol == "Yonetici") rol = "Yönetici";
+
+                    kisiAdi = $"{user.Name} {user.Surname} - {rol} ({kuranDepartman})";
+                }
+
                 string durum = rez.Status ?? "Bekliyor";
 
                 DateTime rezTarihi = rez.Date ?? DateTime.Today;
@@ -191,9 +204,9 @@ namespace MeetingProject.Controllers
                 if (durum == "İptal Edildi")
                     renk = "#ef4444";
                 else if (durum == "Bekliyor")
-                    renk = "#f59e0b"; 
+                    renk = "#f59e0b";
                 else if (durum == "Tamamlandı")
-                    renk = "#6c757d"; 
+                    renk = "#6c757d";
                 else if (durum == "Devam Ediyor")
                     renk = "#0d6efd";
 
@@ -209,6 +222,28 @@ namespace MeetingProject.Controllers
                     endDateTime = rez.Date.Value.ToString("yyyy-MM-dd") + "T" + rez.EndTime.Value.ToString(@"hh\:mm\:ss");
                 }
 
+                List<string> katilimciListesi = new List<string>();
+
+                if (!string.IsNullOrEmpty(rez.Attendees))
+                {
+                    var idList = rez.Attendees.Split(',');
+
+                    foreach (var idStr in idList)
+                    {
+                        if (int.TryParse(idStr.Trim(), out int userId))
+                        {
+                            var katilimci = kullanicilar.FirstOrDefault(u => u.Id == userId);
+                            if (katilimci != null)
+                            {
+                                string departman = !string.IsNullOrEmpty(katilimci.Department) ? katilimci.Department : "Belirtilmemiş";
+                                katilimciListesi.Add($"{katilimci.Name} {katilimci.Surname} ({departman})");
+                            }
+                        }
+                    }
+                }
+
+                string islenmisKatilimcilar = katilimciListesi.Any() ? string.Join(",", katilimciListesi) : "Katılımcı bilgisi yok";
+
                 events.Add(new
                 {
                     title = odaAdi,
@@ -220,11 +255,10 @@ namespace MeetingProject.Controllers
                         kisi = kisiAdi,
                         durum = durum,
                         konu = rez.Title,
-                        katilimcilar = rez.Attendees
+                        katilimcilar = islenmisKatilimcilar
                     }
                 });
             }
-
 
             return Json(events, JsonRequestBehavior.AllowGet);
         }

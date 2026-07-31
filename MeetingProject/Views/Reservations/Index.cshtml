@@ -4,9 +4,9 @@
 
 <style>
     #rezervasyonTablosu tbody tr td {
-        padding-top: 17px !important; 
-        padding-bottom: 17px !important; 
-        border-bottom: 1px solid #f1f5f9; 
+        padding-top: 17px !important;
+        padding-bottom: 17px !important;
+        border-bottom: 1px solid #f1f5f9;
     }
 
     .table-striped > tbody > tr:nth-of-type(odd) > * {
@@ -93,9 +93,24 @@
             TabloyuDoldur();
         });
 
+        function SiralamaTarihiOlustur(tarihStr, saatStr) {
+            if (!tarihStr) return "000000000000";
+
+            var parcalar = tarihStr.split('.');
+            var formatliTarih = tarihStr;
+            if (parcalar.length === 3) {
+                formatliTarih = parcalar[2] + parcalar[1] + parcalar[0]; 
+            } else {
+                formatliTarih = tarihStr.replace(/-/g, ''); 
+            }
+
+            var formatliSaat = (saatStr || "").replace(/:/g, '').padEnd(4, '0');
+            return formatliTarih + formatliSaat;
+        }
+
         function TabloyuDoldur() {
             $.ajax({
-                url: '/Reservations/GetReservations?_=' + new Date().getTime(), 
+                url: '/Reservations/GetReservations?_=' + new Date().getTime(),
                 type: 'GET',
                 cache: false,
                 success: function (data) {
@@ -115,11 +130,14 @@
                             return true;
                         }
 
+                        var siralamaDegeri = SiralamaTarihiOlustur(item.Date, item.StartTime);
+
                         html += '<tr>';
-                        html += '<td class="text-center align-middle"><strong>' + item.Date + '</strong></td>';
+                        html += '<td data-order="' + siralamaDegeri + '" class="text-center align-middle"><strong>' + item.Date + '</strong></td>';
                         html += '<td class="text-center align-middle"><span class="badge bg-light text-dark">' + item.StartTime + ' - ' + item.EndTime + '</span></td>';
                         html += '<td class="text-center align-middle">' + item.RoomName + '</td>';
                         html += '<td class="text-center align-middle">' + item.UserName + '</td>';
+
                         var kisaBaslik = item.Title;
                         if (kisaBaslik && kisaBaslik.length > 30) {
                             kisaBaslik = kisaBaslik.substring(0, 30) + '...';
@@ -168,7 +186,8 @@
                     $('#rezervasyonListesi').html(html);
 
                     $('#rezervasyonTablosu').DataTable({
-                        "language": { "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json" }
+                        "language": { "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json" },
+                        "order": [[0, "desc"]]
                     });
                 }
             });

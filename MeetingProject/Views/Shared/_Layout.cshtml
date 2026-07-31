@@ -146,12 +146,13 @@
                 </a>
             }
 
-            @if (Session["UserRole"] != null && (Session["UserRole"].ToString() == "Admin") || Session["UserRole"].ToString() == "Yönetici"){
-
+            @if (Session["UserRole"]?.ToString() == "Admin" || Session["UserRole"]?.ToString() == "Yönetici")
+            {
                 <a class="sidebar-link mb-2" href="/Users/Index">
                     <i class="fas fa-users text-success me-3"></i> Kullanıcılar
                 </a>
             }
+
             @if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
             {
                 <hr style="opacity: 0.1; margin: 15px 0;">
@@ -164,29 +165,39 @@
         </div>
 
         <div class="mt-auto px-3 pb-4 pt-3 border-top" style="border-color: #e2e8f0 !important; background-color: #fafbfc;">
-            <div class="d-flex align-items-center w-100 p-2 rounded-3 bg-white shadow-sm border">
 
-                <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center me-2 flex-shrink-0 shadow-sm" style="width: 40px; height: 40px;">
-                    <i class="fas fa-user"></i>
+            <div class="d-flex align-items-center w-100 p-2 rounded-3 bg-white shadow-sm border mb-3">
+
+                <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center me-3 flex-shrink-0 shadow-sm" style="width: 45px; height: 45px;">
+                    <i class="fas fa-user fa-lg"></i>
                 </div>
 
                 <div class="pe-2 text-start flex-grow-1 overflow-hidden">
-                    <h6 class="mb-0 fw-bold text-dark text-truncate" style="font-size: 0.85rem;">@Context.Items["UserFullName"]</h6>
-                    <small class="text-muted d-block text-truncate" style="font-size: 0.70rem;">
-                        @if (User.IsInRole("Admin"))
-                        {<text>Sistem Yöneticisi</text> }
-                    else if (User.IsInRole("Yonetici"))
-                    { <text>Departman Yöneticisi</text> }
-                else
-                { <text>Personel</text>}
+                    <h6 class="mb-1 fw-bold text-dark text-truncate" style="font-size: 1rem;">
+                        @(Session["UserName"] != null ? Session["UserName"].ToString() : "Kullanıcı")
+                    </h6>
+
+                    <small class="text-muted d-block text-truncate fw-medium" style="font-size: 0.85rem;">
+                        @if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
+                        {
+                            <text>Sistem Yöneticisi</text>
+                        }
+                        else if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Yönetici")
+                        {
+                            <text>Şirket Yöneticisi</text>
+                        }
+                        else
+                        {
+                            <text>Personel</text>
+                        }
                     </small>
                 </div>
-
-                <a href="/Auth/Logout" class="btn btn-light text-danger p-0 shadow-sm rounded-circle d-flex justify-content-center align-items-center flex-shrink-0" style="width: 35px; height: 35px; transition: 0.2s; border: 1px solid #fee2e2;" onmouseover="this.style.background='#dc3545'; this.style.color='#fff'" onmouseout="this.style.background='#fff'; this.style.color='#dc3545'" title="Çıkış Yap">
-                    <i class="fas fa-power-off"></i>
-                </a>
-
             </div>
+
+            <a href="#" class="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center shadow-sm fw-bold"
+               data-bs-toggle="modal" data-bs-target="#cikisModali" style="border-radius: 10px; padding: 10px;">
+                <i class="fas fa-sign-out-alt me-2"></i> Çıkış Yap
+            </a>
         </div>
     </div>
     <div class="main-wrapper">
@@ -217,6 +228,43 @@
         </footer>
 
     </div>
+    <!-- Şık Çıkış Modalı -->
+    <div class="modal fade" id="cikisModali" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+                <div class="modal-body text-center p-4">
+
+                    <!-- Üst Kısım: Animasyonlu İkon -->
+                    <div class="mb-4 mt-2">
+                        <div class="d-inline-block p-3 rounded-circle" style="background-color: #fee2e2;">
+                            <i class="fas fa-sign-out-alt fa-3x" style="color: #ef4444; margin-left: 5px;"></i>
+                        </div>
+                    </div>
+
+                    <!-- Yazı Kısmı -->
+                    <h4 class="fw-bold mb-2 text-dark">Çıkış Yap</h4>
+                    <p class="text-muted mb-4" style="font-size: 0.95rem;">
+                        Oturumunuzu sonlandırmak istediğinize emin misiniz? <br> Kaydedilmemiş değişiklikleriniz kaybolabilir.
+                    </p>
+
+                    <!-- Butonlar -->
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button type="button" class="btn btn-light shadow-sm flex-fill fw-bold"
+                                style="border-radius: 12px; padding: 10px;" data-bs-dismiss="modal">
+                            İptal
+                        </button>
+                        <!-- Buradaki href'i senin çıkış Action'ına göre değiştir (Örn: /Auth/Logout) -->
+                        <a href="/Auth/Logout" class="btn btn-danger shadow-sm flex-fill fw-bold"
+                           style="border-radius: 12px; padding: 10px; background-color: #ef4444; border: none;">
+                            Evet, Çıkış Yap
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
