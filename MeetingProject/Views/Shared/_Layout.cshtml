@@ -116,6 +116,22 @@
             padding: 40px;
             flex-grow: 1;
         }
+
+        .user-action-menu {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+            .user-action-menu:hover {
+                background-color: #f1f5f9 !important;
+                transform: translateY(-2px);
+                box-shadow: 0 6px 15px rgba(0,0,0,0.05) !important;
+            }
+
+            .user-action-menu::after {
+                margin-left: auto;
+                color: #64748b;
+            }
     </style>
 </head>
 <body>
@@ -139,7 +155,6 @@
                 <i class="fas fa-calendar-alt text-primary me-3"></i> Rezervasyonlar
             </a>
 
-            <!-- ARTIK HERKES GÖREBİLİR: ODALAR VE KULLANICILAR -->
             <a class="sidebar-link mb-2" href="/Rooms/Index">
                 <i class="fas fa-building text-warning me-3"></i> Odalar
             </a>
@@ -148,7 +163,6 @@
                 <i class="fas fa-users text-success me-3"></i> Kullanıcılar
             </a>
 
-            <!-- SADECE ADMİN GÖREBİLİR: YÖNETİM PANELİ -->
             @if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
             {
                 <hr style="opacity: 0.1; margin: 15px 0;">
@@ -162,32 +176,45 @@
 
         <div class="mt-auto px-3 pb-4 pt-3 border-top" style="border-color: #e2e8f0 !important; background-color: #fafbfc;">
 
-            <div class="d-flex align-items-center w-100 p-2 rounded-3 bg-white shadow-sm border mb-3">
+            <div class="dropdown w-100 mb-3">
+                <a href="#" class="d-flex align-items-center w-100 p-2 rounded-3 bg-white shadow-sm border text-decoration-none dropdown-toggle user-action-menu" data-bs-toggle="dropdown" aria-expanded="false">
 
-                <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center me-3 flex-shrink-0 shadow-sm" style="width: 45px; height: 45px;">
-                    <i class="fas fa-user fa-lg"></i>
-                </div>
+                    <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center me-3 flex-shrink-0 shadow-sm" style="width: 45px; height: 45px;">
+                        <i class="fas fa-user fa-lg"></i>
+                    </div>
 
-                <div class="pe-2 text-start flex-grow-1 overflow-hidden">
-                    <h6 class="mb-1 fw-bold text-dark text-truncate" style="font-size: 1rem;">
-                        @(Session["UserName"] != null ? Session["UserName"].ToString() : "Kullanıcı")
-                    </h6>
-
-                    <small class="text-muted d-block text-truncate fw-medium" style="font-size: 0.85rem;">
-                        @if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
-                        {
-                            <text>Sistem Yöneticisi</text>
-                        }
-                        else if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Yönetici")
-                        {
-                            <text>Şirket Yöneticisi</text>
-                        }
-                        else
-                        {
-                            <text>Personel</text>
-                        }
-                    </small>
-                </div>
+                    <div class="pe-2 text-start flex-grow-1 overflow-hidden text-dark">
+                        <h6 id="sidebar-user-name" class="mb-1 fw-bold text-truncate" style="font-size: 1rem;">
+                            @(Session["UserName"] != null ? Session["UserName"].ToString() : "Kullanıcı")
+                        </h6>
+                        <small class="text-muted d-block text-truncate fw-medium" style="font-size: 0.85rem;">
+                            @if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
+                            {
+                                <text>Sistem Yöneticisi</text>
+                            }
+                            else if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Yönetici")
+                            {
+                                <text>Şirket Yöneticisi</text>
+                            }
+                            else
+                            {
+                                <text>Personel</text>
+                            }
+                        </small>
+                    </div>
+                </a>
+                <ul class="dropdown-menu shadow border-0 w-100" style="border-radius: 12px; margin-top: 8px;">
+                    <li>
+                        <a class="dropdown-item py-2 fw-semibold text-secondary profil-modal-tetikle" href="/Profile/Index">
+                            <i class="fas fa-id-badge text-primary me-2" style="width: 20px;"></i> Profilim
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item py-2 fw-semibold text-secondary profil-modal-tetikle" href="/Profile/ChangePassword">
+                            <i class="fas fa-key text-warning me-2" style="width: 20px;"></i> Şifre Değiştir
+                        </a>
+                    </li>
+                </ul>
             </div>
 
             <a href="#" class="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center shadow-sm fw-bold"
@@ -200,8 +227,7 @@
 
         <div class="topbar">
             <div>
-                <h4 class="mb-0 fw-bold text-dark">Hoş Geldiniz, @Context.Items["UserFullName"]</h4>
-                <small class="text-muted fw-semibold"><i class="far fa-calendar me-1"></i> @DateTime.Now.ToString("dd MMMM yyyy, dddd")</small>
+                <h4 id="topbar-user-name" class="mb-0 fw-bold text-dark">Hoş Geldiniz, @Context.Items["UserFullName"]</h4>                <small class="text-muted fw-semibold"><i class="far fa-calendar me-1"></i> @DateTime.Now.ToString("dd MMMM yyyy, dddd")</small>
             </div>
 
             <a href="mailto:itdestek@sirket.com" class="d-flex align-items-center text-decoration-none bg-white p-2 pe-3 rounded-pill shadow-sm border" style="transition: all 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'">
@@ -224,6 +250,7 @@
         </footer>
 
     </div>
+
     <div class="modal fade" id="cikisModali" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
             <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
@@ -256,6 +283,13 @@
         </div>
     </div>
 
+    <div class="modal fade" id="genelProfilModali" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            </div>
+        </div>
+    </div>
+
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
@@ -263,5 +297,21 @@
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).ready(function () {
+            $(document).on('click', '.profil-modal-tetikle', function (e) {
+                e.preventDefault();
+                var gidilecekAdres = $(this).attr('href');
+
+                $('#genelProfilModali .modal-content').html('<div class="p-5 text-center text-muted"><i class="fas fa-spinner fa-spin fa-2x mb-3"></i><br>Yükleniyor...</div>');
+                $('#genelProfilModali').modal('show');
+
+                $('#genelProfilModali .modal-content').load(gidilecekAdres);
+            });
+        });
+    </script>
 </body>
 </html>

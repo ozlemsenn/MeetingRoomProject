@@ -29,7 +29,6 @@ namespace MeetingProject.Controllers
                 ViewBag.Companies = new SelectList(db.Companies.ToList(), "Id", "Name");
             }
 
-            // PERFORMANS: Veritabanından veriyi çekerken ön filtreleme yapıyoruz
             var query = db.Reservations.AsQueryable();
 
             if (!isAdmin)
@@ -39,16 +38,13 @@ namespace MeetingProject.Controllers
 
             if (isPersonel)
             {
-                // SQL Seviyesinde Filtre: Sadece benim kurduklarım veya katılımcı listesi hiç boş olmayanlar
                 query = query.Where(x => x.UserId == aktifKullaniciId || (x.Attendees != null && x.Attendees != ""));
             }
 
-            // Veriyi SQL'den RAM'e İndiriyoruz (Eskisine göre çok daha az veri iniyor)
             var rezervasyonlar = query.ToList();
 
             if (isPersonel)
             {
-                // RAM Seviyesinde Süzme: İçinde adımın geçtiği virgüllü kayıtları bul
                 rezervasyonlar = rezervasyonlar
                     .Where(x => x.UserId == aktifKullaniciId
                              || (!string.IsNullOrEmpty(x.Attendees)
@@ -81,7 +77,6 @@ namespace MeetingProject.Controllers
 
             if (isPersonel)
             {
-                // Sadece ilgili olabilecek veriyi SQL'den iste (Performans)
                 query = query.Where(r => r.UserId == aktifKullaniciId || (r.Attendees != null && r.Attendees != ""));
             }
 
@@ -192,7 +187,6 @@ namespace MeetingProject.Controllers
         [HttpGet]
         public ActionResult Create()
         {
-            // BaseController içindeki kendi yazdığımız güvenli metotları kullanıyoruz
             bool isAdmin = GecerliRol() == "Admin";
             int aktifSirketId = GecerliSirketId();
             int aktifKullaniciId = GecerliKullaniciId();
@@ -223,11 +217,9 @@ namespace MeetingProject.Controllers
 
                 var birlesikKullanicilar = sirketKullanicilar.Concat(adminler).OrderBy(u => u.TamAd).ToList();
 
-                // 1. DOKUNUŞ: Kuran kişi listesinde SADECE aktif kullanıcının kendisi kalsın
                 var sadeceBen = birlesikKullanicilar.Where(u => u.Id == aktifKullaniciId).ToList();
                 ViewBag.Users = new SelectList(sadeceBen, "Id", "TamAd");
 
-                // 2. DOKUNUŞ: Katılımcılar kısmında ise şirketteki herkes görünsün
                 ViewBag.KullaniciListesi = new SelectList(birlesikKullanicilar, "Id", "TamAd");
             }
 
@@ -238,7 +230,6 @@ namespace MeetingProject.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(Reservations res, string[] SecilenKatilimcilar)
         {
-            // BaseController metotları
             bool isAdmin = GecerliRol() == "Admin";
             int aktifSirketId = GecerliSirketId();
             int aktifKullaniciId = GecerliKullaniciId();
@@ -251,8 +242,6 @@ namespace MeetingProject.Controllers
             {
                 res.CompanyId = aktifSirketId;
 
-                // GÜVENLİK KİLİDİ: Personel ise, Kuran Kişi (UserId) kesinlikle o anki oturum sahibidir!
-                // HTML tarafından (Öğeyi İncele ile vs.) başka ID gönderilse bile burada eziyoruz.
                 res.UserId = aktifKullaniciId;
             }
 
@@ -337,10 +326,8 @@ namespace MeetingProject.Controllers
             var res = db.Reservations.Find(id);
             if (res == null) return HttpNotFound();
 
-            // BaseController metodlarını kullanıyoruz
             bool isAdmin = GecerliRol() == "Admin";
 
-            // 1. KESİN KURAL: Admin değilse (Personelse) silme ekranı ASLA açılmasın!
             if (!isAdmin)
             {
                 return Content("<div class='alert alert-danger text-center m-4' style='border-radius:10px;'><i class='fas fa-shield-alt fa-3x mb-3 text-danger'></i><br><b class='d-block fs-5 mb-2'>Yetkisiz İşlem</b> Sadece sistem yöneticileri (Admin) kalıcı silme işlemi yapabilir. Rezervasyonu kaldırmak için lütfen 'İptal Et' (Yasak sembolü) butonunu kullanınız.</div>");
@@ -360,10 +347,8 @@ namespace MeetingProject.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirm(int id)
         {
-            // BaseController metodlarını kullanıyoruz
             bool isAdmin = GecerliRol() == "Admin";
 
-            // 2. ARKA PLAN GÜVENLİĞİ: URL üzerinden zorla silmeye çalışırlarsa engelle
             if (!isAdmin)
             {
                 return Json(new { success = false, message = "Sadece sistem yöneticileri kalıcı silme işlemi yapabilir!" });
@@ -390,7 +375,6 @@ namespace MeetingProject.Controllers
                 return new HttpStatusCodeResult(System.Net.HttpStatusCode.BadRequest);
             }
 
-            // BaseController metodlarını kullanıyoruz
             bool isAdmin = GecerliRol() == "Admin";
             bool isPersonel = GecerliRol() == "Personel";
             int aktifSirketId = GecerliSirketId();
@@ -411,13 +395,11 @@ namespace MeetingProject.Controllers
             var sirketOdalar = db.Rooms.Where(r => isAdmin || r.CompanyId == aktifSirketId).ToList();
             ViewBag.Rooms = new SelectList(sirketOdalar, "Id", "Name", rezervasyon.RoomId);
 
-            // Listeleri Tek Seferde Çekelim
             var sirketKullanicilar = db.Users
                 .Where(u => isAdmin || u.CompanyId == aktifSirketId)
                 .Select(u => new { Value = u.Id.ToString(), Text = u.Name + " " + u.Surname })
                 .ToList();
 
-            // DÜZENLEME EKRANI GÜVENLİĞİ: Personel ise "Kuran Kişi" listesinde sadece kendini görsün
             if (isPersonel)
             {
                 var sadeceBen = sirketKullanicilar.Where(u => u.Value == aktifKullaniciId.ToString()).ToList();
@@ -428,7 +410,6 @@ namespace MeetingProject.Controllers
                 ViewBag.Users = new SelectList(sirketKullanicilar, "Value", "Text", rezervasyon.UserId);
             }
 
-            // Katılımcılar listesinde herkes görünsün
             ViewBag.KullaniciListesi = new SelectList(sirketKullanicilar, "Value", "Text");
 
             return View(rezervasyon);
@@ -535,7 +516,6 @@ namespace MeetingProject.Controllers
         {
             var res = db.Reservations.Find(id);
 
-            // Artık BaseController'daki güvenli metotları kullanıyoruz
             bool isAdmin = GecerliRol() == "Admin";
             bool isPersonel = GecerliRol() == "Personel";
             int aktifSirketId = GecerliSirketId();
@@ -558,7 +538,6 @@ namespace MeetingProject.Controllers
                 res.TransactionDate = DateTime.Now;
                 res.TransactionTime = DateTime.Now.TimeOfDay;
 
-                // DİKKAT: db.Reservations.Add(res); SATIRINI SİLDİK (Hata verdiriyordu)
 
                 db.SaveChanges();
                 return Json(new { success = true });

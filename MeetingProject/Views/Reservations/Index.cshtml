@@ -218,7 +218,6 @@
             });
         }
 
-        // MODAL AÇMA KODU (YETKİSİZ GİRİŞLER BURADA YAKALANACAK)
         function ModalAc(url) {
             var modalCerceve = $('#islemModali .modal-dialog');
             var modalBaslik = $('#modalBaslik');
@@ -249,15 +248,12 @@
                 modalBaslik.text('Rezervasyon İşlemi').addClass('text-white');
             }
 
-            // GET İsteğini Başlat
             $.get(url)
                 .done(function (data) {
-                    // Eğer C# tarafında yetki varsa ve form geldiyse
                     $('#modalIcerik').html(data);
                     $('#islemModali').modal('show');
                 })
                 .fail(function (xhr) {
-                    // EĞER C# TARAFINDA HttpNotFound VERİLİRSE (Yetkisiz) BURASI ÇALIŞIR
                     var hataMesaji = "<div class='alert alert-danger text-center m-4 p-4' style='border-radius:15px;'>" +
                         "<i class='fas fa-ban fa-3x mb-3 text-danger'></i><br>" +
                         "<h5 class='fw-bold'>Yetkisiz İşlem!</h5>" +
@@ -290,7 +286,6 @@
             });
         }
 
-        // SİLME İŞLEMİ GÜNCELLENDİ (HATA MESAJLARI YAKALANIYOR)
         function Sil() {
             var formData = $('#formSil').serialize();
             $.post('/Reservations/Delete', formData, function (response) {
@@ -299,7 +294,6 @@
                     TabloyuDoldur();
                     Swal.fire({ title: 'Silindi!', text: 'Rezervasyon başarıyla silindi.', icon: 'success', timer: 2000, showConfirmButton: false });
                 } else {
-                    // YETKİ YOKSA BURADA KULLANICIYA MESAJ ÇIKAR
                     Swal.fire('Yetkisiz İşlem!', response.message || "Bu işlemi yapamazsınız.", 'error');
                 }
             }).fail(function () {
@@ -330,7 +324,6 @@
             });
         }
 
-        // İPTAL İŞLEMİ GÜNCELLENDİ (HATA MESAJLARI YAKALANIYOR)
         function IptalOnayla() {
             var formData = $('#formIptal').serialize();
             $.post('/Reservations/CancelConfirm', formData, function (response) {
@@ -339,7 +332,6 @@
                     TabloyuDoldur();
                     Swal.fire({ title: 'İptal Edildi!', text: 'Rezervasyon başarıyla iptal edildi.', icon: 'success', timer: 2000, showConfirmButton: false });
                 } else {
-                    // YETKİ YOKSA BURADA KULLANICIYA MESAJ ÇIKAR
                     Swal.fire('Uyarı!', response.message || "İşlem yapılamadı.", 'warning');
                 }
             }).fail(function () {

@@ -17,27 +17,21 @@ namespace MeetingProject.Controllers
 
         public ActionResult Index()
         {
-            // 1. Güvenlik Kontrolü
             if (string.IsNullOrEmpty(GecerliRol()))
             {
                 return RedirectToAction("Login", "Account");
             }
 
-            // 2. BaseController'dan verileri temiz bir şekilde alıyoruz
             bool isAdmin = GecerliRol() == "Admin";
             int aktifSirketId = GecerliSirketId();
 
-            // 3. HTML (View) tarafında "Yeni Ekle, Sil, Düzenle" butonlarını gizlemek için bunu gönderiyoruz!
             ViewBag.IsAdmin = isAdmin;
 
-            // 4. Eğer Admin ise sayfadaki filtreleme Dropdown'ı için şirket listesini gönderiyoruz
             if (isAdmin)
             {
                 ViewBag.Companies = new SelectList(db.Companies.ToList(), "Id", "Name");
             }
 
-            // 5. Veritabanından filtreli çekim
-            // Admin ise tüm odalar gelir, personel ise SADECE aktifSirketId'ye uyan odalar gelir.
             var filtreliOdalar = db.Rooms.Where(x => isAdmin || x.CompanyId == aktifSirketId).ToList();
 
             return View(filtreliOdalar);
