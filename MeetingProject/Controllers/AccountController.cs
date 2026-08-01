@@ -79,5 +79,31 @@ namespace MeetingProject.Controllers
 
             return RedirectToAction("Login", "Auth");
         }
+
+        [HttpPost]
+        public JsonResult ForgotPassword(string Email)
+        {
+            var user = db.Users.FirstOrDefault(x => x.Email == Email);
+
+            if (user != null)
+            {
+                user.Password = "123456";
+                db.SaveChanges();
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Şifreniz başarıyla <b>123456</b> olarak sıfırlandı.<br><br>Lütfen giriş yapıp profilinizden şifrenizi güncelleyiniz."
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Sistemde bu e-posta adresine ait bir kullanıcı bulunamadı."
+                });
+            }
+        }
     }
 }
