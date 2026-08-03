@@ -7,7 +7,7 @@ using MeetingProject.Models;
 
 namespace MeetingProject.Controllers
 {
-    [AllowAnonymous] 
+    [AllowAnonymous]
     public class AuthController : Controller
     {
         private MeetingAppEntities1 db = new MeetingAppEntities1();
@@ -32,7 +32,7 @@ namespace MeetingProject.Controllers
 
                 var ticket = new FormsAuthenticationTicket(
                     1, user.Email, DateTime.Now, DateTime.Now.AddHours(24), false, userData
-                
+
                 );
 
                 string encryptedTicket = FormsAuthentication.Encrypt(ticket);

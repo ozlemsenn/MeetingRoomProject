@@ -141,7 +141,7 @@
                         <div class="mb-4 pb-1">
                             <div class="d-flex justify-content-between align-items-center mb-1 px-1">
                                 <label class="form-label text-secondary small fw-bold mb-0">Şifre</label>
-                                
+
                                 <a href="#" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal" class="text-decoration-none small fw-semibold" style="color: #2563eb;">Şifremi Unuttum?</a>
                             </div>
                             <div class="input-group">
@@ -215,8 +215,8 @@
                     formBtn.html(originalText).prop('disabled', false);
 
                     if (response.success) {
-                        $('#forgotPasswordModal').modal('hide'); 
-                        $('#forgotPasswordForm')[0].reset(); 
+                        $('#forgotPasswordModal').modal('hide');
+                        $('#forgotPasswordForm')[0].reset();
 
                         Swal.fire({
                             icon: 'success',

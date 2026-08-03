@@ -187,20 +187,43 @@
                         <h6 id="sidebar-user-name" class="mb-1 fw-bold text-truncate" style="font-size: 1rem;">
                             @(Session["UserName"] != null ? Session["UserName"].ToString() : "Kullanıcı")
                         </h6>
-                        <small class="text-muted d-block text-truncate fw-medium" style="font-size: 0.85rem;">
-                            @if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
+
+                        <!-- DÜZENLENEN KISIM: DİNAMİK AKTİF/PASİF ROZETİ EKLENDİ -->
+                        <div class="d-flex align-items-center justify-content-between mt-1">
+                            <small class="text-muted d-block text-truncate fw-medium" style="font-size: 0.85rem;">
+                                @if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
+                                {
+                                    <text>Sistem Yöneticisi</text>
+                                }
+                                else if (Session["UserRole"] != null && (Session["UserRole"].ToString() == "Yönetici" || Session["UserRole"].ToString() == "Yonetici"))
+                                {
+                                    <text>Şirket Yöneticisi</text>
+                                }
+                                else if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Pasif")
+                                {
+                                    <text>Pasif Hesap</text>
+                                }
+                                else
+                                {
+                                    <text>Personel</text>
+                                }
+                            </small>
+
+                            @if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Pasif")
                             {
-                                <text>Sistem Yöneticisi</text>
-                            }
-                            else if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Yönetici")
-                            {
-                                <text>Şirket Yöneticisi</text>
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1" style="font-size: 0.65rem;">
+                                    <i class="fas fa-circle me-1" style="font-size: 0.4rem; vertical-align: middle;"></i>Pasif
+                                </span>
                             }
                             else
                             {
-                                <text>Personel</text>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1" style="font-size: 0.65rem;">
+                                    <i class="fas fa-circle me-1" style="font-size: 0.4rem; vertical-align: middle;"></i>Aktif
+                                </span>
                             }
-                        </small>
+                        </div>
+                        <!-- DÜZENLENEN KISIM BİTTİ -->
+
                     </div>
                 </a>
                 <ul class="dropdown-menu shadow border-0 w-100" style="border-radius: 12px; margin-top: 8px;">
@@ -227,7 +250,8 @@
 
         <div class="topbar">
             <div>
-                <h4 id="topbar-user-name" class="mb-0 fw-bold text-dark">Hoş Geldiniz, @Context.Items["UserFullName"]</h4>                <small class="text-muted fw-semibold"><i class="far fa-calendar me-1"></i> @DateTime.Now.ToString("dd MMMM yyyy, dddd")</small>
+                <h4 id="topbar-user-name" class="mb-0 fw-bold text-dark">Hoş Geldiniz, @Context.Items["UserFullName"]</h4>
+                <small class="text-muted fw-semibold"><i class="far fa-calendar me-1"></i> @DateTime.Now.ToString("dd MMMM yyyy, dddd")</small>
             </div>
 
             <a href="mailto:itdestek@sirket.com" class="d-flex align-items-center text-decoration-none bg-white p-2 pe-3 rounded-pill shadow-sm border" style="transition: all 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#fff'">

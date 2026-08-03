@@ -221,8 +221,17 @@ namespace MeetingProject.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(Reservations res, string[] SecilenKatilimcilar)
         {
-            bool isAdmin = GecerliRol() == "Admin";
-            bool isYonetici = GecerliRol() == "Yönetici";
+            string rol = GecerliRol();
+
+            // --- YENİ EKLENEN KISIM 1: GİRİŞ YAPAN KİŞİ PASİF Mİ? ---
+            if (rol == "Pasif")
+            {
+                return Json(new { success = false, message = "Hesabınız pasif durumdadır! Rezervasyon oluşturamazsınız." });
+            }
+            // ---------------------------------------------------------
+
+            bool isAdmin = rol == "Admin";
+            bool isYonetici = rol == "Yönetici" || rol == "Yonetici";
             bool isPersonel = !isAdmin && !isYonetici;
 
             int aktifSirketId = GecerliSirketId();
@@ -236,7 +245,6 @@ namespace MeetingProject.Controllers
             {
                 res.CompanyId = aktifSirketId;
 
-                // Personel ise, formdan ne gelirse gelsin, kurucu odur. Yönetici ise formdan geleni (res.UserId) kabul et.
                 if (isPersonel)
                 {
                     res.UserId = aktifKullaniciId;
@@ -254,11 +262,27 @@ namespace MeetingProject.Controllers
 
             if (!res.RoomId.HasValue || res.RoomId == 0) return Json(new { success = false, message = "Lütfen oda seçiniz." });
             if (!res.UserId.HasValue || res.UserId == 0) return Json(new { success = false, message = "Lütfen kurucu kullanıcıyı seçiniz." });
+
+            // --- YENİ EKLENEN KISIM 2: SEÇİLEN (KURUCU) KULLANICI PASİF Mİ? ---
+            var kurucuKullanici = db.Users.FirstOrDefault(u => u.Id == res.UserId);
+            if (kurucuKullanici != null && kurucuKullanici.Role == "Pasif")
+            {
+                return Json(new { success = false, message = "Seçilen kullanıcı 'Pasif' durumdadır! Bu kullanıcı adına rezervasyon oluşturulamaz." });
+            }
+            // ------------------------------------------------------------------
+
             if (string.IsNullOrWhiteSpace(res.Title)) return Json(new { success = false, message = "Lütfen başlık giriniz." });
             if (!res.Date.HasValue) return Json(new { success = false, message = "Lütfen tarih seçiniz." });
             if (!res.StartTime.HasValue || !res.EndTime.HasValue) return Json(new { success = false, message = "Saatleri eksiksiz giriniz." });
             if (res.StartTime >= res.EndTime) return Json(new { success = false, message = "Bitiş saati başlangıçtan önce olamaz." });
             if (string.IsNullOrWhiteSpace(res.Description)) return Json(new { success = false, message = "Açıklama giriniz." });
+
+            // Geçmiş Zaman Kontrolü (Time Travel Prevention)
+            DateTime secilenTamTarihSaat = res.Date.Value.Date + res.StartTime.Value;
+            if (secilenTamTarihSaat < DateTime.Now)
+            {
+                return Json(new { success = false, message = "Geçmiş bir tarih veya saate rezervasyon oluşturulamaz! Lütfen ileri bir saat seçiniz." });
+            }
 
             bool isOverlap = db.Reservations.Any(r => r.Status != "İptal Edildi" && r.RoomId == res.RoomId && r.Date == res.Date && ((res.StartTime >= r.StartTime && res.StartTime < r.EndTime) || (res.EndTime > r.StartTime && res.EndTime <= r.EndTime) || (res.StartTime <= r.StartTime && res.EndTime >= r.EndTime)));
 

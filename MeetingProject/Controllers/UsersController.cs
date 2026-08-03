@@ -60,6 +60,9 @@ namespace MeetingProject.Controllers
         public JsonResult Create([Bind(Include = "Id,Name,Surname,Email,Password,Role,CompanyId,Department")] Users user)
         {
             string rol = GecerliRol();
+
+            // 1. ADIM: TEMEL YETKİ KONTROLÜ (Kapıdaki Güvenlik)
+            // Sadece Admin ve Yöneticiler içeri girebilir, aksi halde hemen geri gönder.
             if (rol != "Admin" && rol != "Yonetici" && rol != "Yönetici")
             {
                 return Json(new { success = false, message = "Yetkisiz işlem! Sadece yöneticiler kullanıcı ekleyebilir." });
@@ -67,24 +70,44 @@ namespace MeetingProject.Controllers
 
             try
             {
-                // Yönetici ekliyorsa, CompanyId'yi arka planda kendi şirketine zorluyoruz
-                if (rol != "Admin")
-                {
-                    user.CompanyId = GecerliSirketId();
-                }
-
-                // --- İŞTE EKLENEN KISIM BURASI (NULL ÇÖZÜMÜ) ---
+                // 2. ADIM: EKSİK VERİLERİ TAMAMLAMA
                 if (string.IsNullOrWhiteSpace(user.Role))
                 {
-                    user.Role = "Personel"; // Eğer formdan boş gelirse varsayılan olarak Personel yap
+                    user.Role = "Personel"; // Rol seçilmemişse Personel yap
+                }
+                if (string.IsNullOrWhiteSpace(user.Password))
+                {
+                    user.Password = "123456"; // Şifre girilmemişse varsayılan yap
                 }
 
+                // 3. ADIM: ÖZEL GÜVENLİK DUVARI
+                // Yönetici olan biri, uyanıklık yapıp HTML'den "Admin" rolünü gönderirse engelle!
+                if (rol != "Admin" && user.Role == "Admin")
+                {
+                    return Json(new { success = false, message = "Yetkisiz İşlem: Sadece sistem yöneticileri yeni bir Admin hesabı oluşturabilir!" });
+                }
+
+                // 4. ADIM: ŞİRKET (TENANT) ATAMA MANTIĞI
+                if (user.Role == "Admin")
+                {
+                    // Yeni açılan hesap Admin ise şirketten bağımsızdır (NULL)
+                    user.CompanyId = null;
+                }
+                else if (rol != "Admin")
+                {
+                    // İşlemi yapan kişi sıradan bir Yönetici ise, yeni personeli zorla KENDİ ŞİRKETİNE kaydet
+                    user.CompanyId = GecerliSirketId();
+                }
+                // (Eğer işlemi yapan Admin ise ve yeni kişi Admin DEĞİLSE, formdan seçilen CompanyId aynen kalır)
+
+                // 5. ADIM: VERİTABANINA KAYIT
                 if (ModelState.IsValid)
                 {
                     db.Users.Add(user);
                     db.SaveChanges();
                     return Json(new { success = true, message = "Kullanıcı başarıyla oluşturuldu." });
                 }
+
                 return Json(new { success = false, message = "Lütfen alanları kontrol ediniz. Tüm alanlar zorunludur." });
             }
             catch (Exception ex)
