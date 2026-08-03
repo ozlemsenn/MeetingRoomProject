@@ -19,5 +19,7 @@ namespace MeetingProject.Models
         public Nullable<int> Capacity { get; set; }
         public Nullable<bool> HasProjector { get; set; }
         public Nullable<int> CompanyId { get; set; }
+        public Nullable<bool> IsActive { get; set; }
+        public string PassiveReason { get; set; }
     }
 }

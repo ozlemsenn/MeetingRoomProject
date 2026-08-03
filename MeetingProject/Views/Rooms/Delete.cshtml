@@ -1,32 +1,79 @@
-﻿@{
+﻿@model MeetingProject.Models.Rooms
+@{
     ViewBag.Title = "Delete";
     Layout = null;
+
+    bool isAdmin = ViewBag.IsAdmin != null && (bool)ViewBag.IsAdmin;
+    bool isPasif = Model != null && Model.Name != null && Model.Name.Contains("(Pasif)");
+    string mode = ViewBag.Mode as string;
 }
 
 <form id="deleteForm">
     @Html.AntiForgeryToken()
-
     <input type="hidden" id="DeleteId" name="Id" />
+    <input type="hidden" id="ActionType" name="ActionType" value="@(mode == "delete" ? "HardDelete" : "ToggleStatus")" />
 
     <div class="container-fluid px-2 py-3 text-center">
-        <p class="text-secondary fw-semibold mb-4" style="font-size: 1.05rem;">
-            Aşağıdaki odayı sistemden kalıcı olarak silmek üzeresiniz. Onaylıyor musunuz?
-        </p>
-        <div class="card border-danger shadow-sm mx-auto mb-4" style="border-radius: 12px; background-color: #fff5f5; max-width: 380px;">
-            <div class="card-body p-4">
-
-                <h4 id="DeleteName" class="fw-bold text-dark mb-2">Yükleniyor...</h4>
-
-                <hr class="text-danger opacity-25 mx-4">
-
-                <h6 id="DeleteCapacity" class="text-muted mb-0 mt-2">Yükleniyor...</h6>
+        @if (isAdmin && mode == "delete")
+        {
+            <p class="text-secondary fw-semibold mb-4" style="font-size: 1.05rem;">
+                Aşağıdaki odayı sistemden <b class="text-danger">kalıcı olarak silmek</b> üzeresiniz.
+            </p>
+            <div class="card shadow-sm mx-auto mb-4 border-danger" style="border-radius: 12px; background-color: #fff5f5; max-width: 380px;">
+                <div class="card-body p-4">
+                    <h4 id="DeleteName" class="fw-bold text-dark mb-2">Yükleniyor...</h4>
+                    <hr class="text-danger opacity-25 mx-4">
+                    <h6 id="DeleteCapacity" class="text-muted mb-0 mt-2">Yükleniyor...</h6>
+                </div>
             </div>
-        </div>
+        }
+        else
+        {
+            <p class="text-secondary fw-semibold mb-4" style="font-size: 1.05rem;">
+                Oda erişimini @(isPasif ? "açıp" : "kapatıp")
+                <b class="@(isPasif ? "text-success" : "text-warning")">@(isPasif ? "aktife almak" : "pasife almak")</b> üzeresiniz.
+            </p>
+            <div class="card shadow-sm mx-auto mb-4 @(isPasif ? "border-success" : "border-warning")" style="border-radius: 12px; background-color: @(isPasif ? "#f6fdf9" : "#fffbeb"); max-width: 380px;">
+                <div class="card-body p-4">
+                    <h4 id="DeleteName" class="fw-bold text-dark mb-2">Yükleniyor...</h4>
+                    <hr class="@(isPasif ? "text-success" : "text-warning") opacity-50 mx-4">
+                    <h6 id="DeleteCapacity" class="text-muted mb-0 mt-2">Yükleniyor...</h6>
+                </div>
+            </div>
 
+            if (!isPasif)
+            {
+                <div class="text-start mx-auto mb-4" style="max-width: 380px;">
+                    <label class="form-label text-secondary small fw-bold mb-1">Pasife Alma Sebebi <span class="text-danger">*</span></label>
+                    <textarea name="PassiveReason" class="form-control bg-light shadow-sm" rows="2" style="border-radius: 8px; resize: none;" required></textarea>
+                </div>
+            }
+        }
     </div>
 
-    <div class="modal-footer border-0 pt-0 pb-3 justify-content-center">
+    <div class="modal-footer border-0 pt-0 pb-3 justify-content-center gap-2">
         <button type="button" class="btn btn-outline-secondary shadow-sm px-4" style="border-radius: 8px;" onclick="$('#odaModali').modal('hide');">İptal</button>
-        <button type="submit" class="btn btn-danger shadow-sm px-4 fw-bold" style="border-radius: 8px;">Evet, Sil</button>
+
+        @if (isAdmin && mode == "delete")
+        {
+            <button type="submit" class="btn btn-danger shadow-sm px-4 fw-bold" style="border-radius: 8px;">
+                <i class="fas fa-trash-alt me-1"></i> Kalıcı Sil
+            </button>
+        }
+        else
+        {
+            if (isPasif)
+            {
+                <button type="submit" class="btn btn-success shadow-sm px-4 fw-bold" style="border-radius: 8px;">
+                    <i class="fas fa-check-circle me-1"></i> Aktife Al
+                </button>
+            }
+            else
+            {
+                <button type="submit" class="btn btn-warning text-dark shadow-sm px-4 fw-bold" style="border-radius: 8px;">
+                    <i class="fas fa-ban me-1"></i> Pasife Al
+                </button>
+            }
+        }
     </div>
 </form>

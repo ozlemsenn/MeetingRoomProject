@@ -34,7 +34,7 @@
                         Kuran Kişi
                         <i class="fas fa-info-circle ms-2 text-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Arama yapabilirsiniz" style="cursor: help; font-size: 0.9rem;"></i>
                     </label>
-                    @Html.DropDownList("UserId", (SelectList)ViewBag.Users, "Kullanıcı Seçiniz", new { @class = "form-select shadow-sm border-0 bg-light select2-kullanici", @required = "required", style = "width: 100%;" })
+                    @Html.DropDownList("UserId", (SelectList)ViewBag.Users, "Kullanıcı Seçiniz", new { @class = "form-select shadow-sm border-0 bg-light select2-kullanici", @required = "required", style = "width: 100%;", id = "UserId" })
                 </div>
             </div>
 
@@ -62,7 +62,7 @@
 
             <div class="row mb-3">
                 <div class="col-12">
-                    <label class="form-label text-muted small fw-bold mb-1><span class="fw-normal">Katılımcılar (Birden fazla seçebilirsiniz)</span></label>
+                    <label class="form-label text-muted small fw-bold mb-1"><span class="fw-normal">Katılımcılar (Birden fazla seçebilirsiniz)</span></label>
                     @Html.ListBox("SecilenKatilimcilar", (SelectList)ViewBag.KullaniciListesi,
                         new { @class = "form-control shadow-sm border-0 bg-light select2-multiple", multiple = "multiple", style = "width: 100%;" })
                 </div>
@@ -152,7 +152,7 @@
     $(document).ready(function () {
         var guncelKullaniciListesi = [];
 
-        // ÇÖZÜM: Artık tüm şirketin geldiği Katılımcılar kutusuna bakıyor!
+        // Modala yüklendiği anda (Admin dışındaki kullanıcılar için) mevcut katılımcıları diziye al
         $('select[name="SecilenKatilimcilar"] option').each(function () {
             var kisiId = $(this).val();
             var kisiAd = $(this).text();
@@ -161,10 +161,11 @@
                 guncelKullaniciListesi.push({ Id: kisiId, TamAd: kisiAd });
             }
         });
+
         setTimeout(function () {
             $('.select2-kullanici').select2({
                 dropdownParent: $('#islemModali'),
-                placeholder: "Kullanıcı Ara...",
+                placeholder: "Kullanıcı Seçiniz",
                 allowClear: true
             });
 
@@ -174,8 +175,15 @@
                 allowClear: true,
                 width: '100%'
             });
+
+            // Eğer Yönetici veya Personel form açmışsa ve "Kuran Kişi" otomatik seçiliyse tetikle ki Katılımcılardan silinsin.
+            var baslangicKuranKisi = $('#UserId').val();
+            if (baslangicKuranKisi && !$('#sirketSecimi').length) {
+                $('#UserId').trigger('change');
+            }
         }, 100);
 
+        // Şirket Değiştirilince (Sadece ADMIN görür) Odaları ve Kullanıcıları AJAX ile çek
         $('#sirketSecimi').change(function () {
             var secilenSirketId = $(this).val();
 
@@ -221,14 +229,15 @@
             }
         });
 
+        // Admin formu açtığında şirket seçiliyse tetikle
         if ($('#sirketSecimi').val()) {
             $('#sirketSecimi').trigger('change');
         }
 
+        // Kuran Kişi Değişirse onu "Katılımcılar" listesinden kaldır (Kendisiyle toplantı yapamaz mantığı)
         $('#UserId').change(function () {
             var secilenKuranKisi = $(this).val();
             var katilimciDropdown = $('select[name="SecilenKatilimcilar"]');
-
             var mevcutSecimler = katilimciDropdown.val() || [];
 
             katilimciDropdown.empty();
@@ -241,10 +250,10 @@
                 });
             }
 
+            // Yeniden oluşturulan listede eski seçimleri tekrar geri yükle
             katilimciDropdown.val(mevcutSecimler);
-
             katilimciDropdown.trigger('change.select2');
         });
 
-    }); 
+    });
 </script>

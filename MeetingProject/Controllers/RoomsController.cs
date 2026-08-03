@@ -2,30 +2,29 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
-using System.Data.Odbc;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using MeetingProject.Models;
 
 namespace MeetingProject.Controllers
 {
-    [Authorize] 
+    [Authorize]
     public class RoomsController : BaseController
     {
-
         public ActionResult Index()
         {
             if (string.IsNullOrEmpty(GecerliRol()))
             {
-                return RedirectToAction("Login", "Account");
+                return RedirectToAction("Login", "Auth");
             }
 
             bool isAdmin = GecerliRol() == "Admin";
+            bool isYonetici = GecerliRol() == "Yönetici";
             int aktifSirketId = GecerliSirketId();
 
-            ViewBag.IsAdmin = isAdmin;
+            // Arayüzde Ekle/Düzenle butonları Admin ve Yönetici'ye açılsın
+            ViewBag.IsAdmin = isAdmin || isYonetici;
 
             if (isAdmin)
             {
@@ -47,36 +46,35 @@ namespace MeetingProject.Controllers
 
             var odalar = db.Rooms
                            .Where(x => isAdmin || x.CompanyId == aktifSirketId)
+                           .ToList() // Önce veritabanından çek (String Contains işlemi hata vermesin diye)
                            .Select(x => new
                            {
                                Id = x.Id,
-                               Name = x.Name,
+                               // Eğer isminde (Pasif) geçiyorsa temiz ismini al, yoksa normal ismini al
+                               Name = x.Name.Replace(" (Pasif)", ""),
                                companyId = x.CompanyId,
                                Capacity = x.Capacity,
                                HasProjector = x.HasProjector,
-                           })
-                           .ToList();
+                               // İsminde "(Pasif)" geçiyorsa durumu Pasif yap, yoksa Aktif.
+                               Status = x.Name.Contains("(Pasif)") ? "Pasif" : "Aktif"
+                           }).ToList();
 
             return Json(odalar, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult Details(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+            if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
             Rooms rooms = db.Rooms.Find(id);
-            if (rooms == null)
-            {
-                return HttpNotFound();
-            }
-            bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
-            int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
+            if (rooms == null) return HttpNotFound();
+
+            bool isAdmin = GecerliRol() == "Admin";
+            int aktifSirketId = GecerliSirketId();
 
             if (!isAdmin && rooms.CompanyId != aktifSirketId)
             {
-                return RedirectToAction("Index", "Rooms");
+                return Content("<div class='alert alert-danger m-4 text-center'><i class='fas fa-ban fa-3x mb-3 text-danger'></i><br><b>Yetkisiz İşlem</b></div>");
             }
             return PartialView(rooms);
         }
@@ -84,12 +82,21 @@ namespace MeetingProject.Controllers
         [HttpGet]
         public ActionResult Create()
         {
-            bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
+            string rol = GecerliRol();
+            if (rol != "Admin" && rol != "Yönetici")
+                return Content("<div class='alert alert-danger'>Yetkisiz İşlem</div>");
 
-            if (isAdmin)
+            if (rol == "Admin")
             {
                 ViewBag.CompanyId = new SelectList(db.Companies.ToList(), "Id", "Name");
             }
+            else
+            {
+                int sirketId = GecerliSirketId();
+                var sirket = db.Companies.Where(c => c.Id == sirketId).ToList();
+                ViewBag.CompanyId = new SelectList(sirket, "Id", "Name", sirketId);
+            }
+
             return PartialView();
         }
 
@@ -97,48 +104,53 @@ namespace MeetingProject.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Name,Capacity,HasProjector,CompanyId")] Rooms rooms)
         {
-            if (Session["UserRole"] == null || Session["UserRole"].ToString() != "Admin")
+            string rol = GecerliRol();
+
+            if (rol != "Admin" && rol != "Yönetici")
             {
-                rooms.CompanyId = Convert.ToInt32(Session["CompanyId"]);
+                return Json(new { success = false, message = "Yetkisiz İşlem" });
+            }
+
+            // Eğer Yönetici oda ekliyorsa, CompanyId zorunlu olarak kendi şirketidir
+            if (rol != "Admin")
+            {
+                rooms.CompanyId = GecerliSirketId();
             }
 
             if (ModelState.IsValid)
             {
                 db.Rooms.Add(rooms);
                 db.SaveChanges();
-
-                return Json(new
-                {
-                    success = true,
-                    room = rooms
-                });
+                return Json(new { success = true, room = rooms });
             }
 
-            return Json(new
-            {
-                success = false,
-                message = "Lütfen tüm alanları eksiksiz doldurun."
-            });
+            return Json(new { success = false, message = "Lütfen tüm alanları eksiksiz doldurun." });
         }
+
+        [HttpGet]
         public ActionResult Edit(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+            if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
             Rooms rooms = db.Rooms.Find(id);
-            if (rooms == null)
+            if (rooms == null) return HttpNotFound();
+
+            string rol = GecerliRol();
+            int aktifSirketId = GecerliSirketId();
+
+            if (rol != "Admin" && rol != "Yönetici") return Content("<div class='alert alert-danger'>Yetkisiz İşlem</div>");
+            if (rol == "Yönetici" && rooms.CompanyId != aktifSirketId) return Content("<div class='alert alert-danger'>Başka şirketin odasını düzenleyemezsiniz.</div>");
+
+            if (rol == "Admin")
             {
-                return HttpNotFound();
+                ViewBag.CompanyId = new SelectList(db.Companies.ToList(), "Id", "Name", rooms.CompanyId);
+            }
+            else
+            {
+                var sirket = db.Companies.Where(c => c.Id == aktifSirketId).ToList();
+                ViewBag.CompanyId = new SelectList(sirket, "Id", "Name", rooms.CompanyId);
             }
 
-            bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
-            int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
-
-            if(!isAdmin && rooms.CompanyId != aktifSirketId)
-            {
-                return RedirectToAction("Index", "Rooms");
-            }
             return PartialView(rooms);
         }
 
@@ -146,18 +158,20 @@ namespace MeetingProject.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,Name,Capacity,HasProjector,CompanyId")] Rooms rooms)
         {
-            bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
-            int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
+            string rol = GecerliRol();
+            int aktifSirketId = GecerliSirketId();
 
-            if (!isAdmin)
+            if (rol != "Admin" && rol != "Yönetici") return Json(new { success = false, message = "Yetkisiz işlem!" });
+
+            if (rol != "Admin")
             {
-                rooms.CompanyId = aktifSirketId;
+                rooms.CompanyId = aktifSirketId; // Hacklemeye çalışırlarsa diye arka planda tekrar eziyoruz
             }
 
             if (ModelState.IsValid)
             {
                 var gercekOda = db.Rooms.AsNoTracking().FirstOrDefault(x => x.Id == rooms.Id);
-                if (gercekOda == null || (!isAdmin && gercekOda.CompanyId != aktifSirketId))
+                if (gercekOda == null || (rol == "Yönetici" && gercekOda.CompanyId != aktifSirketId))
                 {
                     return Json(new { success = false, message = "Yetkisiz işlem!" });
                 }
@@ -171,57 +185,74 @@ namespace MeetingProject.Controllers
             return Json(new { success = false, message = "Form verileri geçersiz." });
         }
 
-        public ActionResult Delete(int? id)
+        [HttpGet]
+        public ActionResult Delete(int? id, string mode = "")
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Rooms rooms = db.Rooms.Find(id);
-            if (rooms == null)
-            {
-                return HttpNotFound();
-            }
-            bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
-            int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
+            if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            if(!isAdmin && rooms.CompanyId != aktifSirketId)
-            {
-                return RedirectToAction("Index", "Rooms");
-            }
+            Rooms rooms = db.Rooms.Find(id);
+            if (rooms == null) return HttpNotFound();
+
+            string rol = GecerliRol();
+            bool isAdmin = rol == "Admin";
+
+            if (rol != "Admin" && rol != "Yönetici" && rol != "Yonetici") return Content("<div class='alert alert-danger'>Yetkisiz İşlem</div>");
+            if (!isAdmin && rooms.CompanyId != GecerliSirketId()) return Content("<div class='alert alert-danger'>Yetkisiz İşlem</div>");
+
+            ViewBag.IsAdmin = isAdmin;
+            ViewBag.Mode = mode; // "status" veya "delete"
             return PartialView(rooms);
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult DeleteConfirmed(int id, string PassiveReason, string ActionType)
         {
-            bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
-            int aktifSirketId = Convert.ToInt32(Session["CompanyId"]);
+            string rol = GecerliRol();
+            bool isAdmin = rol == "Admin";
+            bool isYonetici = rol == "Yonetici" || rol == "Yönetici";
+            int aktifSirketId = GecerliSirketId();
+
+            if (!isAdmin && !isYonetici) return Json(new { success = false, message = "Yetkisiz işlem!" });
 
             Rooms rooms = db.Rooms.Find(id);
 
-            if (rooms == null || (!isAdmin && rooms.CompanyId != aktifSirketId))
+            if (rooms == null || (isYonetici && rooms.CompanyId != aktifSirketId))
             {
-                return Json(new { success = false, message = "Yetkisiz silme işlemi engellendi!" });
+                return Json(new { success = false, message = "Oda bulunamadı veya yetkiniz yok!" });
             }
 
-            db.Rooms.Remove(rooms);
-            db.SaveChanges();
+            if (string.IsNullOrEmpty(ActionType))
+            {
+                ActionType = isAdmin ? "HardDelete" : "ToggleStatus";
+            }
 
+            if (ActionType == "HardDelete")
+            {
+                if (!isAdmin) return Json(new { success = false, message = "Sadece Admin kalıcı silme işlemi yapabilir!" });
+                db.Rooms.Remove(rooms);
+            }
+            else // ToggleStatus (Aktif/Pasife Alma)
+            {
+                if (rooms.Name.Contains("(Pasif)")) // Zaten pasifse aktife al
+                {
+                    rooms.Name = rooms.Name.Replace(" (Pasif)", "");
+                }
+                else // Aktifse pasife al
+                {
+                    if (string.IsNullOrWhiteSpace(PassiveReason))
+                        return Json(new { success = false, message = "Lütfen odayı pasife alma sebebini belirtiniz!" });
+
+                    rooms.Name += " (Pasif)";
+                    // Not: Gerçek projelerde name'i bozmak yerine IsActive = false; PassiveReason = PassiveReason; yapılır.
+                }
+            }
+
+            db.SaveChanges();
             return Json(new { success = true });
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-    
-    [HttpGet]
+        [HttpGet]
         public JsonResult GetRoomData(int id)
         {
             var oda = db.Rooms.Where(r => r.Id == id).Select(r => new {
@@ -232,6 +263,12 @@ namespace MeetingProject.Controllers
             }).FirstOrDefault();
 
             return Json(oda, JsonRequestBehavior.AllowGet);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing) db.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

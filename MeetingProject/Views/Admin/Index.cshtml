@@ -268,8 +268,35 @@
                                                 <i class="fas fa-user-circle text-muted me-1"></i>@aktivite.Kullanici
                                             </span>
 
-                                            <span class="badge @(aktivite.Rol == "Admin" ? "bg-danger" : "bg-primary") text-white px-2 py-1" style="font-size: 0.70rem;">
-                                                @aktivite.Rol
+                                            @{
+                                                // Rolleri, sistemin genel renk mimarisine uygun hale getiriyoruz
+                                                string badgeBg = "bg-success";
+                                                string badgeText = "text-white";
+                                                string rolIsmi = aktivite.Rol;
+
+                                                if (rolIsmi == "Admin")
+                                                {
+                                                    badgeBg = "bg-dark";
+                                                }
+                                                else if (rolIsmi == "Yönetici" || rolIsmi == "Yonetici")
+                                                {
+                                                    badgeBg = "bg-info";
+                                                    badgeText = "text-dark fw-bold";
+                                                    rolIsmi = "Yönetici";
+                                                }
+                                                else if (rolIsmi == "Pasif")
+                                                {
+                                                    badgeBg = "bg-danger";
+                                                    rolIsmi = "Pasif Hesap"; // Sadece Pasif yerine Pasif Hesap yazsın
+                                                }
+                                                else
+                                                {
+                                                    rolIsmi = "Personel"; // Eğer boş gelirse veya farklıysa Personel kabul et
+                                                }
+                                            }
+
+                                            <span class="badge @badgeBg @badgeText px-2 py-1 shadow-sm" style="font-size: 0.70rem; letter-spacing: 0.5px;">
+                                                @rolIsmi
                                             </span>
                                         </div>
                                         <small class="text-muted fw-bold" style="font-size: 0.75rem; white-space: nowrap;">

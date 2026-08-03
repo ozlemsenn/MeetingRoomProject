@@ -4,6 +4,8 @@
     <EntitySetMapping Name="Rooms">
       <EntityTypeMapping TypeName="MeetingAppModel.Rooms">
         <MappingFragment StoreEntitySet="Rooms">
+          <ScalarProperty Name="PassiveReason" ColumnName="PassiveReason" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
           <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
           <ScalarProperty Name="Id" ColumnName="Id" />
           <ScalarProperty Name="Name" ColumnName="Name" />
@@ -15,6 +17,8 @@
     <EntitySetMapping Name="Users">
       <EntityTypeMapping TypeName="MeetingAppModel.Users">
         <MappingFragment StoreEntitySet="Users">
+          <ScalarProperty Name="PassiveReason" ColumnName="PassiveReason" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
           <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
           <ScalarProperty Name="Role" ColumnName="Role" />
           <ScalarProperty Name="Password" ColumnName="Password" />
