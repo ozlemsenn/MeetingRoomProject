@@ -133,31 +133,34 @@
                         if (secilenDurum === "Pasif" && !gercektenPasifMi) return true;
 
                         var adGorunumu = user.IsCurrentUser
-                                         ? '<span class="text-primary fw-bold">' + user.Name + '</span>'
-                                         : '<span class="fw-bold">' + user.Name + '</span>';
+                            ? '<span class="text-primary fw-bold">' + user.Name + '</span>'
+                            : '<span class="fw-bold">' + user.Name + '</span>';
 
-                        var rolBadgeRengi = "bg-secondary";
+                        // Rol metnini belirle (Arka plan renkleri artık kullanılmayacak)
                         var rolMetni = user.Role;
-
-                        if (rolMetni === "Admin") rolBadgeRengi = "bg-dark";
-                        else if (rolMetni === "Yönetici" || rolMetni === "Yonetici") {
-                            rolBadgeRengi = "bg-dark";
+                        if (rolMetni === "Yönetici" || rolMetni === "Yonetici") {
                             rolMetni = "Yönetici";
-                        }
-                        else if (rolMetni === "Pasif") rolBadgeRengi = "bg-dark";
-                        else {
-                            rolBadgeRengi = "bg-dark";
+                        } else if (rolMetni !== "Admin" && rolMetni !== "Pasif") {
                             rolMetni = "Personel";
                         }
 
                         tabloIcerigi += '<tr>';
                         tabloIcerigi += '<td class="align-middle">' + adGorunumu + '</td>';
-                        tabloIcerigi += '<td class="align-middle">' + user.Surname + '</td>';
-                        tabloIcerigi += '<td class="align-middle"><a href="mailto:' + user.Email + '" class="text-decoration-none text-info fw-medium">' + user.Email + '</a></td>';
-                        tabloIcerigi += '<td class="align-middle"><span class="badge bg-light text-dark border">' + user.Department + '</span></td>';
-                        tabloIcerigi += '<td class="align-middle"><span class="badge ' + rolBadgeRengi + ' px-3 py-2 shadow-sm">' + rolMetni + '</span></td>';
+                        tabloIcerigi += '<td class="align-middle fw-bold">' + user.Surname + '</td>';
 
+                        // MAİL: text-secondary (gri) olarak ayarlandı. Mavi istersen "text-primary" yapabilirsin.
+                        tabloIcerigi += '<td class="align-middle"><a href="mailto:' + user.Email + '" class="text-decoration-none text-secondary">' + user.Email + '</a></td>';
+
+                        // DEPARTMAN: badge sınıfı kaldırıldı, düz yazı
+                        tabloIcerigi += '<td class="align-middle">' + user.Department + '</td>';
+
+                        // ROL DURUMU: badge sınıfı kaldırıldı, düz yazı
+                        tabloIcerigi += '<td class="align-middle">' + rolMetni + '</td>';
+
+                        // İŞLEM BUTONLARI
                         var islemButonlari = '<div class="d-flex justify-content-center align-items-center gap-2">';
+                    // ... (İşlem butonları kodların aynı kalabilir) ...
+                    // ...
                         islemButonlari += '<a href="/Users/Details/' + user.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Detaylar"><i class="fas fa-eye" style="font-size: 1.15rem;"></i></a>';
 
                         if (yetkiliKullaniciMi) {

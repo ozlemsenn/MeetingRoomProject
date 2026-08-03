@@ -156,6 +156,8 @@ namespace MeetingProject.Controllers
         [HttpGet]
         public JsonResult GetUsers()
         {
+            if (string.IsNullOrEmpty(GecerliRol())) return Json(new List<object>(), JsonRequestBehavior.AllowGet);
+
             bool isAdmin = GecerliRol() == "Admin";
             int aktifSirketId = GecerliSirketId();
 
@@ -166,7 +168,9 @@ namespace MeetingProject.Controllers
                     x.Id,
                     x.Name,
                     x.Surname,
-                    x.IsActive, // Artık aktiflik bilgisini de gönderiyoruz
+                    x.Email,       // Bu satırı ekledik
+                    x.Department,  // Bu satırı ekledik
+                    x.IsActive,
                     Role = (x.Role == "Yonetici" || x.Role == "Yönetici") ? "Yönetici" : x.Role
                 }).ToList();
 
