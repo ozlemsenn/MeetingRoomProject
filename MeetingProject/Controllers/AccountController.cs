@@ -21,10 +21,21 @@ namespace MeetingProject.Controllers
         [HttpPost]
         public ActionResult Login(string Email, string Password)
         {
+            // Kullanıcıyı veritabanında bul
             var user = db.Users.FirstOrDefault(x => x.Email == Email && x.Password == Password);
 
             if (user != null)
             {
+                // --- İŞTE GÜVENLİK DUVARI (IsActive Kontrolü) ---
+                // Eğer IsActive false ise, kullanıcı giriş yapamasın.
+                // (Not: user.IsActive property'sinin modelinde tanımlı olduğundan emin ol)
+                if (user.IsActive == false)
+                {
+                    ViewBag.Hata = "Hesabınız pasif durumdadır, giriş yapamazsınız.";
+                    return View();
+                }
+                // ------------------------------------------------
+
                 string adSoyad = user.Name + " " + user.Surname;
                 string sirketId = user.CompanyId.ToString();
 
@@ -32,7 +43,6 @@ namespace MeetingProject.Controllers
 
                 var ticket = new FormsAuthenticationTicket(
                     1, user.Email, DateTime.Now, DateTime.Now.AddHours(24), false, userData
-
                 );
 
                 string encryptedTicket = FormsAuthentication.Encrypt(ticket);
@@ -45,6 +55,7 @@ namespace MeetingProject.Controllers
                 Session["UserRole"] = user.Role;
                 Session["CompanyId"] = user.CompanyId;
 
+                // Yönlendirme mantığı aynen korundu
                 if (user.Role == "Admin")
                 {
                     return RedirectToAction("Index", "Admin");

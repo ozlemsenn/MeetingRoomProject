@@ -123,12 +123,12 @@
                         if (secilenDurum === "Pasif" && oda.Status === "Aktif") return true;
 
                         var projeKodu = oda.HasProjector
-                            ? '<span class="text-success fw-bold"><i class="fas fa-check-circle"></i> Var</span>'
-                            : '<span class="text-danger fw-bold"><i class="fas fa-times-circle"></i> Yok</span>';
+                            ? '<span style="color:#6c757d;font-weight:600;">Var</span>'
+                            : '<span style="color:#6c757d;font-weight:600;">Yok</span>';
 
                         var durumBadge = oda.Status === "Pasif"
-                            ? '<span class="badge bg-danger shadow-sm px-3 py-2">Pasif</span>'
-                            : '<span class="badge bg-success shadow-sm px-3 py-2">Aktif</span>';
+                            ? '<span class="text-danger fw-bold">Pasif</span>'
+                            : '<span class="text-success fw-bold">Aktif</span>';
 
                         tabloIcerigi += '<tr>';
                         tabloIcerigi += '<td class="align-middle fw-bold">' + oda.Name + '</td>';
@@ -209,17 +209,37 @@
                         var roomId = gidilecekAdres.split('/').pop();
                         $.get('/Rooms/GetRoomData/' + roomId, function (odaBilgisi) {
                             if (odaBilgisi) {
-                                // Gelen odanın ismi (Pasif) içeriyorsa temizleyip gösterelim
+
                                 var temizOdaAdi = odaBilgisi.Name.replace(" (Pasif)", "");
 
                                 $('#DeleteId').val(odaBilgisi.Id);
                                 $('#DeleteName, #DetailsName').text(temizOdaAdi);
                                 $('#DeleteCapacity, #DetailsCapacity').text("Kapasite: " + odaBilgisi.Capacity + " Kişi");
 
-                                // Edit form id'leri varsa:
                                 $('#EditId').val(odaBilgisi.Id);
-                                $('#EditName').val(temizOdaAdi); // Formda düzenlerken (Pasif) yazmasın
+                                $('#EditName').val(temizOdaAdi);
                                 $('#EditCapacity').val(odaBilgisi.Capacity);
+
+                                // Projeksiyon
+                                $('#DetailsHasProjector').html(
+                                    odaBilgisi.HasProjector
+                                        ? '<span class="text-secondary fw-bold">Var</span>'
+                                        : '<span class="text-secondary fw-bold">Yok</span>'
+                                );
+
+                                // Durum
+                                if (odaBilgisi.Status === "Aktif") {
+
+                                    $('#DetailsStatus').html('<span class="text-success fw-bold">Aktif</span>');
+                                    $('#PassiveReasonRow').hide();
+
+                                } else {
+
+                                    $('#DetailsStatus').html('<span class="text-danger fw-bold">Pasif</span>');
+                                    $('#DetailsPassiveReason').text(odaBilgisi.PassiveReason || "-");
+                                    $('#PassiveReasonRow').show();
+
+                                }
                             }
                         });
                     }

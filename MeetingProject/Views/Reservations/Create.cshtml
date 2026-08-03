@@ -4,7 +4,6 @@
 
 <div class="modal-body p-0">
     <div class="container-fluid px-4 py-3">
-
         <div id="hataMesajiAlani" class="alert alert-danger d-none shadow-sm" style="border-radius: 8px; font-size: 0.9rem; padding: 10px;"></div>
 
         <form id="formRezervasyon">
@@ -30,25 +29,22 @@
                     @Html.DropDownList("RoomId", (SelectList)ViewBag.Rooms, "Oda Seçiniz", new { @class = "form-select shadow-sm border-0 bg-light", @required = "required" })
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label text-muted small fw-bold mb-1 d-flex align-items-center">
-                        Kuran Kişi
-                        <i class="fas fa-info-circle ms-2 text-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Arama yapabilirsiniz" style="cursor: help; font-size: 0.9rem;"></i>
-                    </label>
-                    @Html.DropDownList("UserId", (SelectList)ViewBag.Users, "Kullanıcı Seçiniz", new { @class = "form-select shadow-sm border-0 bg-light select2-kullanici", @required = "required", style = "width: 100%;", id = "UserId" })
+                    <label class="form-label text-muted small fw-bold mb-1">Kuran Kişi</label>
+                    @Html.DropDownList("UserId", (SelectList)ViewBag.Users, "Kullanıcı Seçiniz", new { @class = "form-select shadow-sm border-0 bg-light", @required = "required", id = "UserId" })
                 </div>
             </div>
 
             <div class="row mb-3">
                 <div class="col-12">
                     <label class="form-label text-muted small fw-bold mb-1">Toplantı Başlığı</label>
-                    <input type="text" name="Title" class="form-control shadow-sm border-0 bg-light" style="width: 100% !important; max-width: 100% !important;" placeholder="Örn: 2026 Q3 Finansal Değerlendirme" required />
+                    <input type="text" name="Title" class="form-control shadow-sm border-0 bg-light" placeholder="Örn: 2026 Q3 Finansal Değerlendirme" required />
                 </div>
             </div>
 
             <div class="row mb-3">
                 <div class="col-4">
                     <label class="form-label text-muted small fw-bold mb-1">Tarih</label>
-                    <input type="date" name="Date" id="tarihInput" class="form-control shadow-sm border-0 bg-light" required onchange="TarihSecildi()">
+                    <input type="date" name="Date" id="tarihInput" class="form-control shadow-sm border-0 bg-light" required>
                 </div>
                 <div class="col-4">
                     <label class="form-label text-muted small fw-bold mb-1">Başlangıç</label>
@@ -62,16 +58,32 @@
 
             <div class="row mb-3">
                 <div class="col-12">
-                    <label class="form-label text-muted small fw-bold mb-1"><span class="fw-normal">Katılımcılar (Birden fazla seçebilirsiniz)</span></label>
-                    @Html.ListBox("SecilenKatilimcilar", (SelectList)ViewBag.KullaniciListesi,
-                        new { @class = "form-control shadow-sm border-0 bg-light select2-multiple", multiple = "multiple", style = "width: 100%;" })
+                    <label class="form-label text-muted small fw-bold mb-1">Katılımcılar</label>
+                    <div class="dropdown">
+                        <button class="form-select shadow-sm border-0 bg-light text-start" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                            <span id="secilenKisiSayisi">Katılımcı Seçiniz...</span>
+                        </button>
+                        <ul class="dropdown-menu w-100 shadow border-0 p-2" aria-labelledby="dropdownMenuButton" style="max-height: 200px; overflow-y: auto;">
+                            <div id="katilimciCheckboxListesi">
+                                @foreach (var item in (SelectList)ViewBag.KullaniciListesi)
+                                {
+                                    <div class="px-2 py-1">
+                                        <label class="d-flex align-items-center" style="cursor:pointer">
+                                            <input type="checkbox" name="SecilenKatilimcilar" value="@item.Value" class="me-2 katilimci-chk">
+                                            @item.Text
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </ul>
+                    </div>
                 </div>
             </div>
 
             <div class="row mb-3">
                 <div class="col-12">
                     <label class="form-label text-muted small fw-bold mb-1">Açıklama / Amacı</label>
-                    <textarea name="Description" class="form-control shadow-sm border-0 bg-light" rows="3" style="width: 100% !important; max-width: 100% !important; resize: none;" placeholder="Örn: Bütçe değerlendirmesi..." required></textarea>
+                    <textarea name="Description" class="form-control shadow-sm border-0 bg-light" rows="3" style="resize: none;" placeholder="Örn: Bütçe değerlendirmesi..." required></textarea>
                 </div>
             </div>
         </form>
@@ -79,181 +91,82 @@
 </div>
 
 <div class="modal-footer border-0 bg-white d-flex justify-content-between align-items-center" style="padding: 15px 20px; border-radius: 0 0 15px 15px;">
-
     <button type="button" id="btnDolulukGoster" class="btn btn-info text-white shadow-sm d-none" style="border-radius: 8px; padding: 8px 15px;" onclick="DolulukDurumunuGetir()">
         <i class="fas fa-calendar-alt me-2"></i> Doluluk Durumu
     </button>
-
     <div>
         <button type="button" class="btn btn-outline-secondary px-4 shadow-sm" style="border-radius: 8px;" onclick="$('#islemModali').modal('hide');">İptal</button>
         <button type="button" class="btn px-4 shadow-sm fw-bold text-white" style="background-color: #343a40; border-radius: 8px;" onclick="Kaydet()">Oluştur</button>
     </div>
 </div>
 
-<div id="dolulukAlani" class="px-4 pb-3" style="display:none;">
-    <div class="card border-0 bg-light shadow-sm">
-        <div class="card-body" id="dolulukIcerik">
-        </div>
-    </div>
-</div>
-
-<style>
-    .select2-results__option[aria-selected="true"] {
-        background-color: #f1f5f9 !important;
-        color: #1e3a8a !important;
-        position: relative;
-        padding-right: 30px !important;
-    }
-
-        .select2-results__option[aria-selected="true"]::after {
-            content: '\f00c';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #10b981;
-            font-size: 1.1rem;
-        }
-
-    .select2-container--default .select2-selection--multiple .select2-selection__choice {
-        background-color: #1e3a8a !important;
-        color: #ffffff !important;
-        border: none !important;
-        border-radius: 6px !important;
-        padding: 5px 12px !important;
-        margin-top: 6px !important;
-        font-weight: 500;
-        font-size: 0.9rem;
-    }
-
-    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
-        color: #ffffff !important;
-        margin-right: 10px !important;
-        border-right: 1px solid rgba(255, 255, 255, 0.3) !important;
-        padding-right: 8px !important;
-    }
-
-        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
-            background: transparent !important;
-            color: #ff4d4d !important;
-        }
-
-    .select2-container .select2-selection--multiple {
-        min-height: 45px !important;
-        border: 0px !important;
-        background-color: #f8f9fa !important;
-        padding-bottom: 5px;
-    }
-</style>
-
 <script>
     $(document).ready(function () {
+        // Tarih ayarları
+        var today = new Date().toISOString().split('T')[0];
+        $('#tarihInput').attr('min', today).val(today);
+
         var guncelKullaniciListesi = [];
 
-        // Modala yüklendiği anda (Admin dışındaki kullanıcılar için) mevcut katılımcıları diziye al
-        $('select[name="SecilenKatilimcilar"] option').each(function () {
-            var kisiId = $(this).val();
-            var kisiAd = $(this).text();
-
-            if (kisiId) {
-                guncelKullaniciListesi.push({ Id: kisiId, TamAd: kisiAd });
-            }
-        });
-
-        setTimeout(function () {
-            $('.select2-kullanici').select2({
-                dropdownParent: $('#islemModali'),
-                placeholder: "Kullanıcı Seçiniz",
-                allowClear: true
+        // İlk yüklemede checkboxlardan listeyi doldur
+        function listeyiHazirla() {
+            guncelKullaniciListesi = [];
+            $('#katilimciCheckboxListesi input:checkbox').each(function () {
+                var val = $(this).val();
+                var text = $(this).parent().text().trim();
+                guncelKullaniciListesi.push({ Id: val, TamAd: text });
             });
+        }
+        listeyiHazirla();
 
-            $('.select2-multiple').select2({
-                dropdownParent: $('#islemModali'),
-                placeholder: "Toplantıya katılacak kişileri seçin...",
-                allowClear: true,
-                width: '100%'
-            });
-
-            // Eğer Yönetici veya Personel form açmışsa ve "Kuran Kişi" otomatik seçiliyse tetikle ki Katılımcılardan silinsin.
-            var baslangicKuranKisi = $('#UserId').val();
-            if (baslangicKuranKisi && !$('#sirketSecimi').length) {
-                $('#UserId').trigger('change');
-            }
-        }, 100);
-
-        // Şirket Değiştirilince (Sadece ADMIN görür) Odaları ve Kullanıcıları AJAX ile çek
+        // Şirket Değişince
         $('#sirketSecimi').change(function () {
             var secilenSirketId = $(this).val();
+            if (!secilenSirketId) return;
 
-            var odaDropdown = $('select[name="RoomId"]');
-            var kullaniciDropdown = $('select[name="UserId"]');
-            var katilimciDropdown = $('select[name="SecilenKatilimcilar"]');
+            $.ajax({
+                url: '/Reservations/SirketeGoreVerileriGetir',
+                type: 'GET',
+                data: { sirketId: secilenSirketId },
+                success: function (data) {
+                    guncelKullaniciListesi = data.kullanicilar;
 
-            if (secilenSirketId) {
-                odaDropdown.empty().append('<option value="">Yükleniyor...</option>');
-                kullaniciDropdown.empty().append('<option value="">Yükleniyor...</option>');
-                katilimciDropdown.empty();
+                    var odaDropdown = $('select[name="RoomId"]').empty().append('<option value="">Oda Seçiniz</option>');
+                    $.each(data.odalar, function (i, oda) { odaDropdown.append('<option value="' + oda.Id + '">' + oda.Name + '</option>'); });
 
-                $.ajax({
-                    url: '/Reservations/SirketeGoreVerileriGetir',
-                    type: 'GET',
-                    data: { sirketId: secilenSirketId },
-                    success: function (data) {
-                        guncelKullaniciListesi = data.kullanicilar;
+                    var kullaniciDropdown = $('select[name="UserId"]').empty().append('<option value="">Kullanıcı Seçiniz</option>');
+                    $.each(guncelKullaniciListesi, function (i, kullanici) { kullaniciDropdown.append('<option value="' + kullanici.Id + '">' + kullanici.TamAd + '</option>'); });
 
-                        odaDropdown.empty().append('<option value="">Oda Seçiniz</option>');
-                        $.each(data.odalar, function (i, oda) {
-                            odaDropdown.append('<option value="' + oda.Id + '">' + oda.Name + '</option>');
-                        });
-
-                        kullaniciDropdown.empty().append('<option value="">Kullanıcı Seçiniz</option>');
-                        $.each(guncelKullaniciListesi, function (i, kullanici) {
-                            kullaniciDropdown.append('<option value="' + kullanici.Id + '">' + kullanici.TamAd + '</option>');
-                        });
-
-                        katilimciDropdown.empty();
-                        $.each(guncelKullaniciListesi, function (i, kullanici) {
-                            katilimciDropdown.append('<option value="' + kullanici.Id + '">' + kullanici.TamAd + '</option>');
-                        });
-
-                        $('.select2-kullanici, .select2-multiple').trigger('change.select2');
-                    }
-                });
-            } else {
-                odaDropdown.empty().append('<option value="">Önce Şirket Seçiniz</option>');
-                kullaniciDropdown.empty().append('<option value="">Önce Şirket Seçiniz</option>');
-                katilimciDropdown.empty();
-                $('.select2-kullanici, .select2-multiple').trigger('change.select2');
-            }
+                    renderKatilimcilar(null);
+                }
+            });
         });
 
-        // Admin formu açtığında şirket seçiliyse tetikle
-        if ($('#sirketSecimi').val()) {
-            $('#sirketSecimi').trigger('change');
+        // Kuran Kişi değişince katılımcı listesinden o kişiyi çıkart
+        $('#UserId').change(function () {
+            renderKatilimcilar($(this).val());
+        });
+
+        function renderKatilimcilar(kuranKisiId) {
+            var container = $('#katilimciCheckboxListesi').empty();
+            $.each(guncelKullaniciListesi, function (i, kullanici) {
+                if (String(kullanici.Id) !== String(kuranKisiId)) {
+                    container.append(`
+                        <div class="px-2 py-1">
+                            <label class="d-flex align-items-center" style="cursor:pointer">
+                                <input type="checkbox" name="SecilenKatilimcilar" value="${kullanici.Id}" class="me-2 katilimci-chk">
+                                ${kullanici.TamAd}
+                            </label>
+                        </div>
+                    `);
+                }
+            });
+            $('#secilenKisiSayisi').text('Katılımcı Seçiniz...');
         }
 
-        // Kuran Kişi Değişirse onu "Katılımcılar" listesinden kaldır (Kendisiyle toplantı yapamaz mantığı)
-        $('#UserId').change(function () {
-            var secilenKuranKisi = $(this).val();
-            var katilimciDropdown = $('select[name="SecilenKatilimcilar"]');
-            var mevcutSecimler = katilimciDropdown.val() || [];
-
-            katilimciDropdown.empty();
-
-            if (guncelKullaniciListesi && guncelKullaniciListesi.length > 0) {
-                $.each(guncelKullaniciListesi, function (i, kullanici) {
-                    if (String(kullanici.Id) !== String(secilenKuranKisi)) {
-                        katilimciDropdown.append('<option value="' + kullanici.Id + '">' + kullanici.TamAd + '</option>');
-                    }
-                });
-            }
-
-            // Yeniden oluşturulan listede eski seçimleri tekrar geri yükle
-            katilimciDropdown.val(mevcutSecimler);
-            katilimciDropdown.trigger('change.select2');
+        $(document).on('change', '.katilimci-chk', function () {
+            var sayi = $('.katilimci-chk:checked').length;
+            $('#secilenKisiSayisi').text(sayi > 0 ? sayi + " kişi seçildi" : "Katılımcı Seçiniz...");
         });
-
     });
 </script>

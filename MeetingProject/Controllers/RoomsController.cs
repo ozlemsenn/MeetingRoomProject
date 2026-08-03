@@ -23,7 +23,6 @@ namespace MeetingProject.Controllers
             bool isYonetici = GecerliRol() == "Yönetici";
             int aktifSirketId = GecerliSirketId();
 
-            // Arayüzde Ekle/Düzenle butonları Admin ve Yönetici'ye açılsın
             ViewBag.IsAdmin = isAdmin || isYonetici;
 
             if (isAdmin)
@@ -46,16 +45,14 @@ namespace MeetingProject.Controllers
 
             var odalar = db.Rooms
                            .Where(x => isAdmin || x.CompanyId == aktifSirketId)
-                           .ToList() // Önce veritabanından çek (String Contains işlemi hata vermesin diye)
+                           .ToList()
                            .Select(x => new
                            {
                                Id = x.Id,
-                               // Eğer isminde (Pasif) geçiyorsa temiz ismini al, yoksa normal ismini al
                                Name = x.Name.Replace(" (Pasif)", ""),
                                companyId = x.CompanyId,
                                Capacity = x.Capacity,
                                HasProjector = x.HasProjector,
-                               // İsminde "(Pasif)" geçiyorsa durumu Pasif yap, yoksa Aktif.
                                Status = x.Name.Contains("(Pasif)") ? "Pasif" : "Aktif"
                            }).ToList();
 
@@ -111,7 +108,6 @@ namespace MeetingProject.Controllers
                 return Json(new { success = false, message = "Yetkisiz İşlem" });
             }
 
-            // Eğer Yönetici oda ekliyorsa, CompanyId zorunlu olarak kendi şirketidir
             if (rol != "Admin")
             {
                 rooms.CompanyId = GecerliSirketId();
@@ -165,7 +161,7 @@ namespace MeetingProject.Controllers
 
             if (rol != "Admin")
             {
-                rooms.CompanyId = aktifSirketId; // Hacklemeye çalışırlarsa diye arka planda tekrar eziyoruz
+                rooms.CompanyId = aktifSirketId;
             }
 
             if (ModelState.IsValid)
@@ -200,7 +196,7 @@ namespace MeetingProject.Controllers
             if (!isAdmin && rooms.CompanyId != GecerliSirketId()) return Content("<div class='alert alert-danger'>Yetkisiz İşlem</div>");
 
             ViewBag.IsAdmin = isAdmin;
-            ViewBag.Mode = mode; // "status" veya "delete"
+            ViewBag.Mode = mode;
             return PartialView(rooms);
         }
 
@@ -240,11 +236,25 @@ namespace MeetingProject.Controllers
                 }
                 else // Aktifse pasife al
                 {
+                    // --- REZERVASYON KONTROLÜ EKLENDİ ---
+                    var yakinRezervasyon = db.Reservations
+                        .Where(r => r.RoomId == id && r.Date >= DateTime.Today && r.Status != "İptal Edildi")
+                        .OrderBy(r => r.Date)
+                        .ThenBy(r => r.StartTime)
+                        .FirstOrDefault();
+
+                    if (yakinRezervasyon != null)
+                    {
+                        string tarihStr = yakinRezervasyon.Date.Value.ToString("dd.MM.yyyy");
+                        return Json(new { success = false, message = $"Bu oda için en yakın {tarihStr} tarihinde onaylı bir rezervasyon bulunmaktadır. Oda pasife alınamaz!" });
+                    }
+                    // ------------------------------------
+
                     if (string.IsNullOrWhiteSpace(PassiveReason))
                         return Json(new { success = false, message = "Lütfen odayı pasife alma sebebini belirtiniz!" });
 
+                    rooms.PassiveReason = PassiveReason;
                     rooms.Name += " (Pasif)";
-                    // Not: Gerçek projelerde name'i bozmak yerine IsActive = false; PassiveReason = PassiveReason; yapılır.
                 }
             }
 
@@ -255,12 +265,18 @@ namespace MeetingProject.Controllers
         [HttpGet]
         public JsonResult GetRoomData(int id)
         {
-            var oda = db.Rooms.Where(r => r.Id == id).Select(r => new {
-                r.Id,
-                r.Name,
-                r.Capacity,
-                r.HasProjector
-            }).FirstOrDefault();
+            var oda = db.Rooms
+                .Where(r => r.Id == id)
+                .Select(r => new
+                {
+                    r.Id,
+                    Name = r.Name.Replace(" (Pasif)", ""),
+                    r.Capacity,
+                    r.HasProjector,
+                    Status = r.Name.Contains("(Pasif)") ? "Pasif" : "Aktif",
+                    r.PassiveReason
+                })
+                .FirstOrDefault();
 
             return Json(oda, JsonRequestBehavior.AllowGet);
         }

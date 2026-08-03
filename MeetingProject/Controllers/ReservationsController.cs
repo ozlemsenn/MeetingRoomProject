@@ -179,6 +179,7 @@ namespace MeetingProject.Controllers
             int aktifSirketId = GecerliSirketId();
             int aktifKullaniciId = GecerliKullaniciId();
 
+            ViewBag.Bugun = DateTime.Now.ToString("yyyy-MM-dd");
             ViewBag.IsAdmin = isAdmin;
 
             if (isAdmin)
