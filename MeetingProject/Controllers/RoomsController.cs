@@ -268,15 +268,14 @@ namespace MeetingProject.Controllers
                 if (!isAdmin) return Json(new { success = false, message = "Sadece Admin kalıcı silme işlemi yapabilir!" });
                 db.Rooms.Remove(rooms);
             }
-            else // ToggleStatus (Aktif/Pasife Alma)
+            else 
             {
-                if (rooms.Name.Contains("(Pasif)")) // Zaten pasifse aktife al
+                if (rooms.Name.Contains("(Pasif)")) 
                 {
                     rooms.Name = rooms.Name.Replace(" (Pasif)", "");
                 }
-                else // Aktifse pasife al
+                else 
                 {
-                    // --- REZERVASYON KONTROLÜ EKLENDİ ---
                     var yakinRezervasyon = db.Reservations
                         .Where(r => r.RoomId == id && r.Date >= DateTime.Today && r.Status != "İptal Edildi")
                         .OrderBy(r => r.Date)
@@ -288,7 +287,6 @@ namespace MeetingProject.Controllers
                         string tarihStr = yakinRezervasyon.Date.Value.ToString("dd.MM.yyyy");
                         return Json(new { success = false, message = $"Bu oda için en yakın {tarihStr} tarihinde onaylı bir rezervasyon bulunmaktadır. Oda pasife alınamaz!" });
                     }
-                    // ------------------------------------
 
                     if (string.IsNullOrWhiteSpace(PassiveReason))
                         return Json(new { success = false, message = "Lütfen odayı pasife alma sebebini belirtiniz!" });

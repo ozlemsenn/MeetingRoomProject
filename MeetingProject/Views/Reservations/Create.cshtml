@@ -102,13 +102,11 @@
 
 <script>
     $(document).ready(function () {
-        // Tarih ayarları
         var today = new Date().toISOString().split('T')[0];
         $('#tarihInput').attr('min', today).val(today);
 
         var guncelKullaniciListesi = [];
 
-        // İlk yüklemede checkboxlardan listeyi doldur
         function listeyiHazirla() {
             guncelKullaniciListesi = [];
             $('#katilimciCheckboxListesi input:checkbox').each(function () {
@@ -119,7 +117,6 @@
         }
         listeyiHazirla();
 
-        // Şirket Değişince
         $('#sirketSecimi').change(function () {
             var secilenSirketId = $(this).val();
             if (!secilenSirketId) return;
@@ -142,7 +139,6 @@
             });
         });
 
-        // Kuran Kişi değişince katılımcı listesinden o kişiyi çıkart
         $('#UserId').change(function () {
             renderKatilimcilar($(this).val());
         });

@@ -5,14 +5,13 @@
 
     bool isAdmin = ViewBag.IsAdmin != null && (bool)ViewBag.IsAdmin;
     bool isPasif = Model.Role == "Pasif";
-    string mode = ViewBag.Mode as string; // "status" veya "delete"
+    string mode = ViewBag.Mode as string;
 }
 
 <form id="deleteForm">
     @Html.AntiForgeryToken()
     <input type="hidden" id="DeleteId" name="Id" />
 
-    <!-- URL'den gelen komuta göre ActionType otomatik atanır -->
     <input type="hidden" id="ActionType" name="ActionType" value="@(mode == "delete" ? "HardDelete" : "ToggleStatus")" />
 
     <div class="container-fluid px-2 py-3 text-center">

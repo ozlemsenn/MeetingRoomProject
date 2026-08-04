@@ -9,13 +9,11 @@
     <div class="container-fluid" style="padding: 15px 25px;">
         @if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
         {
-            <!-- YENİ: id="sirketSecimAlani" eklendi -->
             <div class="row mb-4" id="sirketSecimAlani">
                 <div class="col-md-12">
                     <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">
                         <i class="fas fa-building me-1 text-primary"></i>Şirket Seçimi
                     </label>
-                    <!-- YENİ: id = "CreateCompanyId" eklendi -->
                     @Html.DropDownList("CompanyId", (SelectList)ViewBag.CompanyId, "Lütfen Şirket Seçiniz...", new { @class = "form-select shadow-sm border-0 bg-light fw-semibold text-dark", required = "required", id = "CreateCompanyId" })
                 </div>
             </div>
@@ -50,7 +48,6 @@
             </div>
         </div>
 
-        <!-- ROL VE ŞİFRE ALANI -->
         <div class="row mb-3">
             <div class="col-md-6">
                 <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">Sistem Rolü</label>
@@ -60,7 +57,6 @@
                     <option value="Yönetici">Yönetici</option>
                     @if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
                     {
-                        <!-- Boş div kaldırıldı, sadece option bırakıldı -->
                         <option value="Admin">Admin (Sistem Yöneticisi)</option>
                     }
                 </select>
@@ -80,20 +76,16 @@
     </div>
 </form>
 
-<!-- YENİ: JavaScript Animasyon ve Kontrol Kısmı -->
 <script>
     $(document).ready(function () {
-        // Rol seçimi değiştiğinde tetiklenir
         $('#CreateRole').on('change', function () {
             var secilenRol = $(this).val();
 
-            // Eğer Admin seçildiyse Şirket alanını yukarı doğru kaydırarak (slideUp) gizle ve zorunluluğu kaldır
             if (secilenRol === "Admin") {
                 $('#sirketSecimAlani').slideUp(300);
                 $('#CreateCompanyId').removeAttr('required');
-                $('#CreateCompanyId').val(''); // Önceki seçimi temizle ki veritabanına yanlış veri gitmesin
+                $('#CreateCompanyId').val(''); 
             }
-            // Personel veya Yönetici seçildiyse tekrar göster ve zorunlu yap
             else {
                 $('#sirketSecimAlani').slideDown(300);
                 $('#CreateCompanyId').attr('required', 'required');

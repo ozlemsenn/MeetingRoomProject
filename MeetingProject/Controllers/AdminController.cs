@@ -4,11 +4,10 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Text;
-// YENİ EKLENEN KÜTÜPHANELER: Mail ve Şifreleme işlemleri için
 using System.Net;
 using System.Net.Mail;
 using System.Security.Cryptography;
-using MeetingProject.Models; // User modelini tanıyabilmesi için eklendi
+using MeetingProject.Models; 
 
 namespace MeetingProject.Controllers
 {
@@ -53,8 +52,9 @@ namespace MeetingProject.Controllers
                 string kurucuRol = user != null && !string.IsNullOrEmpty(user.Role) ? user.Role : "Personel";
                 if (kurucuRol == "Yonetici") kurucuRol = "Yönetici";
 
+                // --- DİNAMİK DURUM HESAPLAMA ---
                 string durum = rez.Status ?? "Planlandı";
-                if (durum != "İptal Edildi" && durum != "Bekliyor")
+                if (durum != "İptal Edildi")
                 {
                     TimeSpan baslangicSaati = rez.StartTime ?? new TimeSpan(0, 0, 0);
                     TimeSpan bitisSaati = rez.EndTime ?? baslangicSaati.Add(new TimeSpan(1, 0, 0));
@@ -70,15 +70,19 @@ namespace MeetingProject.Controllers
                         durum = "Planlandı";
                 }
 
+                string saatAraligi = (rez.StartTime.HasValue ? rez.StartTime.Value.ToString(@"hh\:mm") : "") +
+                                     (rez.EndTime.HasValue ? " - " + rez.EndTime.Value.ToString(@"hh\:mm") : "");
+
+                string kurucuKisi = user != null ? (user.Name + " " + user.Surname) : "Bilinmeyen Kullanıcı";
+
                 bugunkuToplantilar.Add(new ToplantiOzet
                 {
                     OdaAdi = oda != null ? oda.Name : "Oda Yok",
-                    Durum = rez.Status,
+                    Durum = durum, 
                     Baslik = rez.Title,
-                    Saat = rez.StartTime.HasValue ? rez.StartTime.Value.ToString(@"hh\:mm") : "",
-
-                    SirketAdi = sirket != null ? sirket.Name : "Şirket Belirtilmemiş",
-                    KurucuAdi = user != null ? (user.Name + " " + user.Surname) : "Bilinmeyen Kullanıcı",
+                    Saat = saatAraligi,
+                    SirketAdi = sirket != null ? sirket.Name : "Şirket Belirtilmemiş",    
+                    KurucuAdi = kurucuKisi, 
                     KurucuRol = kurucuRol
                 });
             }
@@ -130,7 +134,7 @@ namespace MeetingProject.Controllers
 
                 string toplantiAni = islem.Date.HasValue ? islem.Date.Value.ToString("dd.MM.yyyy")
                      + " " + (islem.EndTime.HasValue ? islem.EndTime.Value.ToString(@"hh\:mm") : "")
-         : "Tarih Yok";
+          : "Tarih Yok";
 
                 string islemYapilmaAni = islem.TransactionDate.HasValue ? islem.TransactionDate.Value.ToString("dd.MM.yyyy")
                     + " " + (islem.TransactionTime.HasValue ? islem.TransactionTime.Value.ToString(@"hh\:mm") : "")
@@ -293,17 +297,14 @@ namespace MeetingProject.Controllers
                         kisi = kisiAdi,
                         durum = durum,
                         konu = rez.Title,
-                        katilimcilar = islenmisKatilimcilar
+                        katilimcilar = islenmisKatilimcilar,
+                        iptalNedeni = rez.CancelReason
                     }
                 });
             }
 
             return Json(events, JsonRequestBehavior.AllowGet);
         }
-
-        // ==========================================================
-        // YENİ EKLENEN KISIM: KULLANICI EKLEME VE YARDIMCI METOTLAR
-        // ==========================================================
 
         [HttpGet]
         public ActionResult KullaniciEkle()
@@ -314,27 +315,21 @@ namespace MeetingProject.Controllers
         [HttpPost]
         public ActionResult KullaniciEkle(Users newUser)
         {
-            // 1. Aynı mail adresiyle başka kayıt var mı kontrolü
             if (db.Users.Any(x => x.Email == newUser.Email))
             {
                 ViewBag.Hata = "Bu e-posta adresi zaten sistemde kayıtlı!";
                 return View(newUser);
             }
 
-            // 2. Rastgele 6 haneli şifre üret
             string yeniSifre = RastgeleSifreUret(6);
 
-            // 3. Şifreyi Hash'leyerek kaydetmeye hazır hale getir
             newUser.Password = Sifrele(yeniSifre);
 
-            // 4. Güvenlik ve rol atamaları (Admin'den geliyorsa IsActive true yapıyoruz)
             newUser.IsActive = true;
 
-            // 5. Veritabanına kaydet
             db.Users.Add(newUser);
             db.SaveChanges();
 
-            // 6. Yeni kullanıcıya şifresini mail olarak gönder
             try
             {
                 SmtpClient smtpClient = new SmtpClient("smtp.gmail.com")
@@ -356,17 +351,14 @@ namespace MeetingProject.Controllers
             }
             catch (Exception)
             {
-                // İşlem başarılı ama mail gitmediyse Admin'i uyaralım
                 TempData["Mesaj"] = "Kullanıcı başarıyla eklendi ancak sistemsel bir sorundan dolayı bilgilendirme e-postası gönderilemedi.";
-                return RedirectToAction("Index"); // Veya kullanıcıları listelediğin sayfaya yönlendir (Örn: "KullaniciListesi")
+                return RedirectToAction("Index"); 
             }
 
-            // İşlem tamamen başarılıysa
             TempData["Mesaj"] = "Kullanıcı başarıyla eklendi ve giriş şifresi mail adresine gönderildi.";
-            return RedirectToAction("Index"); // Veya kullanıcıları listelediğin sayfaya yönlendir
+            return RedirectToAction("Index"); 
         }
 
-        // --- YARDIMCI METOTLAR ---
         private string RastgeleSifreUret(int uzunluk = 6)
         {
             string karakterler = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -395,9 +387,6 @@ namespace MeetingProject.Controllers
             }
         }
 
-        // ==========================================================
-        // YENİ EKLENEN KISIM BİTTİ
-        // ==========================================================
 
         public class ToplantiOzet
         {

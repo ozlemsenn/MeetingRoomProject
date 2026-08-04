@@ -25,22 +25,17 @@ namespace MeetingProject.Controllers
         [HttpPost]
         public ActionResult Login(string Email, string Password)
         {
-            // Kullanıcıyı veritabanında bul
 
             string hashliSifre = Sifrele(Password);
             var user = db.Users.FirstOrDefault(x => x.Email == Email && x.Password == hashliSifre);
 
             if (user != null)
             {
-                // --- İŞTE GÜVENLİK DUVARI (IsActive Kontrolü) ---
-                // Eğer IsActive false ise, kullanıcı giriş yapamasın.
-                // (Not: user.IsActive property'sinin modelinde tanımlı olduğundan emin ol)
                 if (user.IsActive == false)
                 {
                     ViewBag.Hata = "Hesabınız pasif durumdadır, giriş yapamazsınız.";
                     return View();
                 }
-                // ------------------------------------------------
 
                 string adSoyad = user.Name + " " + user.Surname;
                 string sirketId = user.CompanyId.ToString();
@@ -61,7 +56,6 @@ namespace MeetingProject.Controllers
                 Session["UserRole"] = user.Role;
                 Session["CompanyId"] = user.CompanyId;
 
-                // Yönlendirme mantığı aynen korundu
                 if (user.Role == "Admin")
                 {
                     return RedirectToAction("Index", "Admin");
@@ -99,14 +93,12 @@ namespace MeetingProject.Controllers
 
         private string RastgeleSifreUret(int uzunluk = 6)
         {
-            // Şifrenin içinde olmasını istediğin karakter havuzu
             string karakterler = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
             Random rnd = new Random();
             char[] sifre = new char[uzunluk];
 
             for (int i = 0; i < uzunluk; i++)
             {
-                // Havuzdan rastgele bir karakter seçip diziye ekliyoruz
                 sifre[i] = karakterler[rnd.Next(karakterler.Length)];
             }
 
@@ -117,14 +109,12 @@ namespace MeetingProject.Controllers
         {
             using (SHA256 sha256Hash = SHA256.Create())
             {
-                // Metni byte dizisine çevir ve hash'ini al
                 byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(metin));
 
-                // Byte dizisini string'e dönüştür
                 StringBuilder builder = new StringBuilder();
                 for (int i = 0; i < bytes.Length; i++)
                 {
-                    builder.Append(bytes[i].ToString("x2")); // x2 formatı hexadecimal (onaltılık) string üretir
+                    builder.Append(bytes[i].ToString("x2")); 
                 }
                 return builder.ToString();
             }
@@ -137,26 +127,22 @@ namespace MeetingProject.Controllers
 
             if (user != null)
             {
-                // 6 haneli rastgele şifre üretiyoruz ve şifreleyerek kaydediyoruz
                 string yeniSifre = RastgeleSifreUret(6);
                 user.Password = Sifrele(yeniSifre);
                 db.SaveChanges();
 
                 try
                 {
-                    // GÜVENLİK PROTOKOLÜ
                     ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
                     SmtpClient smtpClient = new SmtpClient("sandbox.smtp.mailtrap.io")
                     {
                         Port = 2525,
-                        // Ekranda gördüğümüz senin Username bilgini doğrudan kopyaladım:
                         Credentials = new NetworkCredential("ad1f1f81bc7a2c", "3eaf082f6b67c8"),
                         EnableSsl = true,
                     };
 
                     MailMessage mail = new MailMessage();
-                    // Bu kısım sistemden gidiyor gibi görünmesi için (Sallayabilirsin)
                     mail.From = new MailAddress("sistem@bookroom.com", "BookRoom Sistemi");
                     mail.To.Add(Email);
                     mail.Subject = "Şifre Sıfırlama Talebi";
@@ -164,12 +150,8 @@ namespace MeetingProject.Controllers
                     mail.Body = $"Merhaba {user.Name},\n\nŞifreniz başarıyla sıfırlandı.\n\nYeni şifreniz: {yeniSifre}\n\nGüvenliğiniz için sisteme giriş yaptıktan sonra profilinizden şifrenizi değiştirmenizi öneririz.";
                     mail.IsBodyHtml = false;
 
-                    // Maili Mailtrap'e Gönder!
                     smtpClient.Send(mail);
 
-                    // --- HATA VEREN KISIM DÜZELTİLDİ ---
-                    // Kod buraya kadar hatasız çalıştıysa işlem başarılı demektir.
-                    // Kullanıcıya SweetAlert ile "Başarılı" penceresi çıkarıyoruz:
                     return Json(new
                     {
                         success = true,
@@ -178,7 +160,6 @@ namespace MeetingProject.Controllers
                 }
                 catch (Exception ex)
                 {
-                    // Eğer mail gönderilirken bir şeyler ters giderse kod buraya (catch) düşer.
                     return Json(new
                     {
                         success = false,

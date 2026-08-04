@@ -191,7 +191,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // Form post edildiğinde yanlış şifre girilirse çıkacak hata mesajı
         @if (ViewBag.Hata != null)
         {
             <text>
@@ -207,7 +206,6 @@
             </text>
         }
 
-        // Şifremi Unuttum Modalı AJAX İşlemi (Zaten harika yazmışsın)
         $(document).on("submit", "#forgotPasswordForm", function (e) {
             e.preventDefault();
 

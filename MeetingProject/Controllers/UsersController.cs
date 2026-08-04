@@ -24,7 +24,6 @@ namespace MeetingProject.Controllers
             if (isAdmin)
                 ViewBag.Companies = new SelectList(db.Companies.ToList(), "Id", "Name");
 
-            // Artık IsActive kontrolü ile listeliyoruz
             var kullanicilar = db.Users.Where(x => isAdmin || x.CompanyId == aktifSirketId).ToList();
 
             return View(kullanicilar);
@@ -36,14 +35,12 @@ namespace MeetingProject.Controllers
             bool isAdmin = GecerliRol() == "Admin";
             int aktifSirketId = GecerliSirketId();
 
-            // Yetkiye göre kullanıcıları veritabanından çekiyoruz
             var kullanicilar = db.Users.Where(x => isAdmin || x.CompanyId == aktifSirketId).ToList();
 
             using (var workbook = new XLWorkbook())
             {
                 var worksheet = workbook.Worksheets.Add("Kullanici Listesi");
 
-                // 1. Satır: Başlıklar (Kalın ve Arka Planlı yapalım)
                 worksheet.Cell(1, 1).Value = "Ad";
                 worksheet.Cell(1, 2).Value = "Soyad";
                 worksheet.Cell(1, 3).Value = "E-Posta";
@@ -54,7 +51,6 @@ namespace MeetingProject.Controllers
                 worksheet.Range("A1:F1").Style.Font.Bold = true;
                 worksheet.Range("A1:F1").Style.Fill.BackgroundColor = XLColor.LightGray;
 
-                // 2. Satırdan itibaren verileri dönüyoruz
                 int row = 2;
                 foreach (var user in kullanicilar)
                 {
@@ -67,7 +63,7 @@ namespace MeetingProject.Controllers
                     row++;
                 }
 
-                worksheet.Columns().AdjustToContents(); // Sütun genişliklerini otomatik ayarla
+                worksheet.Columns().AdjustToContents(); 
 
                 using (var stream = new MemoryStream())
                 {
@@ -96,7 +92,6 @@ namespace MeetingProject.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        // [Bind] içerisine "IsActive" ekledik
         public JsonResult Create([Bind(Include = "Id,Name,Surname,Email,Password,Role,CompanyId,Department,IsActive")] Users user)
         {
             string rol = GecerliRol();
@@ -107,7 +102,6 @@ namespace MeetingProject.Controllers
             {
                 if (rol != "Admin") user.CompanyId = GecerliSirketId();
 
-                // Yeni kullanıcı her zaman AKTİF başlar
                 user.IsActive = true;
 
                 if (string.IsNullOrWhiteSpace(user.Role)) user.Role = "Personel";
@@ -153,7 +147,7 @@ namespace MeetingProject.Controllers
                 guncellenecekKullanici.Email = model.Email;
                 guncellenecekKullanici.Department = model.Department;
                 guncellenecekKullanici.Role = model.Role;
-                guncellenecekKullanici.IsActive = model.IsActive; // Durumu güncelledik
+                guncellenecekKullanici.IsActive = model.IsActive; 
 
                 if (rol == "Admin") guncellenecekKullanici.CompanyId = model.CompanyId;
 
@@ -181,16 +175,13 @@ namespace MeetingProject.Controllers
                 var silinecekKullanici = db.Users.Find(id);
                 if (silinecekKullanici == null) return Json(new { success = false, message = "Kullanıcı bulunamadı." });
 
-                // KALICI SİLME (Sadece Admin)
                 if (ActionType == "HardDelete")
                 {
                     if (!isAdmin) return Json(new { success = false, message = "Sadece Admin kalıcı silebilir!" });
                     db.Users.Remove(silinecekKullanici);
                 }
-                // DURUM DEĞİŞTİRME (IsActive üzerinden)
                 else
                 {
-                    // true ise false yap, false ise true yap (Toggle)
                     silinecekKullanici.IsActive = !silinecekKullanici.IsActive;
                 }
 
@@ -218,8 +209,8 @@ namespace MeetingProject.Controllers
                     x.Id,
                     x.Name,
                     x.Surname,
-                    x.Email,       // Bu satırı ekledik
-                    x.Department,  // Bu satırı ekledik
+                    x.Email,       
+                    x.Department,  
                     x.IsActive,
                     Role = (x.Role == "Yonetici" || x.Role == "Yönetici") ? "Yönetici" : x.Role
                 }).ToList();

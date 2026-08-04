@@ -67,28 +67,20 @@ namespace MeetingProject.Controllers
             int aktifSirketId = GecerliSirketId();
             int aktifKullaniciId = GecerliKullaniciId();
 
-            // 1. Verileri Çekme ve Filtreleme
-            // Admin tümünü görür, Yönetici kendi şirketindekileri görür.
-            // İstersen Personel'in sadece kendi kurduğu rezervasyonları görmesini sağlayabilirsin.
             var sorgu = db.Reservations.AsQueryable();
 
             if (!isAdmin)
             {
                 sorgu = sorgu.Where(x => x.CompanyId == aktifSirketId);
 
-                // Eğer Personel (Yani Admin veya Yönetici değilse) sadece kendi kurduklarını indirsin diyorsan:
-                // if (!isYonetici) { sorgu = sorgu.Where(x => x.UserId == aktifKullaniciId); }
             }
 
-            // Tarihe göre yeniden eskiye sıralayalım ki Excel düzenli olsun
             var rezervasyonlar = sorgu.OrderByDescending(x => x.Date).ThenByDescending(x => x.StartTime).ToList();
 
-            // 2. Excel Dosyasını Oluşturma
             using (var workbook = new XLWorkbook())
             {
                 var worksheet = workbook.Worksheets.Add("Rezervasyon Listesi");
 
-                // Başlık Satırı (1. Satır)
                 worksheet.Cell(1, 1).Value = "Toplantı Başlığı";
                 worksheet.Cell(1, 2).Value = "Oda Adı";
                 worksheet.Cell(1, 3).Value = "Kuran Kişi";
@@ -99,16 +91,12 @@ namespace MeetingProject.Controllers
                 worksheet.Cell(1, 8).Value = "Açıklama";
                 worksheet.Cell(1, 9).Value = "Durum";
 
-                // Başlık stili (Kalın yazı ve gri arka plan)
                 worksheet.Range("A1:I1").Style.Font.Bold = true;
                 worksheet.Range("A1:I1").Style.Fill.BackgroundColor = XLColor.LightGray;
 
-                // 3. Verileri Excel'e Basma
-                // 3. Verileri Excel'e Basma
                 int row = 2;
                 foreach (var rez in rezervasyonlar)
                 {
-                    // HATA VEREN KISMI DEĞİŞTİRDİK: Veritabanından ID ile manuel buluyoruz (En garantili yol)
                     var oda = db.Rooms.FirstOrDefault(r => r.Id == rez.RoomId);
                     var kullanici = db.Users.FirstOrDefault(u => u.Id == rez.UserId);
 
@@ -132,10 +120,8 @@ namespace MeetingProject.Controllers
                     row++;
                 }
 
-                // Sütun genişliklerini içeriğe göre otomatik ayarla
                 worksheet.Columns().AdjustToContents();
 
-                // 4. Dosyayı Kullanıcıya İndirtme
                 using (var stream = new MemoryStream())
                 {
                     workbook.SaveAs(stream);
@@ -201,10 +187,9 @@ namespace MeetingProject.Controllers
                 DateTime baslangic = rezTarihi.Add(baslangicSaati);
                 DateTime bitis = rezTarihi.Add(bitisSaati);
 
-                // --- 1 SAAT KALA KİLİTLEME KURALI (UI İÇİN) ---
                 if (!isAdmin && DateTime.Now >= baslangic.AddHours(-1))
                 {
-                    kilitliMi = true; // Admin değilse ve toplantıya 1 saat veya daha az kaldıysa kilitle
+                    kilitliMi = true; 
                 }
 
                 if (r.Status != "İptal Edildi" && r.Status != "Bekliyor")
@@ -235,7 +220,7 @@ namespace MeetingProject.Controllers
                     EndTime = r.EndTime.HasValue ? r.EndTime.Value.ToString(@"hh\:mm") : "",
                     r.Description,
                     Status = gercekDurum,
-                    IsLocked = kilitliMi // JS tarafına kilitli bilgisini gönderiyoruz
+                    IsLocked = kilitliMi 
                 };
             });
 
@@ -290,15 +275,12 @@ namespace MeetingProject.Controllers
 
                 var birlesikKullanicilar = sirketKullanicilar.Concat(adminler).OrderBy(u => u.TamAd).ToList();
 
-                // --- YÖNETİCİ MANTIĞI EKLENDİ ---
                 if (isYonetici)
                 {
-                    // Yönetici, kendi şirketindeki herkesi "Kuran Kişi" olarak seçebilir
                     ViewBag.Users = new SelectList(birlesikKullanicilar, "Id", "TamAd");
                 }
                 else
                 {
-                    // Personel sadece kendini kuran kişi seçebilir
                     var sadeceBen = birlesikKullanicilar.Where(u => u.Id == aktifKullaniciId).ToList();
                     ViewBag.Users = new SelectList(sadeceBen, "Id", "TamAd");
                 }
@@ -315,12 +297,10 @@ namespace MeetingProject.Controllers
         {
             string rol = GecerliRol();
 
-            // --- YENİ EKLENEN KISIM 1: GİRİŞ YAPAN KİŞİ PASİF Mİ? ---
             if (rol == "Pasif")
             {
                 return Json(new { success = false, message = "Hesabınız pasif durumdadır! Rezervasyon oluşturamazsınız." });
             }
-            // ---------------------------------------------------------
 
             bool isAdmin = rol == "Admin";
             bool isYonetici = rol == "Yönetici" || rol == "Yonetici";
@@ -347,6 +327,13 @@ namespace MeetingProject.Controllers
             if (secilenOda == null || (!isAdmin && secilenOda.CompanyId != aktifSirketId))
                 return Json(new { success = false, message = "Bu odayı seçme yetkiniz yok!" });
 
+            // --- YENİ EKLENEN PASİF ODA KONTROLÜ ---
+            if (secilenOda.Name.Contains("(Pasif)"))
+            {
+                return Json(new { success = false, message = "Seçtiğiniz oda şu anda pasif durumda olduğu için rezervasyon yapılamaz!" });
+            }
+            // ---------------------------------------
+
             if (SecilenKatilimcilar == null || SecilenKatilimcilar.Length == 0)
                 return Json(new { success = false, message = "En az bir katılımcı seçilmelidir." });
 
@@ -355,13 +342,11 @@ namespace MeetingProject.Controllers
             if (!res.RoomId.HasValue || res.RoomId == 0) return Json(new { success = false, message = "Lütfen oda seçiniz." });
             if (!res.UserId.HasValue || res.UserId == 0) return Json(new { success = false, message = "Lütfen kurucu kullanıcıyı seçiniz." });
 
-            // --- YENİ EKLENEN KISIM 2: SEÇİLEN (KURUCU) KULLANICI PASİF Mİ? ---
             var kurucuKullanici = db.Users.FirstOrDefault(u => u.Id == res.UserId);
             if (kurucuKullanici != null && kurucuKullanici.Role == "Pasif")
             {
                 return Json(new { success = false, message = "Seçilen kullanıcı 'Pasif' durumdadır! Bu kullanıcı adına rezervasyon oluşturulamaz." });
             }
-            // ------------------------------------------------------------------
 
             if (string.IsNullOrWhiteSpace(res.Title)) return Json(new { success = false, message = "Lütfen başlık giriniz." });
             if (!res.Date.HasValue) return Json(new { success = false, message = "Lütfen tarih seçiniz." });
@@ -369,7 +354,6 @@ namespace MeetingProject.Controllers
             if (res.StartTime >= res.EndTime) return Json(new { success = false, message = "Bitiş saati başlangıçtan önce olamaz." });
             if (string.IsNullOrWhiteSpace(res.Description)) return Json(new { success = false, message = "Açıklama giriniz." });
 
-            // Geçmiş Zaman Kontrolü (Time Travel Prevention)
             DateTime secilenTamTarihSaat = res.Date.Value.Date + res.StartTime.Value;
             if (secilenTamTarihSaat < DateTime.Now)
             {
@@ -454,7 +438,6 @@ namespace MeetingProject.Controllers
             if (isPersonel && rezervasyon.UserId != aktifKullaniciId)
                 return HttpNotFound("Sadece kendi rezervasyonunuzu düzenleyebilirsiniz.");
 
-            // --- 1 SAAT KALA KİLİTLEME KURALI (BACKEND) ---
             if (!isAdmin && rezervasyon.Date.HasValue && rezervasyon.StartTime.HasValue)
             {
                 DateTime baslangic = rezervasyon.Date.Value.Add(rezervasyon.StartTime.Value);
@@ -502,7 +485,6 @@ namespace MeetingProject.Controllers
                 if (isPersonel && mevcutRezervasyon.UserId != aktifKullaniciId)
                     return Json(new { success = false, message = "Yetkisiz işlem!" });
 
-                // --- 1 SAAT KALA KİLİTLEME KURALI (BACKEND) ---
                 if (!isAdmin && mevcutRezervasyon.Date.HasValue && mevcutRezervasyon.StartTime.HasValue)
                 {
                     DateTime baslangic = mevcutRezervasyon.Date.Value.Add(mevcutRezervasyon.StartTime.Value);
@@ -521,7 +503,7 @@ namespace MeetingProject.Controllers
                 mevcutRezervasyon.EndTime = res.EndTime;
                 mevcutRezervasyon.Description = res.Description;
 
-                if (!isPersonel) mevcutRezervasyon.UserId = res.UserId; // Personel değilse kurucuyu değiştirebilir
+                if (!isPersonel) mevcutRezervasyon.UserId = res.UserId; 
 
                 if (SecilenKatilimcilar != null && SecilenKatilimcilar.Length > 0)
                     mevcutRezervasyon.Attendees = string.Join(", ", SecilenKatilimcilar);
@@ -537,6 +519,7 @@ namespace MeetingProject.Controllers
             }
         }
 
+        [HttpGet]
         public ActionResult Cancel(int id)
         {
             var res = db.Reservations.Find(id);
@@ -554,7 +537,6 @@ namespace MeetingProject.Controllers
             if (isPersonel && res.UserId != aktifKullaniciId)
                 return HttpNotFound("Sadece kendi rezervasyonunuzu iptal edebilirsiniz.");
 
-            // --- 1 SAAT KALA KİLİTLEME KURALI (BACKEND) ---
             if (!isAdmin && res.Date.HasValue && res.StartTime.HasValue)
             {
                 DateTime baslangic = res.Date.Value.Add(res.StartTime.Value);
@@ -566,6 +548,25 @@ namespace MeetingProject.Controllers
 
             var oda = db.Rooms.Find(res.RoomId);
             ViewBag.OdaAdi = oda != null ? oda.Name : "Oda Bilgisi Bulunamadı";
+
+            List<string> katilimciIsimleri = new List<string>();
+            if (!string.IsNullOrEmpty(res.Attendees))
+            {
+                var idList = res.Attendees.Split(',');
+                foreach (var idStr in idList)
+                {
+                    if (int.TryParse(idStr.Trim(), out int userId))
+                    {
+                        var kullanici = db.Users.Find(userId);
+                        if (kullanici != null)
+                        {
+                            string departman = !string.IsNullOrEmpty(kullanici.Department) ? kullanici.Department : "Belirtilmemiş";
+                            katilimciIsimleri.Add($"{kullanici.Name} {kullanici.Surname} ({departman})");
+                        }
+                    }
+                }
+            }
+            ViewBag.KatilimciIsimleri = katilimciIsimleri;
 
             return PartialView(res);
         }
@@ -587,7 +588,6 @@ namespace MeetingProject.Controllers
             if (isPersonel && res.UserId != aktifKullaniciId)
                 return Json(new { success = false, message = "Sadece kendi rezervasyonunuzu iptal edebilirsiniz!" });
 
-            // --- 1 SAAT KALA KİLİTLEME KURALI (BACKEND) ---
             if (!isAdmin && res.Date.HasValue && res.StartTime.HasValue)
             {
                 DateTime baslangic = res.Date.Value.Add(res.StartTime.Value);

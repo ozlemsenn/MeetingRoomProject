@@ -118,7 +118,6 @@
 </div>
 
 @section scripts {
-    <!-- SweetAlert2 (Şık Uyarı Mesajları İçin) -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
@@ -194,19 +193,15 @@
 
                         if (gercekDurum !== 'İptal Edildi' && gercekDurum !== 'Tamamlandı') {
 
-                            // --- YENİ KİLİT MANTIĞI BURADA ÇALIŞIYOR ---
                             if (item.IsLocked) {
-                                // Toplantıya 1 saatten az kaldıysa butonları gizle, gri bir kilit ikonu çıkar
                                 html += '<button class="btn btn-sm text-muted border-0 shadow-none" title="Toplantıya 1 saatten az kaldığı için kilitlendi" style="cursor:not-allowed;" disabled><i class="fas fa-lock" style="font-size: 1.1rem;"></i></button>';
                             }
                             else {
-                                // Vakit varsa düzenle/iptal butonları serbest
                                 html += '<button class="btn btn-sm text-secondary border-0 shadow-none" title="Düzenle" onclick="ModalAc(\'/Reservations/Edit/' + item.Id + '\')"><i class="fas fa-edit" style="font-size: 1.1rem;"></i></button>';
                                 html += '<button class="btn btn-sm text-secondary border-0 shadow-none" title="İptal Et" onclick="ModalAc(\'/Reservations/Cancel/' + item.Id + '\')"><i class="fas fa-ban" style="font-size: 1.1rem;"></i></button>';
                             }
                         }
 
-                        // Silme butonu sadece Adminlere gözüktüğü için bırakıyoruz
                         html += '<button class="btn btn-sm text-secondary border-0 shadow-none" title="Tamamen Sil" onclick="ModalAc(\'/Reservations/Delete/' + item.Id + '\')"><i class="fas fa-trash-alt" style="font-size: 1.1rem;"></i></button>';
                         html += '</div></td></tr>';
                     });
@@ -221,7 +216,6 @@
         }
 
         function ModalAc(url) {
-            // (Modal Açma mantığın tamamen aynı, dokunmadım)
             var modalCerceve = $('#islemModali .modal-dialog');
             var modalBaslik = $('#modalBaslik');
             modalBaslik.removeClass('text-primary text-warning text-info text-danger text-white text-light');
@@ -242,7 +236,6 @@
             });
         }
 
-        // --- KAYDET, SİL, GÜNCELLE ve İPTAL fonksiyonları aynen duruyor ---
         function Kaydet() {
             var formData = $('#formRezervasyon').serialize();
             $('#hataMesajiAlani').addClass('d-none');

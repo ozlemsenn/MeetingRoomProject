@@ -188,7 +188,6 @@
                             @(Session["UserName"] != null ? Session["UserName"].ToString() : "Kullanıcı")
                         </h6>
 
-                        <!-- DÜZENLENEN KISIM: DİNAMİK AKTİF/PASİF ROZETİ EKLENDİ -->
                         <div class="d-flex align-items-center justify-content-between mt-1">
                             <small class="text-muted d-block text-truncate fw-medium" style="font-size: 0.85rem;">
                                 @if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
@@ -222,7 +221,6 @@
                                 </span>
                             }
                         </div>
-                        <!-- DÜZENLENEN KISIM BİTTİ -->
 
                     </div>
                 </a>

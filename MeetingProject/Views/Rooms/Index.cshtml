@@ -38,7 +38,6 @@
         </div>
     </div>
 
-    <!-- FİLTRELEME ALANI -->
     <div class="row mb-3">
         @if (Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin")
         {
@@ -52,7 +51,6 @@
             </div>
         }
 
-        <!-- AKTİF/PASİF FİLTRESİ -->
         <div class="col-md-4 text-start mb-2">
             <div class="input-group shadow-sm" style="border-radius: 12px; overflow: hidden; border: 1px solid #ced4da;">
                 <span class="input-group-text bg-white border-0 fw-bold text-muted">
@@ -93,7 +91,6 @@
     </div>
 </div>
 
-<!-- ODA İŞLEM MODALI -->
 <div class="modal fade" id="odaModali" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
@@ -193,7 +190,7 @@
 
                     $('#odaTablosu').DataTable({
                         "language": { "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json" },
-                        "order": [[3, "asc"], [0, "asc"]] // Duruma ve isme göre
+                        "order": [[3, "asc"], [0, "asc"]] 
                     });
                 },
                 error: function () {
@@ -239,14 +236,12 @@
                                 $('#EditName').val(temizOdaAdi);
                                 $('#EditCapacity').val(odaBilgisi.Capacity);
 
-                                // Projeksiyon
                                 $('#DetailsHasProjector').html(
                                     odaBilgisi.HasProjector
                                         ? '<span class="text-secondary fw-bold">Var</span>'
                                         : '<span class="text-secondary fw-bold">Yok</span>'
                                 );
 
-                                // Durum
                                 if (odaBilgisi.Status === "Aktif") {
 
                                     $('#DetailsStatus').html('<span class="text-success fw-bold">Aktif</span>');
@@ -265,7 +260,6 @@
                 });
             });
 
-            // Form Submit İşlemleri (Tıpkı kullanıcılardaki gibi SweetAlert2)
             $(document).on("submit", "#createForm", function (e) {
                 e.preventDefault();
                 $.post("/Rooms/Create", $(this).serialize(), function (result) {
