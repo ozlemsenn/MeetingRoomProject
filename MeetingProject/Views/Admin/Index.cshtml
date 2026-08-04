@@ -267,8 +267,10 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+    <!-- SweetAlert2 Kütüphanesini Çağırıyoruz -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <!-- 1. TAKVİM VE HIZLI REZERVASYON SCRİPTİ -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var takvimKutusu = document.getElementById('rezervasyonTakvimi');
@@ -285,18 +287,13 @@
                 },
                 buttonText: { today: 'Bugün', month: 'Ay', week: 'Hafta' },
                 height: 500,
-
                 events: '/Admin/GetCalendarEvents',
-
                 eventClick: function (info) {
                     var baslik = info.event.title;
-
                     var baslangicSaati = info.event.start ? info.event.start.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) : '';
                     var bitisSaati = info.event.end ? info.event.end.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) : '...';
-
                     var saat = baslangicSaati + ' - ' + bitisSaati;
                     var tarih = info.event.start ? info.event.start.toLocaleDateString('tr-TR') : '';
-
                     var kisi = info.event.extendedProps.kisi;
                     var durum = info.event.extendedProps.durum;
                     var konu = info.event.extendedProps.konu;
@@ -326,7 +323,6 @@
 
                     var ozelTasarim = `
                             <div class="text-start" style="font-family: inherit;">
-
                                 <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
                                     <div class="rounded-circle d-flex justify-content-center align-items-center text-white shadow-sm" style="width: 55px; height: 55px; background-color: ${renk};">
                                         <i class="fas fa-door-open fs-4"></i>
@@ -336,12 +332,10 @@
                                         <span class="badge ${durumRozeti} rounded-pill shadow-sm px-3 py-2" style="font-size: 0.8rem; letter-spacing: 0.5px;">${durumYazisi}</span>
                                     </div>
                                 </div>
-
                                 <div class="mb-3 p-3 rounded-3 bg-light border border-light-subtle">
                                     <small class="text-muted d-block mb-1 fw-semibold"><i class="fas fa-quote-left text-primary me-1 opacity-75"></i> Toplantı Konusu</small>
                                     <span class="fw-bold text-dark d-block" style="font-size: 0.95rem;">${konu}</span>
                                 </div>
-
                                 <div class="row g-3 mb-3">
                                     <div class="col-6">
                                         <div class="p-3 rounded-3 bg-light border border-light-subtle h-100">
@@ -356,7 +350,6 @@
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="mb-3 p-3 rounded-3 bg-light border border-light-subtle d-flex align-items-center">
                                     <div class="bg-white rounded-circle d-flex justify-content-center align-items-center me-3 shadow-sm border" style="width: 40px; height: 40px;">
                                         <i class="fas fa-user-tie text-secondary"></i>
@@ -366,14 +359,12 @@
                                         <span class="fw-bold text-dark">${kisi}</span>
                                     </div>
                                 </div>
-
                                 <div class="p-3 rounded-3 bg-light border border-light-subtle">
                                     <small class="text-muted d-block mb-2 fw-semibold"><i class="fas fa-users text-primary me-1 opacity-75"></i> Katılımcılar</small>
                                     <div class="d-flex flex-wrap">
                                         ${katilimciHtml}
                                     </div>
                                 </div>
-
                             </div>`;
 
                     Swal.fire({
@@ -393,6 +384,7 @@
             takvim.render();
         });
 
+        // Hızlı Rezervasyon Fonksiyonu
         function HizliRezervasyonAc() {
             $('#modalIcerik').html('<div class="p-4 text-center text-muted"><i class="fas fa-spinner fa-spin fa-2x"></i><br>Yükleniyor...</div>');
             $('#modalHeader').removeClass('bg-danger text-white').addClass('text-dark');
@@ -407,3 +399,34 @@
             });
         }
     </script>
+
+    <!-- 2. SWEETALERT BİLDİRİMLERİ (Buradaki scriptler yukarıdan tamamen izole edildi) -->
+    @if (TempData["Mesaj"] != null)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: 'Harika!',
+                    text: '@Html.Raw(TempData["Mesaj"])',
+                    icon: 'success',
+                    confirmButtonText: 'Tamam',
+                    confirmButtonColor: '#10b981'
+                });
+            });
+        </script>
+    }
+
+    @if (ViewBag.Hata != null)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: 'Hata!',
+                    text: '@Html.Raw(ViewBag.Hata)',
+                    icon: 'error',
+                    confirmButtonText: 'Anladım',
+                    confirmButtonColor: '#ef4444'
+                });
+            });
+        </script>
+    }

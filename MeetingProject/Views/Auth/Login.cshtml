@@ -121,13 +121,6 @@
                         </div>
                     </div>
 
-                    @if (ViewBag.Hata != null)
-                    {
-                        <div class="alert alert-danger text-center small fw-semibold py-2 rounded-3" role="alert" style="border-left: 4px solid #dc3545;">
-                            <i class="fas fa-exclamation-circle me-1"></i> @ViewBag.Hata
-                        </div>
-                    }
-
                     <form action="/Auth/Login" method="POST">
 
                         <div class="mb-3">
@@ -198,6 +191,23 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+        // Form post edildiğinde yanlış şifre girilirse çıkacak hata mesajı
+        @if (ViewBag.Hata != null)
+        {
+            <text>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: 'Giriş Başarısız!',
+                    text: '@Html.Raw(ViewBag.Hata)',
+                    icon: 'error',
+                    confirmButtonText: 'Tekrar Dene',
+                    confirmButtonColor: '#ef4444'
+                });
+            });
+            </text>
+        }
+
+        // Şifremi Unuttum Modalı AJAX İşlemi (Zaten harika yazmışsın)
         $(document).on("submit", "#forgotPasswordForm", function (e) {
             e.preventDefault();
 

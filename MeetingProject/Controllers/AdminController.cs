@@ -4,6 +4,11 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Text;
+// YENİ EKLENEN KÜTÜPHANELER: Mail ve Şifreleme işlemleri için
+using System.Net;
+using System.Net.Mail;
+using System.Security.Cryptography;
+using MeetingProject.Models; // User modelini tanıyabilmesi için eklendi
 
 namespace MeetingProject.Controllers
 {
@@ -35,8 +40,8 @@ namespace MeetingProject.Controllers
             ViewBag.GrafikSayilar = grafikSayilar;
 
             var bugunList = db.Reservations
-    .Where(x => x.Date == bugun)
-    .ToList();
+                .Where(x => x.Date == bugun)
+                .ToList();
 
             var bugunkuToplantilar = new List<ToplantiOzet>();
             foreach (var rez in bugunList)
@@ -127,7 +132,7 @@ namespace MeetingProject.Controllers
                      + " " + (islem.EndTime.HasValue ? islem.EndTime.Value.ToString(@"hh\:mm") : "")
          : "Tarih Yok";
 
-                string islemYapilmaAni = islem.TransactionDate.HasValue ? islem.TransactionDate.Value.ToString("dd.MM.yyyy") 
+                string islemYapilmaAni = islem.TransactionDate.HasValue ? islem.TransactionDate.Value.ToString("dd.MM.yyyy")
                     + " " + (islem.TransactionTime.HasValue ? islem.TransactionTime.Value.ToString(@"hh\:mm") : "")
         : "Tarih Yok";
 
@@ -154,6 +159,7 @@ namespace MeetingProject.Controllers
 
             return View();
         }
+
         public ActionResult ExcelIndir()
         {
             var tumRezervasyonlar = db.Reservations.OrderByDescending(x => x.Date).ToList();
@@ -184,7 +190,7 @@ namespace MeetingProject.Controllers
         public JsonResult GetCalendarEvents()
         {
             var reservations = db.Reservations.ToList();
-            var kullanicilar = db.Users.ToList(); 
+            var kullanicilar = db.Users.ToList();
 
             var events = new List<object>();
 
@@ -294,6 +300,105 @@ namespace MeetingProject.Controllers
 
             return Json(events, JsonRequestBehavior.AllowGet);
         }
+
+        // ==========================================================
+        // YENİ EKLENEN KISIM: KULLANICI EKLEME VE YARDIMCI METOTLAR
+        // ==========================================================
+
+        [HttpGet]
+        public ActionResult KullaniciEkle()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult KullaniciEkle(Users newUser)
+        {
+            // 1. Aynı mail adresiyle başka kayıt var mı kontrolü
+            if (db.Users.Any(x => x.Email == newUser.Email))
+            {
+                ViewBag.Hata = "Bu e-posta adresi zaten sistemde kayıtlı!";
+                return View(newUser);
+            }
+
+            // 2. Rastgele 6 haneli şifre üret
+            string yeniSifre = RastgeleSifreUret(6);
+
+            // 3. Şifreyi Hash'leyerek kaydetmeye hazır hale getir
+            newUser.Password = Sifrele(yeniSifre);
+
+            // 4. Güvenlik ve rol atamaları (Admin'den geliyorsa IsActive true yapıyoruz)
+            newUser.IsActive = true;
+
+            // 5. Veritabanına kaydet
+            db.Users.Add(newUser);
+            db.SaveChanges();
+
+            // 6. Yeni kullanıcıya şifresini mail olarak gönder
+            try
+            {
+                SmtpClient smtpClient = new SmtpClient("smtp.gmail.com")
+                {
+                    Port = 587,
+                    Credentials = new NetworkCredential("seninmailadresin@gmail.com", "google_uygulama_sifresi_buraya"),
+                    EnableSsl = true,
+                };
+
+                MailMessage mail = new MailMessage();
+                mail.From = new MailAddress("seninmailadresin@gmail.com", "Toplantı Odası Sistemi");
+                mail.To.Add(newUser.Email);
+                mail.Subject = "Sisteme Kaydınız Oluşturuldu";
+
+                mail.Body = $"Merhaba {newUser.Name},\n\nToplantı odası rezervasyon sistemine kaydınız yönetici tarafından oluşturulmuştur.\n\nGiriş Şifreniz: {yeniSifre}\n\nSisteme giriş yaptıktan sonra profilinizden şifrenizi değiştirmeyi unutmayınız.";
+                mail.IsBodyHtml = false;
+
+                smtpClient.Send(mail);
+            }
+            catch (Exception)
+            {
+                // İşlem başarılı ama mail gitmediyse Admin'i uyaralım
+                TempData["Mesaj"] = "Kullanıcı başarıyla eklendi ancak sistemsel bir sorundan dolayı bilgilendirme e-postası gönderilemedi.";
+                return RedirectToAction("Index"); // Veya kullanıcıları listelediğin sayfaya yönlendir (Örn: "KullaniciListesi")
+            }
+
+            // İşlem tamamen başarılıysa
+            TempData["Mesaj"] = "Kullanıcı başarıyla eklendi ve giriş şifresi mail adresine gönderildi.";
+            return RedirectToAction("Index"); // Veya kullanıcıları listelediğin sayfaya yönlendir
+        }
+
+        // --- YARDIMCI METOTLAR ---
+        private string RastgeleSifreUret(int uzunluk = 6)
+        {
+            string karakterler = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            Random rnd = new Random();
+            char[] sifre = new char[uzunluk];
+
+            for (int i = 0; i < uzunluk; i++)
+            {
+                sifre[i] = karakterler[rnd.Next(karakterler.Length)];
+            }
+
+            return new string(sifre);
+        }
+
+        private string Sifrele(string metin)
+        {
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(metin));
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    builder.Append(bytes[i].ToString("x2"));
+                }
+                return builder.ToString();
+            }
+        }
+
+        // ==========================================================
+        // YENİ EKLENEN KISIM BİTTİ
+        // ==========================================================
+
         public class ToplantiOzet
         {
             public string OdaAdi { get; set; }
