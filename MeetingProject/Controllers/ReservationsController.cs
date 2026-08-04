@@ -189,7 +189,7 @@ namespace MeetingProject.Controllers
 
                 if (!isAdmin && DateTime.Now >= baslangic.AddHours(-1))
                 {
-                    kilitliMi = true; 
+                    kilitliMi = true;
                 }
 
                 if (r.Status != "İptal Edildi" && r.Status != "Bekliyor")
@@ -220,7 +220,7 @@ namespace MeetingProject.Controllers
                     EndTime = r.EndTime.HasValue ? r.EndTime.Value.ToString(@"hh\:mm") : "",
                     r.Description,
                     Status = gercekDurum,
-                    IsLocked = kilitliMi 
+                    IsLocked = kilitliMi
                 };
             });
 
@@ -447,7 +447,15 @@ namespace MeetingProject.Controllers
                 }
             }
 
-            var sirketOdalar = db.Rooms.Where(r => isAdmin || r.CompanyId == aktifSirketId).ToList();
+            var tumOdalar = db.Rooms.Where(r => isAdmin || r.CompanyId == aktifSirketId).ToList();
+            var sirketOdalar = tumOdalar.Where(r => string.IsNullOrEmpty(r.Name) || !r.Name.Contains("(Pasif)")).ToList();
+
+            if (rezervasyon.RoomId.HasValue && !sirketOdalar.Any(r => r.Id == rezervasyon.RoomId.Value))
+            {
+                var mevcutOda = tumOdalar.FirstOrDefault(r => r.Id == rezervasyon.RoomId.Value);
+                if (mevcutOda != null) sirketOdalar.Add(mevcutOda);
+            }
+
             ViewBag.Rooms = new SelectList(sirketOdalar, "Id", "Name", rezervasyon.RoomId);
 
             var sirketKullanicilar = db.Users.Where(u => isAdmin || u.CompanyId == aktifSirketId).Select(u => new { Value = u.Id.ToString(), Text = u.Name + " " + u.Surname }).ToList();
@@ -485,11 +493,31 @@ namespace MeetingProject.Controllers
                 if (isPersonel && mevcutRezervasyon.UserId != aktifKullaniciId)
                     return Json(new { success = false, message = "Yetkisiz işlem!" });
 
+                if (res.Date.HasValue && res.Date.Value.Date < DateTime.Today)
+                {
+                    return Json(new { success = false, message = "Geçmiş bir tarihe rezervasyon güncellenemez!" });
+                }
+
+                if (res.Date.HasValue && res.StartTime.HasValue)
+                {
+                    DateTime secilenTamTarihSaat = res.Date.Value.Date + res.StartTime.Value;
+                    if (secilenTamTarihSaat < DateTime.Now)
+                    {
+                        return Json(new { success = false, message = "Geçmiş bir saate rezervasyon güncellenemez!" });
+                    }
+                }
+
                 if (!isAdmin && mevcutRezervasyon.Date.HasValue && mevcutRezervasyon.StartTime.HasValue)
                 {
                     DateTime baslangic = mevcutRezervasyon.Date.Value.Add(mevcutRezervasyon.StartTime.Value);
                     if (DateTime.Now >= baslangic.AddHours(-1))
                         return Json(new { success = false, message = "Toplantıya 1 saatten az kaldığı için değişiklik yapılamaz!" });
+                }
+
+                var secilenOda = db.Rooms.Find(res.RoomId);
+                if (secilenOda == null || (!string.IsNullOrEmpty(secilenOda.Name) && secilenOda.Name.Contains("(Pasif)")))
+                {
+                    return Json(new { success = false, message = "Seçtiğiniz oda şu anda pasif durumda olduğu için işlem yapılamaz!" });
                 }
 
                 bool isOverlap = db.Reservations.Any(r => r.Id != res.Id && r.Status != "İptal Edildi" && r.RoomId == res.RoomId && r.Date == res.Date && ((res.StartTime >= r.StartTime && res.StartTime < r.EndTime) || (res.EndTime > r.StartTime && res.EndTime <= r.EndTime) || (res.StartTime <= r.StartTime && res.EndTime >= r.EndTime)));
@@ -503,7 +531,7 @@ namespace MeetingProject.Controllers
                 mevcutRezervasyon.EndTime = res.EndTime;
                 mevcutRezervasyon.Description = res.Description;
 
-                if (!isPersonel) mevcutRezervasyon.UserId = res.UserId; 
+                if (!isPersonel) mevcutRezervasyon.UserId = res.UserId;
 
                 if (SecilenKatilimcilar != null && SecilenKatilimcilar.Length > 0)
                     mevcutRezervasyon.Attendees = string.Join(", ", SecilenKatilimcilar);

@@ -25,7 +25,7 @@
         }
 
         .login-card {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(10px);
             border-radius: 24px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
@@ -66,8 +66,8 @@
 
         .form-control {
             border-left: none;
-            border-top-left-radius: 0;
-            border-bottom-left-radius: 0;
+            border-right: none;
+            border-radius: 0;
         }
 
             .form-control:focus {
@@ -76,8 +76,24 @@
                 border-color: #1e3a8a;
             }
 
+        .password-toggle-btn {
+            border-left: none;
+            border-top-right-radius: 12px !important;
+            border-bottom-right-radius: 12px !important;
+            background-color: #f8fafc;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+            .password-toggle-btn:hover {
+                color: #1e3a8a;
+                background-color: #f1f5f9;
+            }
+
         .input-group:focus-within .input-group-text,
-        .input-group:focus-within .form-control {
+        .input-group:focus-within .form-control,
+        .input-group:focus-within .password-toggle-btn {
             border-color: #1e3a8a;
             background-color: #fff;
         }
@@ -109,16 +125,13 @@
 
                 <div class="card login-card p-4 p-md-5">
 
-                    <div class="text-center mb-4 pb-2">
-                        <div class="mb-2">
+                    <div class="text-center mb-4">
+                        <div class="mb-3">
                             <i class="fas fa-calendar-check fa-3x" style="color: #1e3a8a;"></i>
                         </div>
-                        <h2 class="brand-text mb-1">Book<span>Room</span></h2>
-
-                        <div class="mt-3">
-                            <h4 class="fw-bold mb-1" style="color: #1e293b;">Hoş Geldiniz</h4>
-                            <p class="text-muted" style="font-size: 0.95rem;">Devam etmek için lütfen hesap bilgilerinizi girin</p>
-                        </div>
+                        <h2 class="brand-text mb-2">Book<span>Room</span></h2>
+                        <h4 class="fw-bold mb-1 text-dark" style="font-size: 1.25rem;">Hoş Geldiniz</h4>
+                        <p class="text-muted mb-0 px-2" style="font-size: 0.88rem; line-height: 1.5;">Devam etmek için lütfen hesap bilgilerinizi girin</p>
                     </div>
 
                     <form action="/Auth/Login" method="POST">
@@ -131,15 +144,17 @@
                             </div>
                         </div>
 
-                        <div class="mb-4 pb-1">
+                        <div class="mb-4">
                             <div class="d-flex justify-content-between align-items-center mb-1 px-1">
                                 <label class="form-label text-secondary small fw-bold mb-0">Şifre</label>
-
                                 <a href="#" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal" class="text-decoration-none small fw-semibold" style="color: #2563eb;">Şifremi Unuttum?</a>
                             </div>
                             <div class="input-group">
                                 <span class="input-group-text text-muted"><i class="fas fa-key"></i></span>
-                                <input type="password" name="Password" class="form-control" placeholder="••••••••" required>
+                                <input type="password" name="Password" id="loginPassword" class="form-control" placeholder="••••••••" required>
+                                <button type="button" class="btn input-group-text password-toggle-btn" id="togglePassword" title="Şifreyi Göster/Gizle">
+                                    <i class="fas fa-eye" id="toggleIcon"></i>
+                                </button>
                             </div>
                         </div>
 
@@ -174,7 +189,7 @@
                             <label class="form-label text-secondary small fw-bold mb-1 ms-1">E-Posta Adresi</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light text-muted"><i class="fas fa-at"></i></span>
-                                <input type="email" name="ResetEmail" class="form-control bg-light" placeholder="ornek@sirket.com" required>
+                                <input type="email" name="ResetEmail" class="form-control bg-light" placeholder="ornek@sirket.com" required style="border-right: 1px solid #e2e8f0; border-top-right-radius: 12px; border-bottom-right-radius: 12px;">
                             </div>
                         </div>
                         <button type="submit" class="btn btn-login w-100 fw-bold">
@@ -191,6 +206,19 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+        $(document).on("click", "#togglePassword", function () {
+            var passwordInput = $("#loginPassword");
+            var icon = $("#toggleIcon");
+
+            if (passwordInput.attr("type") === "password") {
+                passwordInput.attr("type", "text");
+                icon.removeClass("fa-eye").addClass("fa-eye-slash");
+            } else {
+                passwordInput.attr("type", "password");
+                icon.removeClass("fa-eye-slash").addClass("fa-eye");
+            }
+        });
+
         @if (ViewBag.Hata != null)
         {
             <text>

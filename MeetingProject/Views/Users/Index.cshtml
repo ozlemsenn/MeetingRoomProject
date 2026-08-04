@@ -135,17 +135,18 @@
 
                     $.each(data, function (index, user) {
 
+                        // Şirket Filtresi
                         if (secilenSirket && secilenSirket !== "") {
                             if (String(user.CompanyId) !== String(secilenSirket)) return true;
                         }
 
+                        // Durum Filtresi
                         var gercektenPasifMi = (user.Role === "Pasif" || user.IsActive === false);
-
                         if (secilenDurum === "Aktif" && gercektenPasifMi) return true;
                         if (secilenDurum === "Pasif" && !gercektenPasifMi) return true;
 
                         var adGorunumu = user.IsCurrentUser
-                            ? '<span class="text-primary fw-bold">' + user.Name + '</span>'
+                            ? '<span class="text-primary fw-bold">' + user.Name + ' (Siz)</span>'
                             : '<span class="fw-bold">' + user.Name + '</span>';
 
                         var rolMetni = user.Role;
@@ -159,7 +160,7 @@
                         tabloIcerigi += '<td class="align-middle">' + adGorunumu + '</td>';
                         tabloIcerigi += '<td class="align-middle fw-bold">' + user.Surname + '</td>';
                         tabloIcerigi += '<td class="align-middle"><a href="mailto:' + user.Email + '" class="text-decoration-none text-secondary">' + user.Email + '</a></td>';
-                        tabloIcerigi += '<td class="align-middle">' + user.Department + '</td>';
+                        tabloIcerigi += '<td class="align-middle">' + (user.Department ? user.Department : "-") + '</td>';
                         tabloIcerigi += '<td class="align-middle">' + rolMetni + '</td>';
 
                         var islemButonlari = '<div class="d-flex justify-content-center align-items-center gap-2">';
@@ -169,7 +170,7 @@
                             islemButonlari += '<a href="/Users/Edit/' + user.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Düzenle"><i class="fas fa-edit" style="font-size: 1.15rem;"></i></a>';
 
                             if (user.IsCurrentUser) {
-                                islemButonlari += '<button class="btn btn-sm text-muted border-0 shadow-none p-1" title="Kendiniz" disabled><i class="fas fa-user-shield" style="font-size: 1.15rem;"></i></button>';
+                                islemButonlari += '<button class="btn btn-sm text-muted border-0 shadow-none p-1" title="Kendi Durumunuzu Değiştiremezsiniz" disabled><i class="fas fa-user-shield" style="font-size: 1.15rem;"></i></button>';
                             } else {
                                 var isPasif = gercektenPasifMi;
 
@@ -196,14 +197,14 @@
                         tabloIcerigi += '</tr>';
                     });
 
-                    if (tabloIcerigi === '') {
-                        tabloIcerigi = '<tr><td colspan="6" class="text-center text-muted py-4">Bu kriterlere uygun kullanıcı bulunmuyor.</td></tr>';
-                    }
-
+                    
                     $('#kullaniciListesi').html(tabloIcerigi);
 
                     $('#kullaniciTablosu').DataTable({
-                        "language": { "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json" },
+                        "language": {
+                            "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/tr.json",
+                            "emptyTable": "Seçilen kriterlere uygun kullanıcı bulunamadı." 
+                        },
                         "order": [[4, "asc"], [0, "asc"]]
                     });
                 },

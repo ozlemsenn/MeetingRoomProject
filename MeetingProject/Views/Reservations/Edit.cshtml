@@ -1,244 +1,48 @@
-﻿@model MeetingProject.Models.Reservations
-@{
+﻿@{
+    ViewBag.Title = "Edit";
     Layout = null;
-    var seciliKatilimcilar = !string.IsNullOrEmpty(Model.Attendees) ? Model.Attendees.Split(',').Select(s => s.Trim()).ToArray() : new string[0];
 }
 
-<div class="modal-body p-0">
-    <div class="container-fluid px-4 py-3">
-        <div id="hataMesajiAlaniDuzenle" class="alert alert-warning d-none shadow-sm" style="border-radius: 8px; font-size: 0.9rem; padding: 10px;"></div>
+<form id="editForm">
+    @Html.AntiForgeryToken()
 
-        <form id="formDuzenle">
-            @Html.AntiForgeryToken()
-            <input type="hidden" name="Id" value="@Model.Id" />
+    <input type="hidden" id="EditId" name="Id" />
 
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label class="form-label text-muted small fw-bold mb-1">Toplantı Odası</label>
-                    @Html.DropDownList("RoomId", (SelectList)ViewBag.Rooms, "Oda Seçiniz", new { @class = "form-select shadow-sm border-0 bg-light", @required = "required" })
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label text-muted small fw-bold mb-1">Kullanıcı</label>
-                    @Html.DropDownList("UserId", (SelectList)ViewBag.Users, "Kullanıcı Seçiniz", new { @class = "form-select shadow-sm border-0 bg-light select2-kullanici", @required = "required", style = "width: 100%;" })
-                </div>
+    <div class="container-fluid" style="padding: 15px 25px;">
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">Ad</label>
+                <input type="text" id="EditName" name="Name" class="form-control shadow-sm border-0 bg-light" required />
             </div>
-
-            <div class="row mb-3">
-                <div class="col-12">
-                    <label class="form-label text-muted small fw-bold mb-1">Toplantı Başlığı</label>
-                    <input type="text" name="Title" value="@Model.Title" class="form-control shadow-sm border-0 bg-light" style="width: 100% !important; max-width: 100% !important;" required />
-                </div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">Soyad</label>
+                <input type="text" id="EditSurname" name="Surname" class="form-control shadow-sm border-0 bg-light" required />
             </div>
-
-            <div class="row mb-3">
-                <div class="col-4">
-                    <label class="form-label text-muted small fw-bold mb-1">Tarih</label>
-                    <input type="date" name="Date" class="form-control shadow-sm border-0 bg-light" value="@(Model.Date.HasValue ? Model.Date.Value.ToString("yyyy-MM-dd") : "")" required>
-                </div>
-                <div class="col-4">
-                    <label class="form-label text-muted small fw-bold mb-1">Başlangıç</label>
-                    <input type="time" name="StartTime" class="form-control shadow-sm border-0 bg-light" value="@(Model.StartTime.HasValue ? Model.StartTime.Value.ToString(@"hh\:mm") : "")" required />
-                </div>
-                <div class="col-4">
-                    <label class="form-label text-muted small fw-bold mb-1">Bitiş</label>
-                    <input type="time" name="EndTime" class="form-control shadow-sm border-0 bg-light" value="@(Model.EndTime.HasValue ? Model.EndTime.Value.ToString(@"hh\:mm") : "")" required />
-                </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-12">
-                    <label class="form-label text-muted small fw-bold mb-1">Katılımcılar</label>
-                    @Html.ListBox("SecilenKatilimcilar", new MultiSelectList((SelectList)ViewBag.KullaniciListesi, "Value", "Text", seciliKatilimcilar),
-                        new { @class = "form-control shadow-sm border-0 bg-light select2-multiple", multiple = "multiple", style = "width: 100%;" })
-                </div>
-            </div>
-
-            <div class="row mb-2">
-                <div class="mb-2">
-                    <label class="form-label text-muted small fw-bold mb-1">Açıklama / Amacı</label>
-                    <textarea name="Description" class="form-control shadow-sm border-0 bg-light" rows="3" style="width: 100% !important; max-width: 100% !important; resize: none;" required>@Model.Description</textarea>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-<div class="modal-footer border-0 d-flex flex-column" style="background-color: #f8fafc; border-radius: 0 0 15px 15px; padding: 15px 25px;">
-
-    <div class="d-flex justify-content-between align-items-center w-100">
-        <div>
-            <button type="button" class="btn btn-info text-white fw-bold shadow-sm px-3" style="border-radius: 8px; background-color: #0dcaf0;" onclick="DolulukDurumuKontrolEt()">
-                <i class="fas fa-search me-1"></i> Doluluk Durumu
-            </button>
         </div>
 
-        <div class="d-flex gap-2">
-            <button type="button" class="btn btn-light text-secondary fw-bold shadow-sm px-4" style="border-radius: 8px; border: 1px solid #e2e8f0;" data-bs-dismiss="modal">
-                <i class="fas fa-times me-1"></i> İptal
-            </button>
-            <button type="submit" form="formDuzenle" class="btn btn-primary fw-bold shadow-sm px-4" style="border-radius: 8px;">
-                <i class="fas fa-save me-1"></i> Düzenle
-            </button>
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">E-Posta</label>
+                <input type="email" id="EditEmail" name="Email" class="form-control shadow-sm border-0 bg-light" required />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">Departman</label>
+                <select id="EditDepartment" name="Department" class="form-select shadow-sm border-0 bg-light" required>
+                    <option value="" disabled>Seçiniz...</option>
+                    <option value="IT">IT (Bilgi İşlem)</option>
+                    <option value="İnsan Kaynakları">İnsan Kaynakları</option>
+                    <option value="Pazarlama">Pazarlama</option>
+                    <option value="Satış">Satış</option>
+                    <option value="Yönetim">Yönetim</option>
+                </select>
+            </div>
         </div>
+
     </div>
 
-    <div id="dolulukSonucAlani" class="w-100 mt-3 d-none">
+    <div class="modal-footer border-0 bg-white d-flex justify-content-end" style="padding: 15px 25px; border-radius: 0 0 10px 10px;">
+        <button type="button" class="btn btn-outline-secondary px-4 shadow-sm" style="border-radius: 8px;" onclick="$('#kullaniciModali').modal('hide');">İptal</button>
+        <button type="submit" class="btn btn-warning px-4 shadow-sm fw-bold text-dark" style="border-radius: 8px;">Kaydet</button>
     </div>
-
-</div>
-
-<style>
-    .select2-results__option[aria-selected="true"] {
-        background-color: #f1f5f9 !important;
-        color: #1e3a8a !important;
-        position: relative;
-        padding-right: 30px !important;
-    }
-
-        .select2-results__option[aria-selected="true"]::after {
-            content: '\f00c';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #10b981;
-            font-size: 1.1rem;
-        }
-
-    .select2-container--default .select2-selection--multiple .select2-selection__choice {
-        background-color: #1e3a8a !important;
-        color: #ffffff !important;
-        border: none !important;
-        border-radius: 6px !important;
-        padding: 5px 12px !important;
-        margin-top: 6px !important;
-        font-weight: 500;
-        font-size: 0.9rem;
-    }
-
-    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
-        color: #ffffff !important;
-        margin-right: 10px !important;
-        border-right: 1px solid rgba(255, 255, 255, 0.3) !important;
-        padding-right: 8px !important;
-    }
-
-        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
-            background: transparent !important;
-            color: #ff4d4d !important;
-        }
-
-    .select2-container .select2-selection--multiple {
-        min-height: 45px !important;
-        border: 0px !important;
-        background-color: #f8f9fa !important;
-        padding-bottom: 5px;
-    }
-</style>
-
-<script>
-    $(document).ready(function () {
-        $('.select2-kullanici').select2({
-            dropdownParent: $('#islemModali'),
-            placeholder: "Kullanıcı Ara...",
-            allowClear: true
-        });
-
-        $('.select2-multiple').select2({
-            dropdownParent: $('#islemModali'),
-            placeholder: "Toplantıya katılacak kişileri seçin...",
-            allowClear: true,
-            width: '100%'
-        });
-    });
-
-    function DolulukDurumuKontrolEt() {
-        var tarih = $('input[name="Date"]').val();
-        var rezId = $('input[name="Id"]').val();
-        var sonucAlani = $('#dolulukSonucAlani');
-
-        if (!tarih) {
-            sonucAlani.html('<div class="alert alert-warning py-2 mb-0 shadow-sm" style="border-radius: 8px;"><i class="fas fa-exclamation-triangle me-2"></i>Lütfen durumu görmek için önce bir tarih seçin.</div>').removeClass('d-none').hide().slideDown();
-            return;
-        }
-
-        sonucAlani.html('<div class="text-center text-muted py-3"><i class="fas fa-spinner fa-spin me-2 text-primary"></i>Odalar kontrol ediliyor...</div>').removeClass('d-none').hide().slideDown();
-
-        $.ajax({
-            url: '/Reservations/GetReservationsByDate',
-            type: 'GET',
-            data: { date: tarih, excludeId: rezId },
-            success: function (doluOdalar) {
-                if (doluOdalar.length === 0) {
-                    sonucAlani.html('<div class="alert alert-success py-2 mb-0 shadow-sm" style="border-radius: 8px;"><i class="fas fa-check-circle me-2"></i>Harika! Bu tarihte hiçbir oda dolu değil.</div>');
-                    return;
-                }
-
-                var listeHtml = `
-                    <div class="card border-0 shadow-sm" style="border-radius: 10px; overflow: hidden;">
-                        <div class="card-header bg-white fw-bold text-dark py-3 border-bottom-0">
-                            <i class="fas fa-calendar-day text-primary me-2"></i> ${tarih} Tarihindeki Dolu Odalar
-                        </div>
-                        <ul class="list-group list-group-flush">`;
-
-                doluOdalar.forEach(function (item) {
-                    listeHtml += `
-                        <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-3 bg-light border-light-subtle">
-                            <span class="fw-semibold text-dark"><i class="fas fa-door-closed text-danger opacity-75 me-2"></i>${item.RoomName}</span>
-                            <span class="badge bg-danger rounded-pill shadow-sm"><i class="far fa-clock me-1"></i> ${item.StartTime} - ${item.EndTime}</span>
-                        </li>`;
-                });
-
-                listeHtml += '</ul></div>';
-
-                sonucAlani.html(listeHtml).hide().slideDown();
-            },
-            error: function () {
-                sonucAlani.html('<div class="alert alert-danger py-2 mb-0 shadow-sm" style="border-radius: 8px;"><i class="fas fa-times-circle me-2"></i>Sistemden veri alınırken hata oluştu.</div>');
-            }
-        });
-    }
-    $('#formDuzenle').on('submit', function (e) {
-        e.preventDefault();
-
-        var form = $(this);
-        var hataAlani = $('#hataMesajiAlaniDuzenle');
-        var btn = $('button[form="formDuzenle"]');
-        var orjinalBtnMetni = btn.html();
-
-        btn.html('<i class="fas fa-spinner fa-spin me-1"></i> Kaydediliyor...').prop('disabled', true);
-        hataAlani.addClass('d-none');
-
-        $.ajax({
-            url: '/Reservations/Edit',
-            type: 'POST',
-            data: form.serialize(),
-            success: function (response) {
-                if (response.success) {
-
-                    $('#islemModali').modal('hide');
-
-                    TabloyuDoldur();
-
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Harika!',
-                        text: response.message,
-                        confirmButtonColor: '#10b981',
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
-
-                } else {
-                    hataAlani.html('<i class="fas fa-exclamation-triangle me-2"></i>' + response.message).removeClass('d-none');
-                    btn.html(orjinalBtnMetni).prop('disabled', false);
-                }
-            },
-            error: function () {
-                hataAlani.html('<i class="fas fa-times-circle me-2"></i>Sistemle iletişim kurulamadı. Lütfen tekrar deneyin.').removeClass('d-none');
-                btn.html(orjinalBtnMetni).prop('disabled', false);
-            }
-        });
-    });
-</script>
+</form>

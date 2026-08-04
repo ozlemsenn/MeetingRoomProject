@@ -126,6 +126,36 @@ namespace MeetingProject.Controllers
             }
         }
 
+        [HttpGet]
+        public ActionResult Edit(int? id)
+        {
+            if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            string rol = GecerliRol();
+            if (rol != "Admin" && rol != "Yönetici" && rol != "Yonetici")
+                return Content("<div class='alert alert-danger p-4 text-center'>Yetkisiz İşlem! Sadece yöneticiler düzenleme yapabilir.</div>");
+
+            var kullanici = db.Users.Find(id);
+            if (kullanici == null) return HttpNotFound("Kullanıcı bulunamadı.");
+
+            int aktifSirketId = GecerliSirketId();
+            if (rol != "Admin" && kullanici.CompanyId != aktifSirketId)
+                return Content("<div class='alert alert-danger p-4 text-center'>Kendi şirketiniz dışındaki bir kullanıcıyı düzenleyemezsiniz.</div>");
+
+            if (rol == "Admin")
+            {
+                ViewBag.CompanyId = new SelectList(db.Companies.ToList(), "Id", "Name", kullanici.CompanyId);
+            }
+            else
+            {
+                ViewBag.CompanyId = new SelectList(db.Companies.Where(c => c.Id == aktifSirketId).ToList(), "Id", "Name", kullanici.CompanyId);
+            }
+
+            ViewBag.IsAdmin = (rol == "Admin");
+
+            return PartialView(kullanici);
+        }
+
         [HttpPost]
         public JsonResult Edit(Users model)
         {
@@ -160,6 +190,32 @@ namespace MeetingProject.Controllers
             }
         }
 
+        [HttpGet]
+        public ActionResult Delete(int? id)
+        {
+            if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            string rol = GecerliRol();
+            if (rol != "Admin" && rol != "Yönetici" && rol != "Yonetici")
+                return Content("<div class='alert alert-danger p-4 text-center'>Yetkisiz İşlem! Sadece yöneticiler silme/pasife alma işlemi yapabilir.</div>");
+
+            var kullanici = db.Users.Find(id);
+            if (kullanici == null) return HttpNotFound("Kullanıcı bulunamadı.");
+
+            int aktifSirketId = GecerliSirketId();
+            if (rol != "Admin" && kullanici.CompanyId != aktifSirketId)
+                return Content("<div class='alert alert-danger p-4 text-center'>Kendi şirketiniz dışındaki bir kullanıcıya müdahale edemezsiniz.</div>");
+
+            ViewBag.IsAdmin = (rol == "Admin");
+
+            ViewBag.Durum = kullanici.IsActive == true ? "Aktif" : "Pasif";
+
+            var sirket = db.Companies.Find(kullanici.CompanyId);
+            ViewBag.SirketAdi = sirket != null ? sirket.Name : "Şirket Atanmamış"
+;
+            return PartialView(kullanici);
+        }
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public JsonResult DeleteConfirmed(int id, string PassiveReason, string ActionType)
@@ -183,6 +239,11 @@ namespace MeetingProject.Controllers
                 else
                 {
                     silinecekKullanici.IsActive = !silinecekKullanici.IsActive;
+
+                    if (silinecekKullanici.IsActive == false)
+                        silinecekKullanici.PassiveReason = PassiveReason;
+                    else
+                        silinecekKullanici.PassiveReason = null;
                 }
 
                 db.SaveChanges();
@@ -195,24 +256,48 @@ namespace MeetingProject.Controllers
         }
 
         [HttpGet]
+        public ActionResult Details(int? id)
+        {
+            if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            string rol = GecerliRol();
+            if (string.IsNullOrEmpty(rol)) return Content("<div class='alert alert-danger p-4 text-center'>Oturum süreniz dolmuş.</div>");
+
+            var kullanici = db.Users.Find(id);
+            if (kullanici == null) return HttpNotFound("Kullanıcı bulunamadı.");
+
+            int aktifSirketId = GecerliSirketId();
+            if (rol != "Admin" && kullanici.CompanyId != aktifSirketId)
+                return Content("<div class='alert alert-danger p-4 text-center'>Sadece kendi şirketinizdeki kullanıcıların detayını görebilirsiniz.</div>");
+
+            var sirket = db.Companies.Find(kullanici.CompanyId);
+            ViewBag.SirketAdi = sirket != null ? sirket.Name : "Şirket Atanmamış";
+
+            return PartialView(kullanici);
+        }
+
+        [HttpGet]
         public JsonResult GetUsers()
         {
             if (string.IsNullOrEmpty(GecerliRol())) return Json(new List<object>(), JsonRequestBehavior.AllowGet);
 
             bool isAdmin = GecerliRol() == "Admin";
             int aktifSirketId = GecerliSirketId();
+            int aktifKullaniciId = GecerliKullaniciId(); 
 
             var kullanicilar = db.Users
                 .Where(x => isAdmin || x.CompanyId == aktifSirketId)
                 .Select(x => new
                 {
                     x.Id,
+                    x.CompanyId,  
                     x.Name,
                     x.Surname,
-                    x.Email,       
-                    x.Department,  
+                    x.Email,
+                    x.Department,
                     x.IsActive,
-                    Role = (x.Role == "Yonetici" || x.Role == "Yönetici") ? "Yönetici" : x.Role
+                    Role = (x.Role == "Yonetici" || x.Role == "Yönetici") ? "Yönetici" : x.Role,
+                    IsCurrentUser = (x.Id == aktifKullaniciId) 
                 }).ToList();
 
             return Json(kullanicilar, JsonRequestBehavior.AllowGet);

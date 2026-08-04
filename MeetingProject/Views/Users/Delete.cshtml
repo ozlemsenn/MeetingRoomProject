@@ -4,14 +4,17 @@
     Layout = null;
 
     bool isAdmin = ViewBag.IsAdmin != null && (bool)ViewBag.IsAdmin;
-    bool isPasif = Model.Role == "Pasif";
-    string mode = ViewBag.Mode as string;
+
+    bool isPasif = Model.IsActive == false || Model.Role == "Pasif";
+
+    string gosterilecekRol = (Model.Role == "Pasif" || string.IsNullOrEmpty(Model.Role)) ? "Personel" : Model.Role;
+
+    string mode = Request.QueryString["mode"] ?? "status";
 }
 
 <form id="deleteForm">
     @Html.AntiForgeryToken()
-    <input type="hidden" id="DeleteId" name="Id" />
-
+    <input type="hidden" id="DeleteId" name="Id" value="@Model.Id" />
     <input type="hidden" id="ActionType" name="ActionType" value="@(mode == "delete" ? "HardDelete" : "ToggleStatus")" />
 
     <div class="container-fluid px-2 py-3 text-center">
@@ -23,9 +26,14 @@
             </p>
             <div class="card shadow-sm mx-auto mb-4 border-danger" style="border-radius: 12px; background-color: #fff5f5; max-width: 380px;">
                 <div class="card-body p-4">
-                    <h4 id="DeleteFullName" class="fw-bold text-dark mb-2">Yükleniyor...</h4>
-                    <hr class="text-danger opacity-25 mx-4">
-                    <h6 id="DeleteDepartment" class="text-muted mb-0 mt-2">Yükleniyor...</h6>
+                    <h4 class="fw-bold text-dark mb-2">@Model.Name @Model.Surname</h4>
+                    <hr class="text-danger opacity-25 mx-4 mt-2 mb-3">
+
+                    <div class="d-flex flex-column gap-2 align-items-center text-muted" style="font-size: 0.95rem;">
+                        <span>@(string.IsNullOrEmpty(Model.Department) ? "Departman Belirtilmemiş" : Model.Department)</span>
+                        <span>@gosterilecekRol</span>
+                        <span>@(ViewBag.SirketAdi ?? "Şirket Bilgisi Yok")</span>
+                    </div>
                 </div>
             </div>
         }
@@ -37,9 +45,14 @@
             </p>
             <div class="card shadow-sm mx-auto mb-4 @(isPasif ? "border-success" : "border-warning")" style="border-radius: 12px; background-color: @(isPasif ? "#f6fdf9" : "#fffbeb"); max-width: 380px;">
                 <div class="card-body p-4">
-                    <h4 id="DeleteFullName" class="fw-bold text-dark mb-2">Yükleniyor...</h4>
-                    <hr class="@(isPasif ? "text-success" : "text-warning") opacity-50 mx-4">
-                    <h6 id="DeleteDepartment" class="text-muted mb-0 mt-2">Yükleniyor...</h6>
+                    <h4 class="fw-bold text-dark mb-2">@Model.Name @Model.Surname</h4>
+                    <hr class="@(isPasif ? "text-success" : "text-warning") opacity-50 mx-4 mt-2 mb-3">
+
+                    <div class="d-flex flex-column gap-2 align-items-center text-muted" style="font-size: 0.95rem;">
+                        <span>@(string.IsNullOrEmpty(Model.Department) ? "Departman Belirtilmemiş" : Model.Department)</span>
+                        <span>@gosterilecekRol</span>
+                        <span>@(ViewBag.SirketAdi ?? "Şirket Bilgisi Yok")</span>
+                    </div>
                 </div>
             </div>
 

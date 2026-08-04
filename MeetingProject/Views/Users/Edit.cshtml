@@ -1,40 +1,82 @@
-﻿@{
+﻿@model MeetingProject.Models.Users
+@{
     ViewBag.Title = "Edit";
     Layout = null;
+
+    // Admin yetkisi kontrolü
+    bool isAdmin = ViewBag.IsAdmin != null && (bool)ViewBag.IsAdmin;
 }
 
 <form id="editForm">
     @Html.AntiForgeryToken()
 
-    <input type="hidden" id="EditId" name="Id" />
+    <!-- Güncelleme için gerekli olan kullanıcının ID'sini gizli olarak tutuyoruz -->
+    <input type="hidden" id="EditId" name="Id" value="@Model.Id" />
+
+    <!-- Hesap durumu (Aktif/Pasif) başka ekrandan yönetildiği için burada sadece arka planda değerini koruyoruz -->
+    <input type="hidden" name="IsActive" value="@(Model.IsActive == true ? "true" : "false")" />
+
+    <!-- Kullanıcı admin değilse kendi şirketine mahkumdur, CompanyId gizli yollanır -->
+    @if (!isAdmin)
+    {
+        <input type="hidden" name="CompanyId" value="@Model.CompanyId" />
+    }
 
     <div class="container-fluid" style="padding: 15px 25px;">
+
+        @if (isAdmin)
+        {
+            <!-- ŞİRKET ALANI EN ÜSTE TAŞINDI -->
+            <div class="row mb-4" id="editSirketSecimAlani" style="@(Model.Role == "Admin" ? "display:none;" : "")">
+                <div class="col-md-12">
+                    <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">
+                        <i class="fas fa-building me-1 text-primary"></i>Şirket Seçimi
+                    </label>
+                    @Html.DropDownList("CompanyId", (SelectList)ViewBag.CompanyId, "Lütfen Şirket Seçiniz...", new { @class = "form-select shadow-sm border-0 bg-light fw-semibold text-dark", id = "EditCompanyId" })
+                </div>
+            </div>
+        }
 
         <div class="row mb-3">
             <div class="col-md-6">
                 <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">Ad</label>
-                <input type="text" id="EditName" name="Name" class="form-control shadow-sm border-0 bg-light" required />
+                <input type="text" id="EditName" name="Name" class="form-control shadow-sm border-0 bg-light" value="@Model.Name" required />
             </div>
             <div class="col-md-6">
                 <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">Soyad</label>
-                <input type="text" id="EditSurname" name="Surname" class="form-control shadow-sm border-0 bg-light" required />
+                <input type="text" id="EditSurname" name="Surname" class="form-control shadow-sm border-0 bg-light" value="@Model.Surname" required />
             </div>
         </div>
 
-        <div class="row mb-4">
+        <div class="row mb-3">
             <div class="col-md-6">
                 <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">E-Posta</label>
-                <input type="email" id="EditEmail" name="Email" class="form-control shadow-sm border-0 bg-light" required />
+                <input type="email" id="EditEmail" name="Email" class="form-control shadow-sm border-0 bg-light" value="@Model.Email" required />
             </div>
             <div class="col-md-6">
                 <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">Departman</label>
                 <select id="EditDepartment" name="Department" class="form-select shadow-sm border-0 bg-light" required>
-                    <option value="" disabled>Seçiniz...</option>
-                    <option value="IT">IT (Bilgi İşlem)</option>
-                    <option value="İnsan Kaynakları">İnsan Kaynakları</option>
-                    <option value="Pazarlama">Pazarlama</option>
-                    <option value="Satış">Satış</option>
-                    <option value="Yönetim">Yönetim</option>
+                    <option value="" disabled @(string.IsNullOrEmpty(Model.Department) ? "selected" : "")>Seçiniz...</option>
+                    <option value="IT" @(Model.Department == "IT" ? "selected" : "")>IT (Bilgi İşlem)</option>
+                    <option value="İnsan Kaynakları" @(Model.Department == "İnsan Kaynakları" ? "selected" : "")>İnsan Kaynakları</option>
+                    <option value="Pazarlama" @(Model.Department == "Pazarlama" ? "selected" : "")>Pazarlama</option>
+                    <option value="Satış" @(Model.Department == "Satış" ? "selected" : "")>Satış</option>
+                    <option value="Yönetim" @(Model.Department == "Yönetim" ? "selected" : "")>Yönetim</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <!-- Aktif/Pasif kalktığı için Rol satırı tam genişliğe (col-md-12) yayıldı -->
+            <div class="col-md-12">
+                <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">Sistem Rolü</label>
+                <select id="EditRole" name="Role" class="form-select shadow-sm border-0 bg-light" required>
+                    <option value="Personel" @(Model.Role == "Personel" || Model.Role == "Pasif" || string.IsNullOrEmpty(Model.Role) ? "selected" : "")>Personel</option>
+                    <option value="Yönetici" @(Model.Role == "Yönetici" || Model.Role == "Yonetici" ? "selected" : "")>Yönetici</option>
+                    @if (isAdmin)
+                    {
+                        <option value="Admin" @(Model.Role == "Admin" ? "selected" : "")>Admin (Sistem Yöneticisi)</option>
+                    }
                 </select>
             </div>
         </div>
@@ -43,6 +85,34 @@
 
     <div class="modal-footer border-0 bg-white d-flex justify-content-end" style="padding: 15px 25px; border-radius: 0 0 10px 10px;">
         <button type="button" class="btn btn-outline-secondary px-4 shadow-sm" style="border-radius: 8px;" onclick="$('#kullaniciModali').modal('hide');">İptal</button>
-        <button type="submit" class="btn btn-warning px-4 shadow-sm fw-bold text-dark" style="border-radius: 8px;">Kaydet</button>
+        <button type="submit" class="btn btn-primary px-4 shadow-sm text-white" style="background-color: #343a40; border-radius: 8px;">Kaydet</button>
     </div>
 </form>
+
+<script>
+    $(document).ready(function () {
+
+        // Sayfa ilk yüklendiğinde Admin kontrolü (Şirket Require ayarı için)
+        if ($('#EditRole').val() === "Admin") {
+            $('#EditCompanyId').removeAttr('required');
+        } else {
+            $('#EditCompanyId').attr('required', 'required');
+        }
+
+        // Tıpkı Create.cshtml'deki gibi Rol'e göre Şirket Seçim alanını gizle/göster animasyonu
+        $('#EditRole').on('change', function () {
+            var secilenRol = $(this).val();
+
+            if (secilenRol === "Admin") {
+                $('#editSirketSecimAlani').slideUp(300);
+                $('#EditCompanyId').removeAttr('required');
+                $('#EditCompanyId').val('');
+            }
+            else {
+                $('#editSirketSecimAlani').slideDown(300);
+                $('#EditCompanyId').attr('required', 'required');
+            }
+        });
+
+    });
+</script>
