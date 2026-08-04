@@ -3,27 +3,45 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!-- Test/Debug Alanı -->
-<div class="alert alert-warning m-3 shadow-sm" style="border-radius: 10px;">
-    <strong>Giriş Yapan Rol:</strong> @Session["UserRole"] |
-    <strong>Giriş Yapan Şirket ID:</strong> @Session["CompanyId"]
-</div>
-
-<div class="container-fluid px-4" style="margin-top: 30px;">
+<div class="container-fluid px-4" style="margin-top:30px;">
     <div class="row align-items-center mb-4">
-        <div class="col-md-8">
-            <h2 class="text-primary fw-bold mb-1"><i class="fas fa-users-cog me-2"></i> Kullanıcı Yönetimi</h2>
-            <p class="text-muted mb-0">Sistemde kayıtlı kullanıcıları buradan yönetebilir ve yeni kullanıcı ekleyebilirsiniz.</p>
+
+        <!-- Başlık -->
+        <div class="col-md-7">
+            <h2 class="text-primary fw-bold mb-1">
+                <i class="fas fa-users-cog me-2"></i> Kullanıcı Yönetimi
+            </h2>
+            <p class="text-muted mb-0">
+                Sistemde kayıtlı kullanıcıları buradan yönetebilir ve yeni kullanıcı ekleyebilirsiniz.
+            </p>
         </div>
-        @if (ViewBag.IsAdmin != null && (bool)ViewBag.IsAdmin)
-        {
-            <div class="col-md-4 text-end mt-3 mt-md-0">
-                <a href="/Users/Create" class="btn btn-primary modal-tetikle shadow-sm" style="font-weight: bold; border-radius: 12px; padding: 10px 20px;">
-                    <i class="fas fa-user-plus me-1"></i> Yeni Kullanıcı
+
+        <!-- Sağ Butonlar -->
+        <div class="col-md-5">
+            <div class="d-flex justify-content-end gap-2 flex-wrap">
+
+                <a href="@Url.Action("ExcelIndir", "Users")"
+                   class="btn btn-success shadow-sm"
+                   style="border-radius:20px; font-weight:600; padding:10px 22px;">
+                    <i class="fas fa-file-excel me-1"></i>
+                    Excel İndir
                 </a>
+
+                @if (ViewBag.IsAdmin != null && (bool)ViewBag.IsAdmin)
+                {
+                    <a href="/Users/Create"
+                       class="btn btn-primary modal-tetikle shadow-sm"
+                       style="border-radius:20px; font-weight:600; padding:10px 22px;">
+                        <i class="fas fa-user-plus me-1"></i>
+                        Yeni Kullanıcı
+                    </a>
+                }
+
             </div>
-        }
+        </div>
+
     </div>
+</div>
 
     <!-- FİLTRELEME ALANI -->
     <div class="row mb-3">
@@ -127,7 +145,7 @@
                             if (String(user.CompanyId) !== String(secilenSirket)) return true;
                         }
 
-                        var gercektenPasifMi = (user.Role === "Pasif");
+                        var gercektenPasifMi = (user.Role === "Pasif" || user.IsActive === false);
 
                         if (secilenDurum === "Aktif" && gercektenPasifMi) return true;
                         if (secilenDurum === "Pasif" && !gercektenPasifMi) return true;
@@ -136,7 +154,6 @@
                             ? '<span class="text-primary fw-bold">' + user.Name + '</span>'
                             : '<span class="fw-bold">' + user.Name + '</span>';
 
-                        // Rol metnini belirle (Arka plan renkleri artık kullanılmayacak)
                         var rolMetni = user.Role;
                         if (rolMetni === "Yönetici" || rolMetni === "Yonetici") {
                             rolMetni = "Yönetici";
@@ -147,20 +164,11 @@
                         tabloIcerigi += '<tr>';
                         tabloIcerigi += '<td class="align-middle">' + adGorunumu + '</td>';
                         tabloIcerigi += '<td class="align-middle fw-bold">' + user.Surname + '</td>';
-
-                        // MAİL: text-secondary (gri) olarak ayarlandı. Mavi istersen "text-primary" yapabilirsin.
                         tabloIcerigi += '<td class="align-middle"><a href="mailto:' + user.Email + '" class="text-decoration-none text-secondary">' + user.Email + '</a></td>';
-
-                        // DEPARTMAN: badge sınıfı kaldırıldı, düz yazı
                         tabloIcerigi += '<td class="align-middle">' + user.Department + '</td>';
-
-                        // ROL DURUMU: badge sınıfı kaldırıldı, düz yazı
                         tabloIcerigi += '<td class="align-middle">' + rolMetni + '</td>';
 
-                        // İŞLEM BUTONLARI
                         var islemButonlari = '<div class="d-flex justify-content-center align-items-center gap-2">';
-                    // ... (İşlem butonları kodların aynı kalabilir) ...
-                    // ...
                         islemButonlari += '<a href="/Users/Details/' + user.Id + '" class="btn btn-sm text-secondary border-0 shadow-none modal-tetikle p-1" title="Detaylar"><i class="fas fa-eye" style="font-size: 1.15rem;"></i></a>';
 
                         if (yetkiliKullaniciMi) {
@@ -169,7 +177,7 @@
                             if (user.IsCurrentUser) {
                                 islemButonlari += '<button class="btn btn-sm text-muted border-0 shadow-none p-1" title="Kendiniz" disabled><i class="fas fa-user-shield" style="font-size: 1.15rem;"></i></button>';
                             } else {
-                                var isPasif = (rolMetni === "Pasif");
+                                var isPasif = gercektenPasifMi;
 
                                 if (girisYapanKisininRolu === "Admin") {
                                     if (isPasif) {
@@ -244,7 +252,6 @@
                         gidilecekAdres.indexOf('/Users/Delete/') !== -1 ||
                         gidilecekAdres.indexOf('/Users/Details/') !== -1) {
 
-                        // DÜZELTİLEN KISIM BURASI
                         var rawId = gidilecekAdres.split('/').pop();
                         var userId = rawId.split('?')[0];
 

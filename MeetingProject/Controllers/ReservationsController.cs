@@ -4,6 +4,8 @@ using System.Web.Mvc;
 using MeetingProject.Models;
 using System.Data.Entity;
 using System.Collections.Generic;
+using System.IO;
+using ClosedXML.Excel;
 
 namespace MeetingProject.Controllers
 {
@@ -54,6 +56,95 @@ namespace MeetingProject.Controllers
             }
 
             return View(rezervasyonlar);
+        }
+
+        [HttpGet]
+        public ActionResult ExcelIndir()
+        {
+            string rol = GecerliRol();
+            bool isAdmin = rol == "Admin";
+            bool isYonetici = rol == "Yönetici" || rol == "Yonetici";
+            int aktifSirketId = GecerliSirketId();
+            int aktifKullaniciId = GecerliKullaniciId();
+
+            // 1. Verileri Çekme ve Filtreleme
+            // Admin tümünü görür, Yönetici kendi şirketindekileri görür.
+            // İstersen Personel'in sadece kendi kurduğu rezervasyonları görmesini sağlayabilirsin.
+            var sorgu = db.Reservations.AsQueryable();
+
+            if (!isAdmin)
+            {
+                sorgu = sorgu.Where(x => x.CompanyId == aktifSirketId);
+
+                // Eğer Personel (Yani Admin veya Yönetici değilse) sadece kendi kurduklarını indirsin diyorsan:
+                // if (!isYonetici) { sorgu = sorgu.Where(x => x.UserId == aktifKullaniciId); }
+            }
+
+            // Tarihe göre yeniden eskiye sıralayalım ki Excel düzenli olsun
+            var rezervasyonlar = sorgu.OrderByDescending(x => x.Date).ThenByDescending(x => x.StartTime).ToList();
+
+            // 2. Excel Dosyasını Oluşturma
+            using (var workbook = new XLWorkbook())
+            {
+                var worksheet = workbook.Worksheets.Add("Rezervasyon Listesi");
+
+                // Başlık Satırı (1. Satır)
+                worksheet.Cell(1, 1).Value = "Toplantı Başlığı";
+                worksheet.Cell(1, 2).Value = "Oda Adı";
+                worksheet.Cell(1, 3).Value = "Kuran Kişi";
+                worksheet.Cell(1, 4).Value = "Tarih";
+                worksheet.Cell(1, 5).Value = "Başlangıç";
+                worksheet.Cell(1, 6).Value = "Bitiş";
+                worksheet.Cell(1, 7).Value = "Katılımcılar";
+                worksheet.Cell(1, 8).Value = "Açıklama";
+                worksheet.Cell(1, 9).Value = "Durum";
+
+                // Başlık stili (Kalın yazı ve gri arka plan)
+                worksheet.Range("A1:I1").Style.Font.Bold = true;
+                worksheet.Range("A1:I1").Style.Fill.BackgroundColor = XLColor.LightGray;
+
+                // 3. Verileri Excel'e Basma
+                // 3. Verileri Excel'e Basma
+                int row = 2;
+                foreach (var rez in rezervasyonlar)
+                {
+                    // HATA VEREN KISMI DEĞİŞTİRDİK: Veritabanından ID ile manuel buluyoruz (En garantili yol)
+                    var oda = db.Rooms.FirstOrDefault(r => r.Id == rez.RoomId);
+                    var kullanici = db.Users.FirstOrDefault(u => u.Id == rez.UserId);
+
+                    string odaAdi = oda != null ? oda.Name.Replace(" (Pasif)", "") : "-";
+                    string kurucu = kullanici != null ? (kullanici.Name + " " + kullanici.Surname) : "-";
+
+                    string tarih = rez.Date.HasValue ? rez.Date.Value.ToString("dd.MM.yyyy") : "-";
+                    string baslangic = rez.StartTime.HasValue ? rez.StartTime.Value.ToString(@"hh\:mm") : "-";
+                    string bitis = rez.EndTime.HasValue ? rez.EndTime.Value.ToString(@"hh\:mm") : "-";
+
+                    worksheet.Cell(row, 1).Value = rez.Title;
+                    worksheet.Cell(row, 2).Value = odaAdi;
+                    worksheet.Cell(row, 3).Value = kurucu;
+                    worksheet.Cell(row, 4).Value = tarih;
+                    worksheet.Cell(row, 5).Value = baslangic;
+                    worksheet.Cell(row, 6).Value = bitis;
+                    worksheet.Cell(row, 7).Value = rez.Attendees;
+                    worksheet.Cell(row, 8).Value = rez.Description;
+                    worksheet.Cell(row, 9).Value = rez.Status;
+
+                    row++;
+                }
+
+                // Sütun genişliklerini içeriğe göre otomatik ayarla
+                worksheet.Columns().AdjustToContents();
+
+                // 4. Dosyayı Kullanıcıya İndirtme
+                using (var stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    var content = stream.ToArray();
+                    string dosyaAdi = $"Rezervasyonlar_{DateTime.Now:ddMMyyyy_HHmm}.xlsx";
+
+                    return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", dosyaAdi);
+                }
+            }
         }
 
         [HttpGet]

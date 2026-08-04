@@ -20,15 +20,30 @@
     }
 </style>
 
-<div class="row mb-4" style="margin-top: 20px;">
-    <div class="col-md-8">
-        <h2 class="text-primary fw-bold">Rezervasyon Yönetimi</h2>
-        <p class="text-muted">Toplantı odalarının doluluk durumunu ve rezervasyonları yönetebilirsiniz.</p>
+<div class="row mb-4 align-items-center" style="margin-top:20px;">
+    <div class="col-md-7">
+        <h2 class="text-primary fw-bold mb-1">Rezervasyon Yönetimi</h2>
+        <p class="text-muted mb-0">
+            Toplantı odalarının doluluk durumunu ve rezervasyonları yönetebilirsiniz.
+        </p>
     </div>
-    <div class="col-md-4" style="display: flex; justify-content: flex-end; align-items: center;">
-        <button class="btn btn-primary shadow-sm" style="border-radius: 20px; font-weight: 600; padding: 10px 20px;" onclick="ModalAc('/Reservations/Create')">
-            + Yeni Rezervasyon
-        </button>
+
+    <div class="col-md-5">
+        <div class="d-flex justify-content-end gap-2 flex-wrap">
+            <button class="btn btn-primary shadow-sm"
+                    style="border-radius:20px; font-weight:600; padding:10px 22px;"
+                    onclick="ModalAc('/Reservations/Create')">
+                <i class="fas fa-plus me-1"></i>
+                Yeni Rezervasyon
+            </button>
+
+            <a href="@Url.Action("ExcelIndir", "Reservations")"
+               class="btn btn-success shadow-sm"
+               style="border-radius:20px; font-weight:600; padding:10px 22px;">
+                <i class="fas fa-file-excel me-1"></i>
+                Excel İndir
+            </a>
+        </div>
     </div>
 </div>
 

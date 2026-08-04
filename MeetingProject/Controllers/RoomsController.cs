@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using ClosedXML.Excel;
 using MeetingProject.Models;
 
 namespace MeetingProject.Controllers
@@ -33,6 +35,44 @@ namespace MeetingProject.Controllers
             var filtreliOdalar = db.Rooms.Where(x => isAdmin || x.CompanyId == aktifSirketId).ToList();
 
             return View(filtreliOdalar);
+        }
+
+        [HttpGet]
+        public ActionResult ExcelIndir()
+        {
+            bool isAdmin = GecerliRol() == "Admin";
+            int aktifSirketId = GecerliSirketId();
+
+            var odalar = db.Rooms.Where(x => isAdmin || x.CompanyId == aktifSirketId).ToList();
+
+            using (var workbook = new XLWorkbook())
+            {
+                var worksheet = workbook.Worksheets.Add("Odalar");
+
+                worksheet.Cell(1, 1).Value = "Oda Adı";
+                worksheet.Cell(1, 2).Value = "Kapasite";
+                worksheet.Cell(1, 3).Value = "Projeksiyon";
+                worksheet.Cell(1, 4).Value = "Durum";
+                worksheet.Range("A1:D1").Style.Font.Bold = true;
+
+                int row = 2;
+                foreach (var oda in odalar)
+                {
+                    worksheet.Cell(row, 1).Value = oda.Name.Replace(" (Pasif)", "");
+                    worksheet.Cell(row, 2).Value = oda.Capacity;
+                    worksheet.Cell(row, 3).Value = (oda.HasProjector == true) ? "Var" : "Yok";
+                    worksheet.Cell(row, 4).Value = oda.Name.Contains("(Pasif)") ? "Pasif" : "Aktif";
+                    row++;
+                }
+
+                worksheet.Columns().AdjustToContents();
+
+                using (var stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Odalar_{DateTime.Now:ddMMyyyy}.xlsx");
+                }
+            }
         }
 
         [HttpGet]

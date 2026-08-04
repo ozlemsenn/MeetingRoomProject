@@ -4,6 +4,8 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using MeetingProject.Models;
+using ClosedXML.Excel;
+using System.IO;
 
 namespace MeetingProject.Controllers
 {
@@ -26,6 +28,54 @@ namespace MeetingProject.Controllers
             var kullanicilar = db.Users.Where(x => isAdmin || x.CompanyId == aktifSirketId).ToList();
 
             return View(kullanicilar);
+        }
+
+        [HttpGet]
+        public ActionResult ExcelIndir()
+        {
+            bool isAdmin = GecerliRol() == "Admin";
+            int aktifSirketId = GecerliSirketId();
+
+            // Yetkiye göre kullanıcıları veritabanından çekiyoruz
+            var kullanicilar = db.Users.Where(x => isAdmin || x.CompanyId == aktifSirketId).ToList();
+
+            using (var workbook = new XLWorkbook())
+            {
+                var worksheet = workbook.Worksheets.Add("Kullanici Listesi");
+
+                // 1. Satır: Başlıklar (Kalın ve Arka Planlı yapalım)
+                worksheet.Cell(1, 1).Value = "Ad";
+                worksheet.Cell(1, 2).Value = "Soyad";
+                worksheet.Cell(1, 3).Value = "E-Posta";
+                worksheet.Cell(1, 4).Value = "Departman";
+                worksheet.Cell(1, 5).Value = "Rol";
+                worksheet.Cell(1, 6).Value = "Durum";
+
+                worksheet.Range("A1:F1").Style.Font.Bold = true;
+                worksheet.Range("A1:F1").Style.Fill.BackgroundColor = XLColor.LightGray;
+
+                // 2. Satırdan itibaren verileri dönüyoruz
+                int row = 2;
+                foreach (var user in kullanicilar)
+                {
+                    worksheet.Cell(row, 1).Value = user.Name;
+                    worksheet.Cell(row, 2).Value = user.Surname;
+                    worksheet.Cell(row, 3).Value = user.Email;
+                    worksheet.Cell(row, 4).Value = user.Department;
+                    worksheet.Cell(row, 5).Value = user.Role;
+                    worksheet.Cell(row, 6).Value = (user.IsActive == true) ? "Aktif" : "Pasif";
+                    row++;
+                }
+
+                worksheet.Columns().AdjustToContents(); // Sütun genişliklerini otomatik ayarla
+
+                using (var stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    var content = stream.ToArray();
+                    return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Kullanicilar_{DateTime.Now:ddMMyyyy}.xlsx");
+                }
+            }
         }
 
         [HttpGet]
