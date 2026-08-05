@@ -45,9 +45,3 @@ Yazılım stajım kapsamında, uçtan uca mimari tasarımı, veritabanı ilişki
 <img width="1561" height="772" alt="Ekran görüntüsü 2026-08-05 111625" src="https://github.com/user-attachments/assets/241918ec-aeef-4ec3-9a79-9acb3357ee97" />
 
 
-
-##  Kurulum ve Çalıştırma
-
-1. Projeyi bilgisayarınıza klonlayın:
-   ```bash
-   git clone [https://github.com/ozlemsenn/MeetingProject.git](https://github.com/ozlemsenn/MeetingProject.git)
