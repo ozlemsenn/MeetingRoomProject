@@ -52,7 +52,6 @@ namespace MeetingProject.Controllers
                 string kurucuRol = user != null && !string.IsNullOrEmpty(user.Role) ? user.Role : "Personel";
                 if (kurucuRol == "Yonetici") kurucuRol = "Yönetici";
 
-                // --- DİNAMİK DURUM HESAPLAMA ---
                 string durum = rez.Status ?? "Planlandı";
                 if (durum != "İptal Edildi")
                 {

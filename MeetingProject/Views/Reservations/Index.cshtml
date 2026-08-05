@@ -187,19 +187,22 @@
 
                         html += '<td class="text-center align-middle"><span class="badge ' + badgeRengi + ' shadow-sm px-3 py-2" style="font-size: 0.85rem; letter-spacing: 0.5px;">' + ikonKodu + gercekDurum + '</span></td>';
 
+
                         html += '<td class="align-middle text-center">';
                         html += '<div class="d-flex justify-content-center align-items-center flex-nowrap gap-1">';
                         html += '<button class="btn btn-sm text-secondary border-0 shadow-none" title="Detayları Gör" onclick="ModalAc(\'/Reservations/Details/' + item.Id + '\')"><i class="fas fa-eye" style="font-size: 1.1rem;"></i></button>';
 
                         if (gercekDurum !== 'İptal Edildi' && gercekDurum !== 'Tamamlandı') {
-
                             if (item.IsLocked) {
                                 html += '<button class="btn btn-sm text-muted border-0 shadow-none" title="Toplantıya 1 saatten az kaldığı için kilitlendi" style="cursor:not-allowed;" disabled><i class="fas fa-lock" style="font-size: 1.1rem;"></i></button>';
-                            }
-                            else {
+                            } else {
                                 html += '<button class="btn btn-sm text-secondary border-0 shadow-none" title="Düzenle" onclick="ModalAc(\'/Reservations/Edit/' + item.Id + '\')"><i class="fas fa-edit" style="font-size: 1.1rem;"></i></button>';
                                 html += '<button class="btn btn-sm text-secondary border-0 shadow-none" title="İptal Et" onclick="ModalAc(\'/Reservations/Cancel/' + item.Id + '\')"><i class="fas fa-ban" style="font-size: 1.1rem;"></i></button>';
                             }
+                        }
+
+                        if (item.IsAdmin) {
+                            html += '<button class="btn btn-sm text-danger border-0 shadow-none" title="Kalıcı Sil" onclick="ModalAc(\'/Reservations/Delete/' + item.Id + '\')"><i class="fas fa-trash-alt" style="font-size: 1.1rem;"></i></button>';
                         }
 
                         html += '</div></td></tr>';

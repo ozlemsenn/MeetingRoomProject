@@ -2,8 +2,7 @@
 @{
     Layout = null;
 
-    var katilimcilar = Model.Attendees;
-    var katilimciListesi = !string.IsNullOrEmpty(katilimcilar) && katilimcilar != "Katılımcı yok" ? katilimcilar.Split(',') : new string[0];
+    var katilimciListesi = ViewBag.KatilimciIsimleri as List<string> ?? new List<string>();
 }
 
 <div class="container-fluid px-2 py-3 text-center">
@@ -34,14 +33,14 @@
                 <i class="far fa-clock me-1"></i> @(Model.StartTime.HasValue ? Model.StartTime.Value.ToString(@"hh\:mm") : "") - @(Model.EndTime.HasValue ? Model.EndTime.Value.ToString(@"hh\:mm") : "")
             </div>
 
-            @if (katilimciListesi.Length > 0)
+            @if (katilimciListesi.Count > 0)
             {
                 <div class="small fw-bold text-muted mb-1">Katılımcılar:</div>
                 <div class="d-flex flex-wrap gap-1">
                     @foreach (var kisi in katilimciListesi)
                     {
                         <span class="badge" style="background-color: #fce4e4; color: #b71c1c; border: 1px solid #f5c6cb; font-size: 0.75rem;">
-                            @kisi.Trim()
+                            @kisi
                         </span>
                     }
                 </div>

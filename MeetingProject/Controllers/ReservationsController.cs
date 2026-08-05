@@ -220,7 +220,8 @@ namespace MeetingProject.Controllers
                     EndTime = r.EndTime.HasValue ? r.EndTime.Value.ToString(@"hh\:mm") : "",
                     r.Description,
                     Status = gercekDurum,
-                    IsLocked = kilitliMi
+                    IsLocked = kilitliMi,
+                    IsAdmin = isAdmin
                 };
             });
 
@@ -327,12 +328,10 @@ namespace MeetingProject.Controllers
             if (secilenOda == null || (!isAdmin && secilenOda.CompanyId != aktifSirketId))
                 return Json(new { success = false, message = "Bu odayı seçme yetkiniz yok!" });
 
-            // --- YENİ EKLENEN PASİF ODA KONTROLÜ ---
             if (secilenOda.Name.Contains("(Pasif)"))
             {
                 return Json(new { success = false, message = "Seçtiğiniz oda şu anda pasif durumda olduğu için rezervasyon yapılamaz!" });
             }
-            // ---------------------------------------
 
             if (SecilenKatilimcilar == null || SecilenKatilimcilar.Length == 0)
                 return Json(new { success = false, message = "En az bir katılımcı seçilmelidir." });
@@ -401,6 +400,25 @@ namespace MeetingProject.Controllers
             ViewBag.OdaAdi = oda != null ? oda.Name : "Bulunamadı";
             ViewBag.KullaniciAdi = user != null ? user.Name + " " + user.Surname : "Bulunamadı";
 
+            List<string> katilimciIsimleri = new List<string>();
+            if (!string.IsNullOrEmpty(res.Attendees))
+            {
+                var idList = res.Attendees.Split(',');
+                foreach (var idStr in idList)
+                {
+                    if (int.TryParse(idStr.Trim(), out int userId))
+                    {
+                        var kullanici = db.Users.Find(userId);
+                        if (kullanici != null)
+                        {
+                            string departman = !string.IsNullOrEmpty(kullanici.Department) ? kullanici.Department : "Belirtilmemiş";
+                            katilimciIsimleri.Add($"{kullanici.Name} {kullanici.Surname} ({departman})");
+                        }
+                    }
+                }
+            }
+            ViewBag.KatilimciIsimleri = katilimciIsimleri;
+
             return PartialView(res);
         }
 
@@ -447,18 +465,26 @@ namespace MeetingProject.Controllers
                 }
             }
 
-            var tumOdalar = db.Rooms.Where(r => isAdmin || r.CompanyId == aktifSirketId).ToList();
-            var sirketOdalar = tumOdalar.Where(r => string.IsNullOrEmpty(r.Name) || !r.Name.Contains("(Pasif)")).ToList();
+            var sirketOdalar = db.Rooms.Where(r => r.CompanyId == rezervasyon.CompanyId && !r.Name.Contains("(Pasif)")).ToList();
 
             if (rezervasyon.RoomId.HasValue && !sirketOdalar.Any(r => r.Id == rezervasyon.RoomId.Value))
             {
-                var mevcutOda = tumOdalar.FirstOrDefault(r => r.Id == rezervasyon.RoomId.Value);
+                var mevcutOda = db.Rooms.FirstOrDefault(r => r.Id == rezervasyon.RoomId.Value);
                 if (mevcutOda != null) sirketOdalar.Add(mevcutOda);
             }
-
             ViewBag.Rooms = new SelectList(sirketOdalar, "Id", "Name", rezervasyon.RoomId);
 
-            var sirketKullanicilar = db.Users.Where(u => isAdmin || u.CompanyId == aktifSirketId).Select(u => new { Value = u.Id.ToString(), Text = u.Name + " " + u.Surname }).ToList();
+
+            var personeller = db.Users.Where(u => u.CompanyId == rezervasyon.CompanyId).Select(u => new { Value = u.Id.ToString(), Text = u.Name + " " + u.Surname }).ToList();
+            var adminler = db.Users.Where(u => u.Role == "Admin").Select(u => new { Value = u.Id.ToString(), Text = u.Name + " " + u.Surname + " (Admin)" }).ToList();
+
+            var sirketKullanicilar = personeller.ToList();
+            foreach (var admin in adminler)
+            {
+                if (!sirketKullanicilar.Any(k => k.Value == admin.Value)) sirketKullanicilar.Add(admin);
+            }
+            sirketKullanicilar = sirketKullanicilar.OrderBy(u => u.Text).ToList();
+
 
             if (isPersonel)
             {
@@ -469,8 +495,16 @@ namespace MeetingProject.Controllers
             {
                 ViewBag.Users = new SelectList(sirketKullanicilar, "Value", "Text", rezervasyon.UserId);
             }
-
             ViewBag.KullaniciListesi = new SelectList(sirketKullanicilar, "Value", "Text");
+
+
+            List<string> seciliKatilimcilar = new List<string>();
+            if (!string.IsNullOrEmpty(rezervasyon.Attendees))
+            {
+                seciliKatilimcilar = rezervasyon.Attendees.Split(',').Select(x => x.Trim()).ToList();
+            }
+            ViewBag.SeciliKatilimcilar = seciliKatilimcilar;
+
             return View(rezervasyon);
         }
 

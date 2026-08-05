@@ -3,20 +3,16 @@
     ViewBag.Title = "Edit";
     Layout = null;
 
-    // Admin yetkisi kontrolü
     bool isAdmin = ViewBag.IsAdmin != null && (bool)ViewBag.IsAdmin;
 }
 
 <form id="editForm">
     @Html.AntiForgeryToken()
 
-    <!-- Güncelleme için gerekli olan kullanıcının ID'sini gizli olarak tutuyoruz -->
     <input type="hidden" id="EditId" name="Id" value="@Model.Id" />
 
-    <!-- Hesap durumu (Aktif/Pasif) başka ekrandan yönetildiği için burada sadece arka planda değerini koruyoruz -->
     <input type="hidden" name="IsActive" value="@(Model.IsActive == true ? "true" : "false")" />
 
-    <!-- Kullanıcı admin değilse kendi şirketine mahkumdur, CompanyId gizli yollanır -->
     @if (!isAdmin)
     {
         <input type="hidden" name="CompanyId" value="@Model.CompanyId" />
@@ -26,7 +22,6 @@
 
         @if (isAdmin)
         {
-            <!-- ŞİRKET ALANI EN ÜSTE TAŞINDI -->
             <div class="row mb-4" id="editSirketSecimAlani" style="@(Model.Role == "Admin" ? "display:none;" : "")">
                 <div class="col-md-12">
                     <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">
@@ -67,7 +62,6 @@
         </div>
 
         <div class="row mb-2">
-            <!-- Aktif/Pasif kalktığı için Rol satırı tam genişliğe (col-md-12) yayıldı -->
             <div class="col-md-12">
                 <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">Sistem Rolü</label>
                 <select id="EditRole" name="Role" class="form-select shadow-sm border-0 bg-light" required>
@@ -92,14 +86,12 @@
 <script>
     $(document).ready(function () {
 
-        // Sayfa ilk yüklendiğinde Admin kontrolü (Şirket Require ayarı için)
         if ($('#EditRole').val() === "Admin") {
             $('#EditCompanyId').removeAttr('required');
         } else {
             $('#EditCompanyId').attr('required', 'required');
         }
 
-        // Tıpkı Create.cshtml'deki gibi Rol'e göre Şirket Seçim alanını gizle/göster animasyonu
         $('#EditRole').on('change', function () {
             var secilenRol = $(this).val();
 

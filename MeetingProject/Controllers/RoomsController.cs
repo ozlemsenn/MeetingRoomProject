@@ -199,20 +199,27 @@ namespace MeetingProject.Controllers
 
             if (rol != "Admin" && rol != "Yönetici") return Json(new { success = false, message = "Yetkisiz işlem!" });
 
-            if (rol != "Admin")
-            {
-                rooms.CompanyId = aktifSirketId;
-            }
-
             if (ModelState.IsValid)
             {
-                var gercekOda = db.Rooms.AsNoTracking().FirstOrDefault(x => x.Id == rooms.Id);
+                var gercekOda = db.Rooms.FirstOrDefault(x => x.Id == rooms.Id);
+
                 if (gercekOda == null || (rol == "Yönetici" && gercekOda.CompanyId != aktifSirketId))
                 {
-                    return Json(new { success = false, message = "Yetkisiz işlem!" });
+                    return Json(new { success = false, message = "Yetkisiz işlem veya kayıt bulunamadı!" });
                 }
 
-                db.Entry(rooms).State = EntityState.Modified;
+                bool isPasif = gercekOda.Name.Contains("(Pasif)");
+                string temizAd = rooms.Name.Replace(" (Pasif)", "").Trim();
+                gercekOda.Name = isPasif ? temizAd + " (Pasif)" : temizAd;
+
+                gercekOda.Capacity = rooms.Capacity;
+                gercekOda.HasProjector = rooms.HasProjector;
+
+                if (rol == "Admin")
+                {
+                    gercekOda.CompanyId = rooms.CompanyId;
+                }
+
                 db.SaveChanges();
 
                 return Json(new { success = true });

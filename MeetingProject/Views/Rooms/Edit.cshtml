@@ -1,47 +1,60 @@
-﻿@{
+﻿@model MeetingProject.Models.Rooms
+@{
     ViewBag.Title = "Edit";
     Layout = null;
+
+    bool isAdmin = Session["UserRole"] != null && Session["UserRole"].ToString() == "Admin";
+
+    string temizAd = Model.Name.Replace(" (Pasif)", "");
 }
 
 <form id="editForm">
     @Html.AntiForgeryToken()
 
-    <!-- Güncelleme işlemi için odanın ID'sini tutan gizli alan -->
-    <input type="hidden" id="EditId" name="Id" />
+    <input type="hidden" id="EditId" name="Id" value="@Model.Id" />
+
+    @if (!isAdmin)
+    {
+        <input type="hidden" name="CompanyId" value="@Model.CompanyId" />
+    }
 
     <div class="container-fluid" style="padding: 20px;">
 
-        <!-- 1. SATIR: Oda Adı ve Kapasite Yan Yana -->
+        @if (isAdmin)
+        {
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">Bağlı Olduğu Şirket</label>
+                    @Html.DropDownList("CompanyId", (SelectList)ViewBag.CompanyId, "Şirket Seçiniz", new { @class = "form-select shadow-sm border-0 bg-light", required = "required" })
+                </div>
+            </div>
+        }
+
         <div class="row mb-4">
             <div class="col-md-7">
                 <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">Oda Adı</label>
-                <!-- bg-light ve border-0 ile inputlara "Ghost" hissiyatı verildi -->
-                <input type="text" id="EditName" name="Name" class="form-control shadow-sm border-0 bg-light" required />
+                <input type="text" id="EditName" name="Name" class="form-control shadow-sm border-0 bg-light" value="@temizAd" required />
             </div>
             <div class="col-md-5">
                 <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">Kapasite</label>
-                <input type="number" id="EditCapacity" name="Capacity" class="form-control shadow-sm border-0 bg-light" required min="1" />
+                <input type="number" id="EditCapacity" name="Capacity" class="form-control shadow-sm border-0 bg-light" value="@Model.Capacity" required min="1" />
             </div>
         </div>
 
-        <!-- 2. SATIR: Projeksiyon Durumu -->
         <div class="row mb-2">
             <div class="col-md-12">
                 <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">Projeksiyon Durumu</label>
                 <select id="EditHasProjector" name="HasProjector" class="form-select shadow-sm border-0 bg-light" required>
-                    <option value="" disabled>Seçiniz...</option>
-                    <option value="true">Var (Mevcut)</option>
-                    <option value="false">Yok</option>
+                    <option value="true" @(Model.HasProjector == true ? "selected" : "")>Var (Mevcut)</option>
+                    <option value="false" @(Model.HasProjector == false || Model.HasProjector == null ? "selected" : "")>Yok</option>
                 </select>
             </div>
         </div>
 
     </div>
 
-    <!-- İşlem Butonları -->
     <div class="modal-footer border-0 bg-white d-flex justify-content-end" style="padding: 15px 20px; border-radius: 0 0 10px 10px;">
         <button type="button" class="btn btn-outline-secondary px-4 shadow-sm" style="border-radius: 8px;" onclick="$('#odaModali').modal('hide');">İptal</button>
-        <!-- Düzenleme işleminin sistem geneli rengi olan SARI buton -->
         <button type="submit" class="btn btn-warning px-4 shadow-sm fw-bold text-dark" style="border-radius: 8px;">Değişiklikleri Kaydet</button>
     </div>
 </form>

@@ -1,48 +1,171 @@
-﻿@{
-    ViewBag.Title = "Edit";
+﻿@model MeetingProject.Models.Reservations
+@{
     Layout = null;
+
+    string formattedDate = Model.Date.HasValue ? Model.Date.Value.ToString("yyyy-MM-dd") : "";
+    string formattedStart = Model.StartTime.HasValue ? Model.StartTime.Value.ToString(@"hh\:mm") : "";
+    string formattedEnd = Model.EndTime.HasValue ? Model.EndTime.Value.ToString(@"hh\:mm") : "";
+
+    var seciliKatilimcilar = ViewBag.SeciliKatilimcilar as List<string> ?? new List<string>();
 }
 
-<form id="editForm">
-    @Html.AntiForgeryToken()
+<div class="modal-body p-0">
+    <div class="container-fluid px-4 py-3">
+        <div id="hataMesajiAlaniDuzenle" class="alert alert-danger d-none shadow-sm" style="border-radius: 8px; font-size: 0.9rem; padding: 10px;"></div>
 
-    <input type="hidden" id="EditId" name="Id" />
+        <form id="formDuzenle">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="Id" value="@Model.Id" />
 
-    <div class="container-fluid" style="padding: 15px 25px;">
+            @if (ViewBag.IsAdmin != null && (bool)ViewBag.IsAdmin)
+            {
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label class="form-label text-muted small fw-bold mb-1">Rezervasyon Yapılacak Şirket</label>
+                        @Html.DropDownList("CompanyId", (SelectList)ViewBag.Companies, "Lütfen Şirket Seçiniz", new { @class = "form-select shadow-sm border-0 bg-light", @id = "sirketSecimiEdit", @required = "required" })
+                    </div>
+                </div>
+            }
+            else
+            {
+                <input type="hidden" name="CompanyId" value="@Model.CompanyId" />
+            }
 
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">Ad</label>
-                <input type="text" id="EditName" name="Name" class="form-control shadow-sm border-0 bg-light" required />
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label text-muted small fw-bold mb-1">Toplantı Odası</label>
+                    @Html.DropDownList("RoomId", (SelectList)ViewBag.Rooms, "Oda Seçiniz", new { @class = "form-select shadow-sm border-0 bg-light", @required = "required", id = "EditRoomId" })
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-muted small fw-bold mb-1">Kuran Kişi</label>
+                    @Html.DropDownList("UserId", (SelectList)ViewBag.Users, "Kullanıcı Seçiniz", new { @class = "form-select shadow-sm border-0 bg-light", @required = "required", id = "EditUserId" })
+                </div>
             </div>
-            <div class="col-md-6">
-                <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">Soyad</label>
-                <input type="text" id="EditSurname" name="Surname" class="form-control shadow-sm border-0 bg-light" required />
-            </div>
-        </div>
 
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">E-Posta</label>
-                <input type="email" id="EditEmail" name="Email" class="form-control shadow-sm border-0 bg-light" required />
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label class="form-label text-muted small fw-bold mb-1">Toplantı Başlığı</label>
+                    <input type="text" name="Title" class="form-control shadow-sm border-0 bg-light" value="@Model.Title" required />
+                </div>
             </div>
-            <div class="col-md-6">
-                <label class="form-label fw-bold text-muted" style="font-size: 0.9rem;">Departman</label>
-                <select id="EditDepartment" name="Department" class="form-select shadow-sm border-0 bg-light" required>
-                    <option value="" disabled>Seçiniz...</option>
-                    <option value="IT">IT (Bilgi İşlem)</option>
-                    <option value="İnsan Kaynakları">İnsan Kaynakları</option>
-                    <option value="Pazarlama">Pazarlama</option>
-                    <option value="Satış">Satış</option>
-                    <option value="Yönetim">Yönetim</option>
-                </select>
-            </div>
-        </div>
 
+            <div class="row mb-3">
+                <div class="col-4">
+                    <label class="form-label text-muted small fw-bold mb-1">Tarih</label>
+                    <input type="date" name="Date" id="tarihInputEdit" class="form-control shadow-sm border-0 bg-light" value="@formattedDate" required>
+                </div>
+                <div class="col-4">
+                    <label class="form-label text-muted small fw-bold mb-1">Başlangıç</label>
+                    <input type="time" name="StartTime" class="form-control shadow-sm border-0 bg-light" value="@formattedStart" required />
+                </div>
+                <div class="col-4">
+                    <label class="form-label text-muted small fw-bold mb-1">Bitiş</label>
+                    <input type="time" name="EndTime" class="form-control shadow-sm border-0 bg-light" value="@formattedEnd" required />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label class="form-label text-muted small fw-bold mb-1">Katılımcılar</label>
+                    <div class="dropdown">
+                        <button class="form-select shadow-sm border-0 bg-light text-start" type="button" id="dropdownMenuButtonEdit" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                            <span id="secilenKisiSayisiEdit">Katılımcı Seçiniz...</span>
+                        </button>
+                        <ul class="dropdown-menu w-100 shadow border-0 p-2" aria-labelledby="dropdownMenuButtonEdit" style="max-height: 200px; overflow-y: auto;">
+                            <div id="katilimciCheckboxListesiEdit">
+                                @foreach (var item in (SelectList)ViewBag.KullaniciListesi)
+                                {
+                                    bool isCreator = item.Value == Model.UserId.ToString();
+                                    bool isChecked = seciliKatilimcilar.Contains(item.Value);
+
+                                    <div class="px-2 py-1 katilimci-item" data-id="@item.Value" style="@(isCreator ? "display:none;" : "")">
+                                        <label class="d-flex align-items-center" style="cursor:pointer">
+                                            <input type="checkbox" name="SecilenKatilimcilar" value="@item.Value" class="me-2 katilimci-chk-edit" @(isChecked ? "checked" : "")>
+                                            @item.Text
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-12">
+                    <label class="form-label text-muted small fw-bold mb-1">Açıklama / Amacı</label>
+                    <textarea name="Description" class="form-control shadow-sm border-0 bg-light" rows="3" style="resize: none;" required>@Model.Description</textarea>
+                </div>
+            </div>
+        </form>
     </div>
+</div>
 
-    <div class="modal-footer border-0 bg-white d-flex justify-content-end" style="padding: 15px 25px; border-radius: 0 0 10px 10px;">
-        <button type="button" class="btn btn-outline-secondary px-4 shadow-sm" style="border-radius: 8px;" onclick="$('#kullaniciModali').modal('hide');">İptal</button>
-        <button type="submit" class="btn btn-warning px-4 shadow-sm fw-bold text-dark" style="border-radius: 8px;">Kaydet</button>
+<div class="modal-footer border-0 bg-white d-flex justify-content-end align-items-center" style="padding: 15px 20px; border-radius: 0 0 15px 15px;">
+    <div>
+        <button type="button" class="btn btn-outline-secondary px-4 shadow-sm me-1" style="border-radius: 8px;" onclick="$('#islemModali').modal('hide');">İptal</button>
+        <button type="button" class="btn px-4 shadow-sm fw-bold text-white" style="background-color: #343a40; border-radius: 8px;" onclick="Guncelle()">Kaydet</button>
     </div>
-</form>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        var today = new Date().toISOString().split('T')[0];
+        $('#tarihInputEdit').attr('min', today);
+
+        updateSecilenSayisi();
+
+        $('#EditUserId').change(function () {
+            var secilenKuranKisi = $(this).val();
+
+            $('.katilimci-item').show();
+            $('.katilimci-item[data-id="' + secilenKuranKisi + '"]').hide();
+            $('.katilimci-item[data-id="' + secilenKuranKisi + '"] input').prop('checked', false);
+
+            updateSecilenSayisi();
+        });
+
+        $(document).on('change', '.katilimci-chk-edit', function () {
+            updateSecilenSayisi();
+        });
+
+        function updateSecilenSayisi() {
+            var sayi = $('.katilimci-chk-edit:checked').length;
+            $('#secilenKisiSayisiEdit').text(sayi > 0 ? sayi + " kişi seçildi" : "Katılımcı Seçiniz...");
+        }
+
+        $('#sirketSecimiEdit').change(function () {
+            var secilenSirketId = $(this).val();
+            if (!secilenSirketId) return;
+
+            $.ajax({
+                url: '/Reservations/SirketeGoreVerileriGetir',
+                type: 'GET',
+                data: { sirketId: secilenSirketId },
+                success: function (data) {
+                    var odaDropdown = $('#EditRoomId').empty().append('<option value="">Oda Seçiniz</option>');
+                    $.each(data.odalar, function (i, oda) { odaDropdown.append('<option value="' + oda.Id + '">' + oda.Name + '</option>'); });
+
+                    var kullaniciDropdown = $('#EditUserId').empty().append('<option value="">Kullanıcı Seçiniz</option>');
+                    var container = $('#katilimciCheckboxListesiEdit').empty();
+
+                    $.each(data.kullanicilar, function (i, kullanici) {
+                        kullaniciDropdown.append('<option value="' + kullanici.Id + '">' + kullanici.TamAd + '</option>');
+
+                        container.append(`
+                            <div class="px-2 py-1 katilimci-item" data-id="${kullanici.Id}">
+                                <label class="d-flex align-items-center" style="cursor:pointer">
+                                    <input type="checkbox" name="SecilenKatilimcilar" value="${kullanici.Id}" class="me-2 katilimci-chk-edit">
+                                    ${kullanici.TamAd}
+                                </label>
+                            </div>
+                        `);
+                    });
+
+                    $('#secilenKisiSayisiEdit').text('Katılımcı Seçiniz...');
+                }
+            });
+        });
+    });
+</script>
