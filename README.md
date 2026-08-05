@@ -50,4 +50,4 @@ Yazılım stajım kapsamında, uçtan uca mimari tasarımı, veritabanı ilişki
 
 1. Projeyi bilgisayarınıza klonlayın:
    ```bash
-git clone https://github.com/ozlemsenn/MeetingProject.git
+   git clone [https://github.com/ozlemsenn/MeetingProject.git](https://github.com/ozlemsenn/MeetingProject.git)
